@@ -1,0 +1,150 @@
+@import 'tailwindcss';
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* ==========================================================================
+   The admin dashboard shares East-Market's palette but not its personality.
+   The marketplace is warm and spacious because it is selling something; this
+   is a tool someone stares at for an hour while clearing a moderation queue,
+   so it is denser, quieter, and has no cultural pattern layer competing with
+   the data. Same tokens, different tuning.
+   ========================================================================== */
+@theme {
+  --color-acacia-50: #ebf5f1;
+  --color-acacia-100: #d2e9e0;
+  --color-acacia-200: #a6d3c3;
+  --color-acacia-300: #72b8a2;
+  --color-acacia-400: #449a82;
+  --color-acacia-500: #1e6f5c;
+  --color-acacia-600: #19604f;
+  --color-acacia-700: #144e41;
+  --color-acacia-800: #103d33;
+  --color-acacia-900: #0c2f27;
+  --color-acacia-950: #061a16;
+
+  --color-clay-100: #fae1d2;
+  --color-clay-300: #e99a68;
+  --color-clay-500: #b8531a;
+  --color-clay-600: #9c4516;
+  --color-clay-900: #46200b;
+
+  --color-sun-100: #faebce;
+  --color-sun-300: #e9bb63;
+  --color-sun-500: #d4913f;
+  --color-sun-800: #67421b;
+  --color-sun-900: #452c12;
+
+  --color-indigo-100: #d8e1f1;
+  --color-indigo-300: #7f9ccc;
+  --color-indigo-500: #2b4c7e;
+  --color-indigo-900: #111d2d;
+
+  --color-sand-50: #faf7f2;
+  --color-sand-100: #f2ede4;
+  --color-sand-200: #e4daca;
+  --color-sand-300: #d0c2ab;
+  --color-sand-400: #b5a186;
+  --color-sand-600: #7b6749;
+  --color-sand-700: #5f4f38;
+
+  --color-ink-700: #3a332b;
+  --color-ink-800: #2a241e;
+  --color-ink-900: #1a1713;
+  --color-ink-950: #0f0d0b;
+
+  --color-success: #2f7d52;
+  --color-warning: #b0742f;
+  --color-danger: #b4342a;
+
+  --font-sans:
+    ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Noto Sans',
+    'Noto Sans Ethiopic', Arial, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  --radius-card: 0.75rem;
+  --radius-field: 0.5rem;
+}
+
+:root {
+  --surface: var(--color-sand-100);
+  --surface-raised: #ffffff;
+  --surface-sunken: var(--color-sand-200);
+  --border-subtle: var(--color-sand-200);
+  --border-strong: var(--color-sand-300);
+  --text-primary: var(--color-ink-900);
+  --text-secondary: var(--color-sand-700);
+  --text-muted: var(--color-sand-600);
+  --brand: var(--color-acacia-500);
+  --brand-hover: var(--color-acacia-600);
+  --brand-subtle: var(--color-acacia-50);
+  color-scheme: light;
+}
+
+.dark {
+  --surface: var(--color-ink-950);
+  --surface-raised: var(--color-ink-900);
+  --surface-sunken: #080706;
+  --border-subtle: #2c2620;
+  --border-strong: #3d352c;
+  --text-primary: var(--color-sand-100);
+  --text-secondary: var(--color-sand-300);
+  --text-muted: var(--color-sand-400);
+  --brand: var(--color-acacia-300);
+  --brand-hover: var(--color-acacia-200);
+  --brand-subtle: rgb(30 111 92 / 0.16);
+  color-scheme: dark;
+}
+
+@theme inline {
+  --color-surface: var(--surface);
+  --color-surface-raised: var(--surface-raised);
+  --color-surface-sunken: var(--surface-sunken);
+  --color-border-subtle: var(--border-subtle);
+  --color-border-strong: var(--border-strong);
+  --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+  --color-text-muted: var(--text-muted);
+  --color-brand: var(--brand);
+  --color-brand-hover: var(--brand-hover);
+  --color-brand-subtle: var(--brand-subtle);
+}
+
+@layer base {
+  body {
+    background-color: var(--surface);
+    color: var(--text-primary);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--brand);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
+
+@layer components {
+  .em-skeleton {
+    background: linear-gradient(90deg, var(--surface-sunken) 25%,
+      color-mix(in oklab, var(--surface-sunken) 70%, var(--surface-raised)) 37%,
+      var(--surface-sunken) 63%);
+    background-size: 400% 100%;
+    animation: em-skeleton 1.6s ease-in-out infinite;
+  }
+  @keyframes em-skeleton {
+    0% { background-position: 100% 50%; }
+    100% { background-position: 0 50%; }
+  }
+
+  /* Wide tables are normal here; they scroll inside their card rather than
+     pushing the page sideways. */
+  .em-table-scroll { overflow-x: auto; }
+}

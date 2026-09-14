@@ -4,6 +4,7 @@ import { env } from '../config/env.js';
 import { anon } from '../config/supabase.js';
 import { cacheStats } from '../utils/cache.js';
 import { ok } from '../utils/response.js';
+import { adminRouter } from './admin.routes.js';
 import { categoriesRouter } from './categories.routes.js';
 import { locationsRouter } from './locations.routes.js';
 import { productsRouter } from './products.routes.js';
@@ -15,6 +16,7 @@ apiRouter.use('/locations', locationsRouter);
 apiRouter.use('/categories', categoriesRouter);
 apiRouter.use('/products', productsRouter);
 apiRouter.use('/users', usersRouter);
+apiRouter.use('/admin', adminRouter);
 
 /**
  * Public, client-readable configuration.
