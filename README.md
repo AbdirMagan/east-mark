@@ -14,13 +14,13 @@ This repository is being built in dependency order. Only what is listed as
 
 | Area | State |
 |---|---|
-| `supabase/` — schema, RLS, storage, seed data | **Done, applied and verified against Postgres 17** |
-| `backend/` — Node + Express + TypeScript API | Not started |
-| `web/` — React + TypeScript marketplace | Not started |
+| `supabase/` — schema, RLS, storage, seed data | **Done**, applied and verified against Postgres 17 |
+| `backend/` — Node + Express + TypeScript API | **Done** for config, locations, categories, products, users. Messaging, businesses, admin, payments and the job runner are not started. |
+| `web/` — React + TypeScript marketplace | **Done** for home, browse/search/filter, product detail, categories and auth. Sell, messaging and seller profiles are not started. |
 | `admin/` — React + TypeScript dashboard | Not started |
 | `android/` — Kotlin + Compose | Prototype only (Room-backed, not wired to Supabase) |
 | `ios/` — Swift + SwiftUI | Not started |
-| `packages/shared` — design tokens, i18n | Not started |
+| `packages/shared` — design tokens, i18n | Not started. The design system currently lives in `web/src/index.css`. |
 
 The `android/` directory currently holds an AI Studio prototype with a local
 Room database and no backend. It is kept for reference and will be rebuilt
@@ -46,6 +46,18 @@ East-Market/
 ```
 
 ---
+
+## Running it locally
+
+```bash
+# 1. database — apply migrations and seeds (see docs/DATABASE.md)
+# 2. api
+cd backend && npm install && cp ../.env.example .env && npm run dev   # :4000
+# 3. web
+cd web && npm install && cp .env.example .env && npm run dev          # :5173
+```
+
+The web dev server proxies `/api` to the backend, so both need to be running.
 
 ## Database
 
@@ -76,6 +88,15 @@ Both sets are idempotent and safe to re-run.
 | Categories | 25 top-level + 53 subcategories, each named in all four languages |
 | Subscription plans | Free, Basic, Business, Premium |
 | Payment providers | ZAAD, eDahab, EVC Plus, Sahal, telebirr, M-Pesa, bank transfer, cash — all registered, all inactive until credentials are configured |
+
+`supabase/seed/99_demo_listings.sql` is optional sample content: two demo
+sellers and eight listings across all four countries, so a fresh environment
+has something to look at. It is not production data — the accounts have a known
+password. Remove it with:
+
+```sql
+delete from auth.users where email like 'demo-%@eastmarket.test';
+```
 
 Nothing about locations, categories, currencies or payment providers is
 hard-coded in application code. They are rows. Adding Djibouti, Uganda,

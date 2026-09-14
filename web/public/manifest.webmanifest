@@ -1,0 +1,10 @@
+{
+  "name": "East-Market",
+  "short_name": "East-Market",
+  "description": "Buy. Sell. Connect. The marketplace for Somaliland, Somalia, Ethiopia and Kenya.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#faf7f2",
+  "theme_color": "#1e6f5c",
+  "icons": [{ "src": "/favicon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }]
+}

@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+
+    <title>East-Market — Buy. Sell. Connect.</title>
+    <meta
+      name="description"
+      content="Buy and sell across Somaliland, Somalia, Ethiopia and Kenya. Cars, phones, houses, livestock, land and more."
+    />
+
+    <!-- Paint the browser chrome to match the theme before React mounts. -->
+    <meta name="theme-color" media="(prefers-color-scheme: light)" content="#faf7f2" />
+    <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#0f0d0b" />
+
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+
+    <script>
+      // Apply the stored theme before first paint. Without this the page
+      // renders light and then flips, which is the classic dark-mode flash.
+      (function () {
+        try {
+          var stored = JSON.parse(localStorage.getItem("em.preferences") || "{}");
+          var theme = (stored.state && stored.state.theme) || "system";
+          var dark =
+            theme === "dark" ||
+            (theme === "system" && matchMedia("(prefers-color-scheme: dark)").matches);
+          if (dark) document.documentElement.classList.add("dark");
+        } catch (error) {
+          // Storage blocked; fall back to the light default.
+        }
+      })();
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <noscript>East-Market needs JavaScript enabled.</noscript>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

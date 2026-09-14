@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+Disallow: /signin
+Disallow: /register
+Disallow: /saved
+Disallow: /my-listings
+Disallow: /messages
+
+Sitemap: https://eastmarket.app/sitemap.xml

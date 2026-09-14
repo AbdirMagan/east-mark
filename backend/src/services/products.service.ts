@@ -235,7 +235,7 @@ async function assembleDetail(
   auth: AuthContext | undefined,
   siteUrl: string,
 ): Promise<ProductDetailDto> {
-  const [images, seller, business, contact, favorited] = await Promise.all([
+  const [images, seller, business, contact, favorited, city, country] = await Promise.all([
     db
       .from('product_images')
       .select('id, url, thumbnail_url, width, height, position, is_primary')
@@ -262,6 +262,15 @@ async function assembleDetail(
           .eq('product_id', row.id)
           .maybeSingle()
       : Promise.resolve({ data: null, error: null }),
+    // The search RPC denormalises the city name onto every card, but a direct
+    // row read does not, so it is resolved here. Without this the product page
+    // renders a dash where the location should be.
+    row.city_id
+      ? db.from('cities').select('name').eq('id', row.city_id as number).maybeSingle()
+      : Promise.resolve({ data: null, error: null }),
+    row.country_id
+      ? db.from('countries').select('code').eq('id', row.country_id as number).maybeSingle()
+      : Promise.resolve({ data: null, error: null }),
   ]);
 
   const profile = await db
@@ -286,8 +295,8 @@ async function assembleDetail(
     categoryId: Number(row.category_id),
     subcategoryId: (row.subcategory_id as number | null) ?? null,
     cityId: (row.city_id as number | null) ?? null,
-    city: null,
-    countryCode: null,
+    city: city.data?.name ?? null,
+    countryCode: country.data?.code ?? null,
     regionId: (row.region_id as number | null) ?? null,
     districtId: (row.district_id as number | null) ?? null,
     neighborhoodId: (row.neighborhood_id as number | null) ?? null,
