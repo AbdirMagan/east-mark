@@ -579,23 +579,45 @@ export async function listMyProducts(
  * The storage policy keys on the first path segment being the uploader's own
  * user id, so a signed URL cannot be used to write into someone else's folder.
  */
+export interface UploadSlot {
+  uploadUrl: string;
+  token: string;
+  path: string;
+}
+
 export async function createImageUploadUrl(
   auth: AuthContext,
   productId: string,
   contentType: string,
-): Promise<{ uploadUrl: string; token: string; path: string }> {
+): Promise<{ full: UploadSlot; thumbnail: UploadSlot }> {
   await assertOwnsProduct(auth, productId);
 
   const extension = extensionFor(contentType);
-  const path = `${auth.userId}/${productId}/${randomUUID()}.${extension}`;
+  const base = `${auth.userId}/${productId}/${randomUUID()}`;
 
-  const { data, error } = await auth.db.storage.from(PRODUCT_BUCKET).createSignedUploadUrl(path);
+  // Both slots are issued together. Each photo needs two objects uploaded (the
+  // resized original and its thumbnail), and asking for them separately would
+  // be four round trips per photo. On a connection with 300ms of latency, a
+  // five-photo listing would spend six seconds just negotiating URLs.
+  const [full, thumbnail] = await Promise.all([
+    auth.db.storage.from(PRODUCT_BUCKET).createSignedUploadUrl(`${base}.${extension}`),
+    auth.db.storage.from(PRODUCT_BUCKET).createSignedUploadUrl(`${base}-thumb.${extension}`),
+  ]);
 
-  if (error) {
-    throw new BadRequestError(`Could not prepare the upload: ${error.message}`);
+  if (full.error || thumbnail.error) {
+    throw new BadRequestError(
+      `Could not prepare the upload: ${(full.error ?? thumbnail.error)!.message}`,
+    );
   }
 
-  return { uploadUrl: data.signedUrl, token: data.token, path: data.path };
+  return {
+    full: { uploadUrl: full.data.signedUrl, token: full.data.token, path: full.data.path },
+    thumbnail: {
+      uploadUrl: thumbnail.data.signedUrl,
+      token: thumbnail.data.token,
+      path: thumbnail.data.path,
+    },
+  };
 }
 
 export async function registerImage(

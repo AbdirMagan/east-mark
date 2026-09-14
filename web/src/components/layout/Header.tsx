@@ -203,7 +203,6 @@ export function Header() {
                         });
                       }}
                     >
-                      {country.flag ? `${country.flag} ` : ''}
                       {country.name}
                     </MenuItem>
                   ))}
@@ -432,7 +431,6 @@ function MobileMenu({ onClose }: { onClose: () => void }) {
                     preferences.setCountry({ id: country.id, code: country.code, name: country.name })
                   }
                 >
-                  {country.flag ? `${country.flag} ` : ''}
                   {country.name}
                 </MenuItem>
               ))}

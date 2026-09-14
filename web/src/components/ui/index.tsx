@@ -167,7 +167,10 @@ interface SelectFieldProps extends SelectHTMLAttributes<HTMLSelectElement> {
 }
 
 export function SelectField({ label, className = '', id, children, ...rest }: SelectFieldProps) {
-  const fieldId = id ?? rest.name;
+  // Without this fallback a caller that passes only `label` renders a
+  // <label for=undefined>, so the control has no accessible name and clicking
+  // the label does not focus it.
+  const fieldId = id ?? rest.name ?? label?.toLowerCase().replace(/\s+/g, '-');
   return (
     <div className="space-y-1.5">
       {label ? (

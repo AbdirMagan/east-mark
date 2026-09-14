@@ -19,9 +19,12 @@ insert into public.countries
   (code, code3, name, translations, dial_code, flag_emoji,
    default_currency_code, default_language_code, phone_number_length, sort_order)
 values
+  -- No flag emoji. The only emoji available is Somalia's, and applying it
+  -- to Somaliland is both factually wrong and politically loaded. Clients
+  -- render the country name and dialling code instead.
   ('XA', 'XSL', 'Somaliland',
    '{"so":"Somaliland","am":"ሶማሊላንድ","sw":"Somaliland"}'::jsonb,
-   '+252', '🇸🇴', 'SLSH', 'so', 9, 1),
+   '+252', null, 'SLSH', 'so', 9, 1),
   ('SO', 'SOM', 'Somalia',
    '{"so":"Soomaaliya","am":"ሶማሊያ","sw":"Somalia"}'::jsonb,
    '+252', '🇸🇴', 'SOS', 'so', 9, 2),

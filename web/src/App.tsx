@@ -22,6 +22,7 @@ const CategoriesPage = lazy(() =>
   import('./pages/MiscPages.js').then((m) => ({ default: m.CategoriesPage })),
 );
 const SavedPage = lazy(() => import('./pages/MiscPages.js').then((m) => ({ default: m.SavedPage })));
+const SellPage = lazy(() => import('./pages/SellPage.js').then((m) => ({ default: m.SellPage })));
 const NotFoundPage = lazy(() =>
   import('./pages/MiscPages.js').then((m) => ({ default: m.NotFoundPage })),
 );
@@ -87,7 +88,7 @@ function Shell() {
             <Route path="/saved" element={<SavedPage />} />
             <Route path="/signin" element={<SignInPage />} />
             <Route path="/register" element={<RegisterPage />} />
-            <Route path="/sell" element={<ComingSoonPage titleKey="nav.sell" />} />
+            <Route path="/sell" element={<SellPage />} />
             <Route path="/my-listings" element={<ComingSoonPage titleKey="nav.myListings" />} />
             <Route path="/messages/*" element={<ComingSoonPage titleKey="nav.messages" />} />
             <Route path="*" element={<NotFoundPage />} />

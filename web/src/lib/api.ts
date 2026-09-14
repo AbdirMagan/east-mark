@@ -239,6 +239,47 @@ export interface ProductDetail extends ProductCard {
   shareUrl: string;
 }
 
+export interface CreateListingInput {
+  title: string;
+  description?: string;
+  categoryId: number;
+  subcategoryId?: number;
+  price: number;
+  currency: string;
+  negotiable?: boolean;
+  condition: string;
+  countryId: number;
+  regionId?: number;
+  cityId?: number;
+  districtId?: number;
+  latitude?: number;
+  longitude?: number;
+  phone?: string;
+  whatsapp?: string;
+  brand?: string;
+  model?: string;
+  year?: number;
+  color?: string;
+  size?: string;
+  quantity?: number;
+  deliveryAvailable?: boolean;
+  attributes?: Record<string, string | number | boolean | null>;
+  draft?: boolean;
+}
+
+export interface CreatedListing {
+  id: string;
+  ref: number;
+  slug: string | null;
+  status: string;
+}
+
+export interface UploadSlot {
+  uploadUrl: string;
+  token: string;
+  path: string;
+}
+
 export interface AppConfig {
   settings: Record<string, Record<string, unknown>>;
   languages: Array<{ code: string; name: string; nativeName: string; rtl: boolean }>;
@@ -359,4 +400,75 @@ export const endpoints = {
 
   removeFavorite: (productId: string) =>
     api<null>(`/users/me/favorites/${productId}`, { method: 'DELETE' }),
+
+  /* --- selling --- */
+
+  createListing: (input: CreateListingInput) =>
+    api<CreatedListing>('/products', { method: 'POST', body: input }),
+
+  imageUploadSlots: (productId: string, contentType: string) =>
+    api<{ full: UploadSlot; thumbnail: UploadSlot }>(`/products/${productId}/images/upload-url`, {
+      method: 'POST',
+      body: { contentType },
+    }),
+
+  registerImage: (
+    productId: string,
+    input: {
+      path: string;
+      thumbnailPath?: string;
+      width?: number;
+      height?: number;
+      bytes?: number;
+      isPrimary?: boolean;
+    },
+  ) => api<ProductImage>(`/products/${productId}/images`, { method: 'POST', body: input }),
+
+  setListingStatus: (productId: string, status: 'draft' | 'pending_approval' | 'active' | 'sold') =>
+    api<{ id: string; status: string }>(`/products/${productId}/status`, {
+      method: 'PATCH',
+      body: { status },
+    }),
+
+  deleteListing: (productId: string) => api<null>(`/products/${productId}`, { method: 'DELETE' }),
+
+  myListings: (params: { status?: string; page?: number; limit?: number } = {}) =>
+    apiRequest<Array<Record<string, unknown>>>('/products/mine', { query: params }),
+
+  regions: (countryId: number, lang: string) =>
+    api<Place[]>(`/locations/countries/${countryId}/regions`, { query: { lang }, auth: false }),
+
+  districts: (cityId: number, lang: string) =>
+    api<Place[]>(`/locations/cities/${cityId}/districts`, { query: { lang }, auth: false }),
+
+  updateContact: (input: { phone?: string | null; whatsapp?: string | null }) =>
+    api<Me['contact']>('/users/me/contact', { method: 'PATCH', body: input }),
 };
+
+/**
+ * Uploads a processed blob to a signed storage URL.
+ *
+ * The bytes go straight from the browser to Supabase Storage, never through
+ * our API. The signed URL already carries its token, and the storage policy
+ * requires the first path segment to be the uploader's own user id, so a
+ * leaked URL cannot be used to write into someone else's folder.
+ */
+export async function uploadToSignedUrl(slot: UploadSlot, blob: Blob): Promise<void> {
+  const response = await fetch(slot.uploadUrl, {
+    method: 'PUT',
+    headers: {
+      'content-type': blob.type || 'application/octet-stream',
+      'x-upsert': 'false',
+    },
+    body: blob,
+  });
+
+  if (!response.ok) {
+    const detail = await response.text().catch(() => '');
+    throw new ApiError(response.status, {
+      success: false,
+      message: `Upload failed${detail ? `: ${detail.slice(0, 120)}` : ''}`,
+      code: 'upload_failed',
+    });
+  }
+}

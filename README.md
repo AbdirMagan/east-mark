@@ -16,7 +16,7 @@ This repository is being built in dependency order. Only what is listed as
 |---|---|
 | `supabase/` — schema, RLS, storage, seed data | **Done**, applied and verified against Postgres 17 |
 | `backend/` — Node + Express + TypeScript API | **Done** for config, locations, categories, products, users. Messaging, businesses, admin, payments and the job runner are not started. |
-| `web/` — React + TypeScript marketplace | **Done** for home, browse/search/filter, product detail, categories and auth. Sell, messaging and seller profiles are not started. |
+| `web/` — React + TypeScript marketplace | **Done** for home, browse/search/filter, product detail, categories, auth and posting a listing. Messaging, seller profiles and my-listings are not started. |
 | `admin/` — React + TypeScript dashboard | Not started |
 | `android/` — Kotlin + Compose | Prototype only (Room-backed, not wired to Supabase) |
 | `ios/` — Swift + SwiftUI | Not started |

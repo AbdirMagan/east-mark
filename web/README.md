@@ -166,9 +166,41 @@ result counts, labelled form fields with `aria-describedby` for errors, and
 
 ---
 
+## Posting a listing
+
+A three-step flow: category, details and photos, then location and contact.
+
+**Images are processed in the browser, never on the server.** A phone camera
+produces 3-6 MB JPEGs; uploading one over a 3G uplink takes most of a minute,
+and a seller adding five photos gives up long before that. Each photo is
+resized to 1600px and re-encoded as WebP, with a 400px thumbnail produced at
+the same time. Measured on a 3000x2250 test image: **7.55 MB in, 202 KB full
++ 5.4 KB thumbnail out.** The thumbnail is what the product grid renders, so
+browsing twenty listings costs a few hundred kilobytes.
+
+Targets live in `app_settings.media`, so they can be re-tuned for a slower
+network without shipping a build. `imageOrientation: 'from-image'` applies the
+EXIF rotation tag — without it, portrait photos from many Android phones upload
+sideways.
+
+**Publishing is three server steps, not one:** create as a draft, upload and
+register each photo, then flip the status into moderation. It has to be that
+order because the storage path contains the product id. Creating it as a draft
+first means a listing interrupted mid-upload lands in the seller's drafts with
+whatever photos made it, rather than reaching a moderator half-built. A photo
+that fails does not cost the seller the listing.
+
+**The form is saved to localStorage as you type** — everything except the
+photos, which are blobs and cannot be serialised. A half-typed listing is real
+work, and losing it to a dropped connection is what stops someone trying again.
+
+The optional fields come from the chosen category's `field_schema`. Nothing in
+the client knows what a car is: pick Cars and Mileage/Fuel/Transmission appear,
+pick Livestock and it is Breed/Age/Sex.
+
 ## Not built yet
 
-Sell/listing form, my listings, messaging, seller profiles, saved listings
+My listings, editing a listing, messaging, seller profiles, saved listings
 (the screen exists but `/users/me/favorites` returns raw product rows rather
 than the card shape the grid needs), onboarding, and the legal pages the footer
 links to.
