@@ -21,7 +21,8 @@ const schema = z.object({
   LOG_LEVEL: z.enum(['fatal', 'error', 'warn', 'info', 'debug', 'trace', 'silent']).default('info'),
 
   API_BASE_URL: z.string().url().default('http://localhost:4000'),
-  CORS_ORIGINS: csv.default('http://localhost:5173,http://localhost:5174'),
+  // 5173/5174 marketplace (Vite picks the next free port), 5175 admin.
+  CORS_ORIGINS: csv.default('http://localhost:5173,http://localhost:5174,http://localhost:5175'),
 
   SUPABASE_URL: z.string().url(),
   SUPABASE_ANON_KEY: z.string().min(20),

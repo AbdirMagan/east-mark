@@ -241,7 +241,7 @@ function Gallery({ product }: { product: ProductDetail }) {
           // The first image is the largest thing on the page and the reason the
           // visitor is here, so it loads eagerly at high priority.
           loading="eager"
-          fetchPriority="high"
+          {...({ fetchpriority: 'high' } as React.ImgHTMLAttributes<HTMLImageElement>)}
           decoding="async"
           className="size-full object-contain"
         />

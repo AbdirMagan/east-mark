@@ -3,7 +3,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 import { api } from '../lib/api.js';
 import {
-  Button, Card, EmptyState, ErrorState, PageHeader, Pagination, Skeleton,
+  Button, Card, EmptyState, ErrorState, MutationError, PageHeader, Pagination, Skeleton,
   StatusPill, formatRelative,
 } from '../components/ui.js';
 
@@ -48,6 +48,8 @@ export function Reports() {
       <PageHeader title="Reports" description="What users have flagged for review." />
 
       <Tabs tabs={REPORT_TABS} value={status} onChange={(value) => { setStatus(value); setPage(1); }} />
+
+      <MutationError error={resolve.error} />
 
       <Card>
         {reports.isError ? (
@@ -167,6 +169,8 @@ export function Verifications() {
       />
 
       <Tabs tabs={VERIFICATION_TABS} value={status} onChange={(value) => { setStatus(value); setPage(1); }} />
+
+      <MutationError error={decide.error} />
 
       <Card>
         {requests.isError ? (

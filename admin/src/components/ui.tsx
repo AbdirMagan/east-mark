@@ -180,6 +180,26 @@ export function ErrorState({ message, onRetry }: { message: string; onRetry?: ()
   );
 }
 
+/**
+ * A failed moderation action must say so. Without this the button simply does
+ * nothing on failure, which reads as a broken dashboard rather than a missing
+ * key or a permission problem — and the server's message is the whole
+ * diagnosis.
+ */
+export function MutationError({ error }: { error: unknown }) {
+  if (!error) return null;
+  const message = error instanceof Error ? error.message : 'That action failed.';
+  return (
+    <div
+      role="alert"
+      className="mb-3 flex items-start gap-2 rounded-[--radius-field] bg-[--color-danger]/10 px-3 py-2.5 text-sm text-[--color-danger]"
+    >
+      <Icon name="alert" size={15} className="mt-0.5" />
+      <span>{message}</span>
+    </div>
+  );
+}
+
 export function Pagination({
   page, totalPages, onChange,
 }: { page: number; totalPages: number; onChange: (page: number) => void }) {

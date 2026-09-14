@@ -55,7 +55,10 @@ export const ProductCard = memo(function ProductCard({
               height={300}
               loading={priority ? 'eager' : 'lazy'}
               decoding="async"
-              fetchPriority={priority ? 'high' : 'auto'}
+              // React 18 only passes through the lowercase attribute; the
+              // camelCase form is dropped with a warning, so the hint never
+              // reached the browser.
+              {...({ fetchpriority: priority ? 'high' : 'auto' } as React.ImgHTMLAttributes<HTMLImageElement>)}
               className="size-full object-cover transition-transform duration-300 group-hover:scale-[1.03]"
             />
           ) : (

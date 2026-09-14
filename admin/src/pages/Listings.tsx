@@ -3,7 +3,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 import { api, type AdminProduct } from '../lib/api.js';
 import {
-  Button, Card, EmptyState, ErrorState, Icon, PageHeader, Pagination, Skeleton,
+  Button, Card, MutationError, EmptyState, ErrorState, Icon, PageHeader, Pagination, Skeleton,
   StatusPill, formatPrice, formatRelative,
 } from '../components/ui.js';
 
@@ -84,6 +84,8 @@ export function Listings() {
           />
         </form>
       </div>
+
+      <MutationError error={moderate.error} />
 
       <Card>
         {listings.isError ? (

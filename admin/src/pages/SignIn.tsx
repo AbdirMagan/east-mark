@@ -1,17 +1,14 @@
 import { useState, type FormEvent } from 'react';
 
-import { api, auth } from '../lib/api.js';
+import { auth } from '../lib/api.js';
 import { Button, Card, Icon } from '../components/ui.js';
 
 /**
- * Staff sign-in.
- *
- * Authenticating is not the same as being staff, so after a successful sign-in
- * this checks the account's role and signs straight back out if it is not an
- * admin or moderator. Without that, a seller could sign in here and sit on an
- * empty dashboard wondering why everything 403s.
+ * Staff sign-in. The role check lives in StaffGate (App.tsx), which runs
+ * before the dashboard mounts; `notice` carries its refusal back here, since
+ * this component is remounted when that gate signs a non-staff user out.
  */
-export function SignIn({ onSignedIn }: { onSignedIn: () => void }) {
+export function SignIn({ onSignedIn, notice }: { onSignedIn: () => void; notice?: string | null }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
@@ -25,12 +22,6 @@ export function SignIn({ onSignedIn }: { onSignedIn: () => void }) {
     try {
       const { error: signInError } = await auth.signInWithPassword({ email: email.trim(), password });
       if (signInError) throw new Error(signInError.message);
-
-      const me = await api.me();
-      if (me.role !== 'admin' && me.role !== 'moderator') {
-        await auth.signOut();
-        throw new Error('That account does not have staff access.');
-      }
       onSignedIn();
     } catch (caught) {
       setError(caught instanceof Error ? caught.message : 'Could not sign in');
@@ -57,10 +48,10 @@ export function SignIn({ onSignedIn }: { onSignedIn: () => void }) {
           <p className="mt-1 text-sm text-text-secondary">This dashboard is for admins and moderators.</p>
 
           <form onSubmit={submit} className="mt-5 space-y-4">
-            {error ? (
+            {error || notice ? (
               <p role="alert" className="flex items-start gap-2 rounded-[--radius-field] bg-[--color-danger]/10 px-3 py-2 text-sm text-[--color-danger]">
                 <Icon name="alert" size={15} className="mt-0.5" />
-                {error}
+                {error ?? notice}
               </p>
             ) : null}
 

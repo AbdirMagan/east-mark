@@ -3,7 +3,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 import { api, type AdminUser } from '../lib/api.js';
 import {
-  Button, Card, EmptyState, ErrorState, Icon, PageHeader, Pagination, Skeleton,
+  Button, Card, MutationError, EmptyState, ErrorState, Icon, PageHeader, Pagination, Skeleton,
   StatusPill, formatDate, formatRelative,
 } from '../components/ui.js';
 
@@ -71,6 +71,8 @@ export function Users() {
           />
         </form>
       </div>
+
+      <MutationError error={update.error} />
 
       <Card>
         {users.isError ? (
