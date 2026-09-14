@@ -25,9 +25,14 @@ const schema = z.object({
 
   SUPABASE_URL: z.string().url(),
   SUPABASE_ANON_KEY: z.string().min(20),
-  SUPABASE_SERVICE_ROLE_KEY: z.string().min(20),
-  // Optional. Only needed when the project still signs tokens with the legacy
-  // shared secret; asymmetric keys are verified from JWKS instead.
+  // Optional to BOOT, but required to actually use. The service-role client
+  // throws a clear error if something reaches for it without this set, and
+  // production refuses to start without it (see the check below). Requiring it
+  // up front stopped anyone running the API locally for the sake of endpoints
+  // that never touch it.
+  SUPABASE_SERVICE_ROLE_KEY: z.string().min(20).optional(),
+  // Only needed when the project still signs tokens with the legacy shared
+  // secret; asymmetric keys are verified from JWKS instead.
   SUPABASE_JWT_SECRET: z.string().min(20).optional(),
 
   RATE_LIMIT_WINDOW_MS: z.coerce.number().int().positive().default(60_000),
@@ -40,7 +45,16 @@ const schema = z.object({
 export type Env = z.infer<typeof schema>;
 
 function parseEnv(): Env {
-  const parsed = schema.safeParse(process.env);
+  // An env var set to an empty string means "not set". dotenv turns every
+  // `KEY=` line in a .env file into '', and .optional() only accepts
+  // undefined — so copying .env.example verbatim would fail validation on
+  // every key the template lists but leaves blank.
+  const cleaned: Record<string, string> = {};
+  for (const [key, value] of Object.entries(process.env)) {
+    if (typeof value === 'string' && value.trim() !== '') cleaned[key] = value;
+  }
+
+  const parsed = schema.safeParse(cleaned);
 
   if (!parsed.success) {
     // Fail at startup with a readable list rather than at the first request
@@ -56,11 +70,24 @@ function parseEnv(): Env {
   // The service-role key bypasses every row level security policy in the
   // database. If it is ever equal to the anon key, someone has pasted the
   // wrong value and the whole security model is off.
-  if (value.SUPABASE_SERVICE_ROLE_KEY === value.SUPABASE_ANON_KEY) {
+  if (
+    value.SUPABASE_SERVICE_ROLE_KEY &&
+    value.SUPABASE_SERVICE_ROLE_KEY === value.SUPABASE_ANON_KEY
+  ) {
     throw new Error(
       'SUPABASE_SERVICE_ROLE_KEY is set to the same value as SUPABASE_ANON_KEY. ' +
         'The service-role key bypasses row level security and must be the secret key ' +
         'from Dashboard -> Settings -> API.',
+    );
+  }
+
+  // Development can run without it; production cannot. Moderation, payments
+  // and the scheduled jobs all need it, and discovering that at 3am because a
+  // deploy quietly came up half-functional is worse than refusing to start.
+  if (value.NODE_ENV === 'production' && !value.SUPABASE_SERVICE_ROLE_KEY) {
+    throw new Error(
+      'SUPABASE_SERVICE_ROLE_KEY is required in production. ' +
+        'Get it from Dashboard -> Settings -> API (service_role, secret).',
     );
   }
 

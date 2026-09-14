@@ -3,7 +3,7 @@ import { createRemoteJWKSet, decodeProtectedHeader, jwtVerify } from 'jose';
 
 import { env } from '../config/env.js';
 import { logger } from '../config/logger.js';
-import { admin, asUser } from '../config/supabase.js';
+import { admin, asUser, hasServiceRole } from '../config/supabase.js';
 import type { AppRole, AuthContext } from '../types/express.js';
 import { ForbiddenError, UnauthorizedError } from '../utils/errors.js';
 
@@ -73,7 +73,13 @@ async function verifyAccessToken(token: string): Promise<VerifiedToken> {
 
   // Remote fallback. Uses the service-role client only to validate the token;
   // it never reads data on the caller's behalf.
-  const { data, error } = await admin.auth.getUser(token);
+  if (!hasServiceRole) {
+    // Without the key there is no second opinion to ask for, and treating an
+    // unverifiable token as valid would be the worst possible failure mode.
+    throw new UnauthorizedError('Could not verify your session. Please sign in again.');
+  }
+
+  const { data, error } = await admin().auth.getUser(token);
   if (error || !data.user) {
     throw new UnauthorizedError('Invalid or expired access token');
   }

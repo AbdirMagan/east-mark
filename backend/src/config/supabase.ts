@@ -40,11 +40,35 @@ const commonOptions = {
   global: { fetch: createResilientFetch() },
 } as const;
 
-/** Service-role client. Bypasses RLS. Never hand this to request handlers by default. */
-export const admin: Db = createClient<Database>(env.SUPABASE_URL, env.SUPABASE_SERVICE_ROLE_KEY, {
-  ...commonOptions,
-  global: { ...commonOptions.global, headers: { 'X-Client-Info': 'east-market-backend/admin' } },
-});
+/**
+ * Service-role client. Bypasses RLS.
+ *
+ * Built lazily so the API can run locally without the secret key — most
+ * endpoints never touch it. Reaching for it when it is not configured throws
+ * here, with a message that says what to do, rather than constructing a
+ * client with an empty key that fails later as an opaque 401 from PostgREST.
+ */
+let adminClient: Db | null = null;
+
+export function admin(): Db {
+  if (!env.SUPABASE_SERVICE_ROLE_KEY) {
+    throw new Error(
+      'This operation needs SUPABASE_SERVICE_ROLE_KEY, which is not set. ' +
+        'Add it to backend/.env from Dashboard -> Settings -> API (service_role, secret). ' +
+        'It bypasses row level security, so it must never appear in a client build.',
+    );
+  }
+
+  adminClient ??= createClient<Database>(env.SUPABASE_URL, env.SUPABASE_SERVICE_ROLE_KEY, {
+    ...commonOptions,
+    global: { ...commonOptions.global, headers: { 'X-Client-Info': 'east-market-backend/admin' } },
+  });
+
+  return adminClient;
+}
+
+/** True when service-role operations are available in this environment. */
+export const hasServiceRole = Boolean(env.SUPABASE_SERVICE_ROLE_KEY);
 
 /** Anonymous client, for public reads made without a signed-in user. */
 export const anon: Db = createClient<Database>(env.SUPABASE_URL, env.SUPABASE_ANON_KEY, {
