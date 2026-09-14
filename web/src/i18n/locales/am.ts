@@ -17,6 +17,7 @@ export const am: Partial<Dictionary> = {
   'nav.signOut': 'ውጣ',
   'nav.myListings': 'የእኔ ዝርዝሮች',
   'nav.settings': 'ቅንብሮች',
+  'nav.admin': 'የአስተዳደር ዳሽቦርድ',
 
   'common.search': 'ፈልግ',
   'common.searchPlaceholder': 'ምርቶች፣ መኪኖች፣ ቤቶች፣ ስልኮች ይፈልጉ...',

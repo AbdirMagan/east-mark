@@ -17,6 +17,7 @@ export const so: Partial<Dictionary> = {
   'nav.signOut': 'Ka bax',
   'nav.myListings': 'Shayadayda',
   'nav.settings': 'Dejinta',
+  'nav.admin': 'Maamulka',
 
   'common.search': 'Raadi',
   'common.searchPlaceholder': 'Raadi alaab, baabuur, guryo, taleefan...',

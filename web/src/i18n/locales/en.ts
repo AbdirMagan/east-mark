@@ -21,6 +21,7 @@ export const en = {
   'nav.signOut': 'Sign out',
   'nav.myListings': 'My listings',
   'nav.settings': 'Settings',
+  'nav.admin': 'Admin dashboard',
 
   'common.search': 'Search',
   'common.searchPlaceholder': 'Search products, cars, houses, phones...',

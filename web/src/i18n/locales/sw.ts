@@ -17,6 +17,7 @@ export const sw: Partial<Dictionary> = {
   'nav.signOut': 'Toka',
   'nav.myListings': 'Matangazo yangu',
   'nav.settings': 'Mipangilio',
+  'nav.admin': 'Dashibodi ya usimamizi',
 
   'common.search': 'Tafuta',
   'common.searchPlaceholder': 'Tafuta bidhaa, magari, nyumba, simu...',

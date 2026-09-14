@@ -146,6 +146,15 @@ function SearchBar({ className = '' }: { className?: string }) {
 /* Header                                                                     */
 /* -------------------------------------------------------------------------- */
 
+/**
+ * The admin dashboard is a separate application on its own origin, so this is
+ * a plain link rather than a route. It is rendered only for accounts whose
+ * profile role is staff -- not as a security control (the dashboard checks the
+ * role itself, and the API enforces it) but because a link that 403s is worse
+ * than no link at all.
+ */
+const ADMIN_URL = (import.meta.env.VITE_ADMIN_URL as string | undefined) ?? 'http://localhost:5175';
+
 export function Header() {
   const t = useT();
   const navigate = useNavigate();
@@ -279,6 +288,21 @@ export function Header() {
             >
               {(close) => (
                 <>
+                  {me?.role === 'admin' || me?.role === 'moderator' ? (
+                    <>
+                      <a
+                        href={ADMIN_URL}
+                        target="_blank"
+                        rel="noreferrer"
+                        onClick={close}
+                        className="flex w-full items-center gap-2 rounded-[--radius-field] px-3 py-2 text-left text-sm font-semibold text-brand transition-colors hover:bg-surface-sunken"
+                      >
+                        <Icon name="sliders" size={15} />
+                        {t('nav.admin')}
+                      </a>
+                      <div className="my-1 h-px bg-border-subtle" />
+                    </>
+                  ) : null}
                   <MenuItem onClick={() => { navigate('/saved'); close(); }}>{t('nav.saved')}</MenuItem>
                   <MenuItem onClick={() => { navigate('/my-listings'); close(); }}>
                     {t('nav.myListings')}
