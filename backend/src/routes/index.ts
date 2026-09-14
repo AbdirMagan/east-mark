@@ -58,6 +58,36 @@ apiRouter.get('/config', async (_req, res) => {
 
 export const healthRouter: Router = Router();
 
+/**
+ * A signpost at the API root.
+ *
+ * Opening http://localhost:4000 in a browser is the first thing anyone does
+ * after starting the server, and a bare "Route GET / not found" gives them
+ * nothing to act on — least of all the fact that the marketplace itself is on
+ * a different port. This says what this service is and where to go next.
+ */
+healthRouter.get('/', (_req, res) => {
+  ok(
+    res,
+    {
+      service: 'East-Market API',
+      version: 'v1',
+      status: 'running',
+      // The thing most people opening this URL are actually looking for.
+      webApp: 'http://localhost:5173',
+      endpoints: {
+        health: '/health',
+        ready: '/health/ready',
+        config: '/api/v1/config',
+        locations: '/api/v1/locations/countries',
+        categories: '/api/v1/categories',
+        products: '/api/v1/products',
+      },
+    },
+    'This is the East-Market API. The marketplace runs separately on port 5173.',
+  );
+});
+
 /** Liveness: is the process up? Never touches the database. */
 healthRouter.get('/health', (_req, res) => {
   ok(res, { status: 'ok', uptime: Math.round(process.uptime()), cache: cacheStats() });
