@@ -1,0 +1,7 @@
+{
+  "name": "East-Market",
+  "description": "East Africa Online Marketplace for Somaliland, Somalia, Ethiopia, and Kenya",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
+
