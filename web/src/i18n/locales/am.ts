@@ -53,7 +53,8 @@ export const am: Partial<Dictionary> = {
 
   'home.heroTitle': 'ይግዙ። ይሽጡ። ይገናኙ።',
   'home.heroSubtitle':
-    'የሶማሊላንድ፣ ሶማሊያ፣ ኢትዮጵያ እና ኬንያ ገበያ። ያለዎትን ያስተዋውቁ፣ የሚፈልጉትን ያግኙ፣ ከአጠገብዎ ካሉ ሰዎች ጋር ይገበያዩ።',
+    'የሶማሊላንድ፣ ሶማሊያ፣ ኢትዮጵያ፣ ኬንያ እና ጅቡቲ ገበያ። ያለዎትን ያስተዋውቁ፣ የሚፈልጉትን ያግኙ፣ ከአጠገብዎ ካሉ ሰዎች ጋር ይገበያዩ።',
+  'home.mapLabel': 'የEast-Market ገበያዎችን የሚያሳይ የአፍሪካ ካርታ፦ ሶማሊላንድ፣ ሶማሊያ፣ ኢትዮጵያ፣ ኬንያ እና ጅቡቲ',
   'home.browseCategories': 'ምድቦችን ያስሱ',
   'home.startSelling': 'መሸጥ ይጀምሩ',
   'home.categories': 'ምድቦች',
@@ -246,5 +247,5 @@ export const am: Partial<Dictionary> = {
   'footer.privacy': 'የግላዊነት ፖሊሲ',
   'footer.guidelines': 'የማህበረሰብ መመሪያዎች',
   'footer.rights': 'መብቱ በህግ የተጠበቀ ነው።',
-  'footer.countries': 'ሶማሊላንድ፣ ሶማሊያ፣ ኢትዮጵያ እና ኬንያን እናገለግላለን',
+  'footer.countries': 'ሶማሊላንድ፣ ሶማሊያ፣ ኢትዮጵያ፣ ኬንያ እና ጅቡቲን እናገለግላለን',
 };

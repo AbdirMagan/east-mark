@@ -141,6 +141,8 @@
   /* Opacity of the cultural pattern layer. Tuned per theme: the same alpha
      that reads as a whisper on sand reads as noise on ink. */
   --pattern-opacity: 0.055;
+  /* Tint of the Africa map behind every page. Faint by design. */
+  --map-tint: rgb(30 111 92 / 0.07);
   color-scheme: light;
 }
 
@@ -166,6 +168,7 @@
   --accent-subtle: rgb(184 83 26 / 0.16);
 
   --pattern-opacity: 0.07;
+  --map-tint: rgb(114 184 162 / 0.06);
   color-scheme: dark;
 }
 

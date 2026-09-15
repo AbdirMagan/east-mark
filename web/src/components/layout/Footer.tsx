@@ -77,6 +77,7 @@ export function Footer() {
             <span>Somalia</span>
             <span>Ethiopia</span>
             <span>Kenya</span>
+            <span>Djibouti</span>
           </p>
         </div>
       </div>

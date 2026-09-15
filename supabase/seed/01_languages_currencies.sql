@@ -82,3 +82,14 @@ on conflict (key) do update
   set value = excluded.value,
       description = excluded.description,
       is_public = excluded.is_public;
+
+-- Djiboutian franc (see migrations/0017_djibouti.sql). Pegged to the dollar.
+insert into public.currencies (code, name, symbol, decimal_digits, sort_order)
+values ('DJF', 'Djiboutian Franc', 'Fdj', 0, 6)
+on conflict (code) do update
+  set name = excluded.name, symbol = excluded.symbol,
+      decimal_digits = excluded.decimal_digits, sort_order = excluded.sort_order;
+
+insert into public.exchange_rates (base_code, quote_code, rate, source)
+values ('USD', 'DJF', 177.721, 'seed')
+on conflict (base_code, quote_code) do nothing;

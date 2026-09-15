@@ -3,6 +3,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { BrowserRouter, Route, Routes, useLocation } from 'react-router-dom';
 
 import { BottomNav, Header } from './components/layout/Header.js';
+import { AfricaBackdrop } from './components/brand/AfricaMap.js';
 import { Footer } from './components/layout/Footer.js';
 import { Spinner } from './components/ui/index.js';
 import { I18nProvider } from './i18n/index.js';
@@ -67,7 +68,8 @@ function Shell() {
   useEffect(() => initAuth(), []);
 
   return (
-    <div className="flex min-h-screen flex-col">
+    <div className="relative isolate flex min-h-screen flex-col">
+      <AfricaBackdrop />
       <a
         href="#main"
         className="em-sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded-[--radius-field] focus:bg-brand focus:px-4 focus:py-2 focus:text-white"

@@ -1,9 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
-    <item
-        android:width="66dp"
-        android:height="66dp"
-        android:drawable="@drawable/img_app_icon"
-        android:gravity="center" />
-</layer-list>
-
+<!-- East-Market launcher icon, foreground layer.
+     The web logo's 48-unit artwork (web/public/favicon.svg) scaled 1.5x and
+     offset 18dp: every point maps as (18 + 1.5x, 18 + 1.5y). That keeps all
+     three diamonds inside the 66dp adaptive-icon safe zone, so no launcher
+     mask shape can clip them. Also used as the monochrome (themed) layer. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <path
+        android:pathData="M54,42L40.5,64.5M54,42L67.5,64.5M40.5,64.5L67.5,64.5"
+        android:strokeWidth="2.625"
+        android:strokeColor="#FFA6D3C3"
+        android:strokeAlpha="0.75" />
+    <path android:pathData="M54,31.5L63,42L54,52.5L45,42Z" android:fillColor="#FFD9743A" />
+    <path android:pathData="M40.5,54L49.5,64.5L40.5,75L31.5,64.5Z" android:fillColor="#FFF2EDE4" />
+    <path android:pathData="M67.5,54L76.5,64.5L67.5,75L58.5,64.5Z" android:fillColor="#FFE9BB63" />
+</vector>

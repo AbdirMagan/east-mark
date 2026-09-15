@@ -18,7 +18,7 @@ interface CategoryStepProps {
 /**
  * Two-level picker with a search box over both levels.
  *
- * 78 categories is too many to scroll on a phone, and someone selling a laptop
+ * Dozens of subcategories are too many to scroll on a phone, and someone selling a laptop
  * will type "laptop" rather than reason about whether it lives under
  * Electronics or Computers. Search matches subcategories too and shows the
  * parent alongside, so the answer is one tap either way.

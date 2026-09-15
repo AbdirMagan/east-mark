@@ -53,7 +53,8 @@ export const sw: Partial<Dictionary> = {
 
   'home.heroTitle': 'Nunua. Uza. Unganisha.',
   'home.heroSubtitle':
-    'Soko la Somaliland, Somalia, Ethiopia na Kenya. Tangaza ulicho nacho, pata unachohitaji, fanya biashara na watu walio karibu nawe.',
+    'Soko la Somaliland, Somalia, Ethiopia, Kenya na Jibuti. Tangaza ulicho nacho, pata unachohitaji, fanya biashara na watu walio karibu nawe.',
+  'home.mapLabel': 'Ramani ya Afrika inayoonyesha masoko ya East-Market: Somaliland, Somalia, Ethiopia, Kenya na Jibuti',
   'home.browseCategories': 'Vinjari kategoria',
   'home.startSelling': 'Anza kuuza',
   'home.categories': 'Kategoria',
@@ -249,5 +250,5 @@ export const sw: Partial<Dictionary> = {
   'footer.privacy': 'Sera ya Faragha',
   'footer.guidelines': 'Miongozo ya Jamii',
   'footer.rights': 'Haki zote zimehifadhiwa.',
-  'footer.countries': 'Tunahudumia Somaliland, Somalia, Ethiopia na Kenya',
+  'footer.countries': 'Tunahudumia Somaliland, Somalia, Ethiopia, Kenya na Jibuti',
 };

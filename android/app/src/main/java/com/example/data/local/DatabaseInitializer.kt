@@ -16,7 +16,8 @@ object DatabaseInitializer {
         Country(
             id = "somaliland",
             name = "Somaliland",
-            flag = "🇸🇴",
+            // No emoji: the Somalia flag is wrong for Somaliland.
+            flag = "",
             defaultCurrency = "SLSH",
             phonePrefix = "+252",
             cities = listOf("Hargeisa", "Berbera", "Burco", "Borama", "Gabiley", "Las Anod")
@@ -44,35 +45,25 @@ object DatabaseInitializer {
             defaultCurrency = "KES",
             phonePrefix = "+254",
             cities = listOf("Nairobi", "Mombasa", "Garissa", "Wajir", "Mandera", "Kisumu", "Nakuru")
+        ),
+        Country(
+            id = "djibouti",
+            name = "Djibouti",
+            flag = "🇩🇯",
+            defaultCurrency = "DJF",
+            phonePrefix = "+253",
+            cities = listOf("Djibouti", "Ali Sabieh", "Dikhil", "Tadjourah", "Obock", "Arta")
         )
     )
 
+    // Mirrors the live catalogue (supabase/migrations/0016_trim_categories.sql):
+    // Electronics, Houses, Cars, Lands, Livestock.
     val CATEGORIES = listOf(
-        CategoryItem("phones", "Phones & Tablets", "Smartphone", listOf("Smartphones", "iPhones", "Samsung", "Tablets", "Accessories")),
-        CategoryItem("electronics", "Electronics", "Devices", listOf("Smart TVs", "Audio & Sound", "Cameras", "Gaming")),
-        CategoryItem("computers", "Computers & Laptops", "Laptop", listOf("Laptops", "Desktops", "Monitors", "Printers", "Storage")),
-        CategoryItem("cars", "Cars", "DirectionsCar", listOf("Sedans", "4x4 / SUVs", "Toyota", "Nissan", "Pickups")),
-        CategoryItem("motorcycles", "Motorcycles", "TwoWheeler", listOf("Bikes", "TukTuks / Bajaj", "Scooters")),
-        CategoryItem("trucks", "Trucks & Commercial", "LocalShipping", listOf("Heavy Trucks", "Vans", "Trailers")),
-        CategoryItem("furniture", "Furniture", "Chair", listOf("Living Room", "Beds & Mattresses", "Office Furniture", "Tables")),
-        CategoryItem("clothing", "Clothing", "Checkroom", listOf("Men's Wear", "Women's Abayas & Dresses", "Traditional", "Kids")),
-        CategoryItem("shoes", "Shoes", "Hiking", listOf("Sneakers", "Formal Shoes", "Sandals", "Boots")),
-        CategoryItem("home_appliances", "Home Appliances", "Kitchen", listOf("Refrigerators", "Washing Machines", "Microwaves", "Blenders")),
-        CategoryItem("construction", "Construction Materials", "Hardware", listOf("Cement", "Iron Bars", "Tiles", "Paints", "Plumbing")),
-        CategoryItem("livestock", "Livestock & Animals", "Pets", listOf("Camels", "Goats & Sheep", "Cattle", "Poultry")),
-        CategoryItem("land", "Land & Plots", "Landscape", listOf("Residential Land", "Commercial Plots", "Agricultural Land")),
-        CategoryItem("houses", "Houses For Sale/Rent", "Home", listOf("Houses for Sale", "Houses for Rent", "Villas")),
-        CategoryItem("apartments", "Apartments", "Apartment", listOf("Furnished Apartments", "Rental Flats", "Office Spaces")),
-        CategoryItem("jobs", "Jobs", "Work", listOf("IT & Tech", "Sales & Marketing", "Driving", "Healthcare", "Teaching")),
-        CategoryItem("services", "Services", "Handyman", listOf("Building & Repair", "Cleaning", "Legal & Accounting", "Transport")),
-        CategoryItem("agriculture", "Agriculture & Farm", "Agriculture", listOf("Seeds", "Fertilizers", "Harvested Produce", "Farm Tools")),
-        CategoryItem("beauty", "Beauty & Health", "Spa", listOf("Perfumes & Oud", "Skincare", "Cosmetics", "Supplements")),
-        CategoryItem("baby_kids", "Baby & Kids", "ChildCare", listOf("Toys", "Baby Clothing", "Strollers", "School Supplies")),
-        CategoryItem("fashion", "Fashion Accessories", "Watch", listOf("Watches", "Jewelry", "Bags & Wallets", "Glasses")),
-        CategoryItem("food", "Food & Groceries", "Fastfood", listOf("Honey & Spices", "Coffee & Tea", "Dry Goods", "Bulk Food")),
-        CategoryItem("spare_parts", "Spare Parts", "Build", listOf("Engine Parts", "Tires & Rims", "Car Electronics", "Body Parts")),
-        CategoryItem("industrial", "Industrial Equipment", "PrecisionManufacturing", listOf("Generators", "Solar Panels", "Water Pumps")),
-        CategoryItem("other", "Other", "MoreHoriz", listOf("General Goods", "Books", "Hobbies"))
+        CategoryItem("electronics", "Electronics", "Devices", listOf("Smartphones", "Tablets", "Laptops", "Desktops", "Smart TVs", "Audio & Sound", "Cameras", "Gaming")),
+        CategoryItem("houses", "Houses", "Home", listOf("Houses for Sale", "Houses for Rent", "Apartments", "Villas")),
+        CategoryItem("cars", "Cars", "DirectionsCar", listOf("Sedans", "4x4 / SUVs", "Pickups", "Toyota", "Nissan")),
+        CategoryItem("land", "Lands", "Landscape", listOf("Residential Land", "Commercial Plots", "Agricultural Land")),
+        CategoryItem("livestock", "Livestock", "Pets", listOf("Camels", "Goats & Sheep", "Cattle", "Poultry"))
     )
 
     val SAMPLE_SELLERS = listOf(
@@ -148,7 +139,7 @@ object DatabaseInitializer {
                 id = "prod_1",
                 title = "iPhone 15 Pro Max - 256GB Natural Titanium (Dual SIM)",
                 description = "Brand new in box, sealed Apple iPhone 15 Pro Max. Physical Dual SIM version popular in East Africa. Includes 1-year warranty and original receipt. Free delivery in Hargeisa.",
-                categoryId = "phones",
+                categoryId = "electronics",
                 subcategory = "iPhones",
                 price = 1150.0,
                 originalCurrency = "USD",
@@ -200,7 +191,7 @@ object DatabaseInitializer {
                 id = "prod_3",
                 title = "MacBook Pro 16\" M3 Pro (18GB / 512GB SSD) Space Black",
                 description = "Barely used for 2 months, 99% battery health. Comes with original MagSafe charger and premium protective sleeve. Ideal for developers, video editors, and businesses.",
-                categoryId = "computers",
+                categoryId = "electronics",
                 subcategory = "Laptops",
                 price = 220000.0,
                 originalCurrency = "KES",
@@ -226,7 +217,7 @@ object DatabaseInitializer {
                 id = "prod_4",
                 title = "Modern 3-Bedroom Luxury Apartment in Bole",
                 description = "Spacious 180 sqm luxury apartment with panoramic views of Addis Ababa. Modern European kitchen fittings, backup generator, dedicated parking, 24/7 security.",
-                categoryId = "apartments",
+                categoryId = "houses",
                 subcategory = "Furnished Apartments",
                 price = 14500000.0,
                 originalCurrency = "ETB",
@@ -278,7 +269,7 @@ object DatabaseInitializer {
                 id = "prod_6",
                 title = "Solar Hybrid Power System 5kVA with Lithium Battery",
                 description = "Complete solar solution for homes and clinics. Includes 5kVA pure sine inverter, 5kWh LiFePO4 battery, 6x 550W Tier 1 panels. Cut generator costs drastically.",
-                categoryId = "industrial",
+                categoryId = "electronics",
                 subcategory = "Solar Panels",
                 price = 2800.0,
                 originalCurrency = "USD",
@@ -330,7 +321,7 @@ object DatabaseInitializer {
                 id = "prod_8",
                 title = "Toyota HiAce 14-Seater Passenger Van 2019",
                 description = "Diesel manual transmission, very clean engine and interior. Ready for public transport or staff shuttle operations. Clean title.",
-                categoryId = "trucks",
+                categoryId = "cars",
                 subcategory = "Vans",
                 price = 2400000.0,
                 originalCurrency = "KES",

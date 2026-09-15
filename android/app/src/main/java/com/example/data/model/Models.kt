@@ -18,6 +18,7 @@ data class City(
 enum class Currency(val code: String, val symbol: String, val label: String, val rateToUsd: Double) {
     USD("USD", "$", "US Dollar", 1.0),
     SLSH("SLSH", "Sl.Sh", "Somaliland Shilling", 8500.0),
+    DJF("DJF", "Fdj", "Djiboutian Franc", 177.72),
     SOSH("SOSH", "So.Sh", "Somali Shilling", 570.0),
     ETB("ETB", "Br", "Ethiopian Birr", 125.0),
     KES("KES", "KSh", "Kenyan Shilling", 130.0);

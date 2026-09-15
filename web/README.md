@@ -40,12 +40,24 @@ grid**. A full-bleed banner costs a few hundred bytes.
 **The mark** — three diamonds joined into a triangle. A marketplace is people
 meeting, and three is the smallest number that reads as more than a
 transaction. The diamond is the same unit the pattern layer repeats, so the
-logo and the backgrounds are visibly one family.
+logo and the backgrounds are visibly one family. `public/favicon.svg` is the
+source drawing: the Android launcher icon (`res/drawable/ic_launcher_*.xml`,
+legacy `mipmap-*` PNGs rendered from it) and the in-app logo
+(`res/drawable/ic_logo_mark.xml`) are translations of it, not redraws.
 
-**The hero motif** is deliberately abstract — connected trading hubs over
-contour arcs, not a literal map of the Horn. A recognisable outline would
-invite arguments about borders this product has no business taking a position
-on, and a slightly-wrong map reads as careless.
+**The Africa map** is the page background and the hero's centrepiece. It is
+generated from Natural Earth's 1:110m outlines (public domain) by
+`scripts/build-africa-map.py` into `public/africa-map.svg`: 11 KB, 4 KB
+gzipped, fetched once and shared by both uses. Every country is filled in one
+colour with **no internal borders** — the product serves Somaliland and Somalia
+as separate markets, and a bordered map would have to draw lines (Somaliland,
+the Ogaden, Western Sahara) that a marketplace has no business taking a
+position on. It is applied as a CSS mask so its colour follows the theme via
+`--map-tint` (7% light, 6% dark), which is why it can sit behind product grids
+where the patterns may not: cards and forms are opaque, so it never touches the
+legibility of a photo or a price. The hero draws the five market cities on top,
+linked in a ring. The projection constants in `AfricaMap.tsx` must match the
+script.
 
 **No web font.** A system stack ships zero bytes, which matters more here than
 a signature typeface would; the stack includes Ethiopic and Arabic fallbacks so

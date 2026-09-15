@@ -59,7 +59,8 @@ export const en = {
 
   'home.heroTitle': 'Buy. Sell. Connect.',
   'home.heroSubtitle':
-    'The marketplace for Somaliland, Somalia, Ethiopia and Kenya. List what you have, find what you need, deal with people near you.',
+    'The marketplace for Somaliland, Somalia, Ethiopia, Kenya and Djibouti. List what you have, find what you need, deal with people near you.',
+  'home.mapLabel': 'Map of Africa showing the East-Market markets: Somaliland, Somalia, Ethiopia, Kenya and Djibouti',
   'home.browseCategories': 'Browse categories',
   'home.startSelling': 'Start selling',
   'home.categories': 'Categories',
@@ -252,7 +253,7 @@ export const en = {
   'footer.privacy': 'Privacy Policy',
   'footer.guidelines': 'Community Guidelines',
   'footer.rights': 'All rights reserved.',
-  'footer.countries': 'Serving Somaliland, Somalia, Ethiopia and Kenya',
+  'footer.countries': 'Serving Somaliland, Somalia, Ethiopia, Kenya and Djibouti',
 } as const;
 
 export type TranslationKey = keyof typeof en;

@@ -53,7 +53,8 @@ export const so: Partial<Dictionary> = {
 
   'home.heroTitle': 'Iibso. Iibi. Xiriir.',
   'home.heroSubtitle':
-    'Suuqa Somaliland, Soomaaliya, Itoobiya iyo Kiiniya. Soo dhig waxaad haysato, hel waxaad u baahan tahay, kana ganacso dad kuu dhow.',
+    'Suuqa Somaliland, Soomaaliya, Itoobiya, Kiiniya iyo Jabuuti. Soo dhig waxaad haysato, hel waxaad u baahan tahay, kana ganacso dad kuu dhow.',
+  'home.mapLabel': 'Khariidadda Afrika oo muujinaysa suuqyada East-Market: Somaliland, Soomaaliya, Itoobiya, Kiiniya iyo Jabuuti',
   'home.browseCategories': 'Fiiri qaybaha',
   'home.startSelling': 'Bilow iibinta',
   'home.categories': 'Qaybaha',
@@ -249,5 +250,5 @@ export const so: Partial<Dictionary> = {
   'footer.privacy': 'Siyaasadda Asturnaanta',
   'footer.guidelines': 'Tilmaamaha Bulshada',
   'footer.rights': 'Dhammaan xuquuqda way dhowran yihiin.',
-  'footer.countries': 'Waxaan u adeegnaa Somaliland, Soomaaliya, Itoobiya iyo Kiiniya',
+  'footer.countries': 'Waxaan u adeegnaa Somaliland, Soomaaliya, Itoobiya, Kiiniya iyo Jabuuti',
 };

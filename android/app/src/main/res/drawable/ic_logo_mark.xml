@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The East-Market mark for use inside the app. A line-for-line translation of
+     web/public/favicon.svg, so the header logo on Android and the web are the
+     same drawing: rounded acacia square, three connected diamonds. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt"
+    android:width="48dp"
+    android:height="48dp"
+    android:viewportWidth="48"
+    android:viewportHeight="48">
+    <path android:pathData="M12,0H36A12,12 0,0 1,48 12V36A12,12 0,0 1,36 48H12A12,12 0,0 1,0 36V12A12,12 0,0 1,12 0Z">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:type="linear"
+                android:startX="0" android:startY="0"
+                android:endX="48" android:endY="48">
+                <item android:color="#FF1E6F5C" android:offset="0.0" />
+                <item android:color="#FF144E41" android:offset="1.0" />
+            </gradient>
+        </aapt:attr>
+    </path>
+    <path
+        android:pathData="M24,16L15,31M24,16L33,31M15,31L33,31"
+        android:strokeWidth="1.75"
+        android:strokeColor="#FFA6D3C3"
+        android:strokeAlpha="0.75" />
+    <path android:pathData="M24,9L30,16L24,23L18,16Z" android:fillColor="#FFD9743A" />
+    <path android:pathData="M15,24L21,31L15,38L9,31Z" android:fillColor="#FFF2EDE4" />
+    <path android:pathData="M33,24L39,31L33,38L27,31Z" android:fillColor="#FFE9BB63" />
+</vector>

@@ -1,6 +1,7 @@
 import { Link, useNavigate } from 'react-router-dom';
 
-import { ConnectionMotif, CulturalPattern } from '../components/brand/CulturalPattern.js';
+import { AfricaMarketsMap } from '../components/brand/AfricaMap.js';
+import { CulturalPattern } from '../components/brand/CulturalPattern.js';
 import { ProductRail } from '../components/product/ProductCard.js';
 import { Button, SectionHeading, Skeleton } from '../components/ui/index.js';
 import { Icon } from '../components/ui/Icon.js';
@@ -37,7 +38,7 @@ export function HomePage() {
   useSeo({
     title: 'East-Market',
     description:
-      'Buy and sell across Somaliland, Somalia, Ethiopia and Kenya. Cars, phones, houses, livestock, land and more — from people near you.',
+      'Buy and sell across Somaliland, Somalia, Ethiopia, Kenya and Djibouti. Electronics, houses, cars, land and livestock — from people near you.',
     path: '/',
   });
 
@@ -55,13 +56,13 @@ export function HomePage() {
           <SectionHeading title={t('home.categories')} action={t('common.seeAll')} to="/categories" />
 
           {categoriesLoading ? (
-            <div className="grid grid-cols-3 gap-3 sm:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8">
-              {Array.from({ length: 16 }, (_, index) => (
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
+              {Array.from({ length: 5 }, (_, index) => (
                 <Skeleton key={index} className="h-24" />
               ))}
             </div>
           ) : (
-            <div className="grid grid-cols-3 gap-3 sm:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8">
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
               {(categories ?? []).slice(0, 16).map((category) => (
                 <CategoryTile
                   key={category.id}
@@ -125,7 +126,7 @@ export function HomePage() {
           </section>
         ) : null}
 
-        <TrustSection countryCount={countries?.length ?? 4} categoryCount={categories?.length ?? 25} />
+        <TrustSection countryCount={countries?.length ?? 4} categoryCount={categories?.length ?? 5} />
 
         {/* Sell call to action --------------------------------------------- */}
         <section className="relative overflow-hidden rounded-[--radius-card] bg-acacia-900 px-6 py-12 text-center text-sand-50 sm:px-12">
@@ -160,7 +161,6 @@ function Hero() {
 
   return (
     <section className="relative overflow-hidden border-b border-border-subtle bg-gradient-to-br from-acacia-900 via-acacia-800 to-acacia-950 text-sand-50">
-      <CulturalPattern variant="weave" scale={64} className="text-sand-100" />
 
       <div className="relative mx-auto grid max-w-[90rem] items-center gap-8 px-4 py-14 sm:py-20 lg:grid-cols-[1.15fr_1fr] lg:px-6">
         <div>
@@ -194,7 +194,7 @@ function Hero() {
         </div>
 
         <div className="hidden justify-center lg:flex">
-          <ConnectionMotif className="w-full max-w-md text-sand-200" />
+          <AfricaMarketsMap className="w-full max-w-md" label={t('home.mapLabel')} />
         </div>
       </div>
     </section>

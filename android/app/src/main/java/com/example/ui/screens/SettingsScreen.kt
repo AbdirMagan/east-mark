@@ -445,9 +445,9 @@ fun SettingsScreen(
             text = {
                 Column {
                     Text(
-                        "East-Market is a dedicated regional classifieds marketplace built to unite buyers and sellers across Somaliland, Somalia, Ethiopia, and Kenya.\n\n" +
+                        "East-Market is a dedicated regional classifieds marketplace built to unite buyers and sellers across Somaliland, Somalia, Ethiopia, Kenya, and Djibouti.\n\n" +
                                 "Features:\n" +
-                                "• Multi-currency conversion (USD, SLSH, SOSH, ETB, KES)\n" +
+                                "• Multi-currency conversion (USD, SLSH, SOSH, ETB, KES, DJF)\n" +
                                 "• Multilingual interface (English, Somali, Amharic, Swahili)\n" +
                                 "• Direct WhatsApp, calling, and built-in chat\n" +
                                 "• Verified seller badges and local community safety",

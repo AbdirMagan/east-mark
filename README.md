@@ -1,6 +1,6 @@
 # East-Market
 
-**Buy. Sell. Connect.** — an online marketplace for Somaliland, Somalia, Ethiopia and Kenya.
+**Buy. Sell. Connect.** — an online marketplace for Somaliland, Somalia, Ethiopia, Kenya and Djibouti.
 
 One backend, one database, one identity system, shared by a native Android app, a
 native iOS app, a responsive web marketplace and an admin dashboard.
@@ -85,12 +85,12 @@ Both sets are idempotent and safe to re-run.
 | Regions | 45 |
 | Cities | 71 (31 flagged as major) |
 | Districts | 50 |
-| Categories | 25 top-level + 53 subcategories, each named in all four languages |
+| Categories | 5 top-level (Electronics, Houses, Cars, Lands, Livestock) + 26 subcategories, each named in all four languages |
 | Subscription plans | Free, Basic, Business, Premium |
 | Payment providers | ZAAD, eDahab, EVC Plus, Sahal, telebirr, M-Pesa, bank transfer, cash — all registered, all inactive until credentials are configured |
 
 `supabase/seed/99_demo_listings.sql` is optional sample content: two demo
-sellers and eight listings across all four countries, so a fresh environment
+sellers and eight listings across Somaliland, Somalia, Ethiopia and Kenya, so a fresh environment
 has something to look at. It is not production data — the accounts have a known
 password. Remove it with:
 

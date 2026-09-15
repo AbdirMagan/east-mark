@@ -55,10 +55,10 @@ describe('response envelope', () => {
 });
 
 describe('locations', () => {
-  it('lists the four launch countries', async () => {
+  it('lists the five launch countries', async () => {
     const res = await request(app).get('/api/v1/locations/countries').expect(200);
     const codes = res.body.data.map((c: { code: string }) => c.code).sort();
-    expect(codes).toEqual(['ET', 'KE', 'SO', 'XA']);
+    expect(codes).toEqual(['DJ', 'ET', 'KE', 'SO', 'XA']);
   });
 
   it('carries the dial code each country needs for phone entry', async () => {
@@ -70,6 +70,7 @@ describe('locations', () => {
     expect(byCode.SO).toBe('+252');
     expect(byCode.ET).toBe('+251');
     expect(byCode.KE).toBe('+254');
+    expect(byCode.DJ).toBe('+253');
   });
 
   it('returns the whole hierarchy for one country in a single request', async () => {
@@ -95,9 +96,15 @@ describe('locations', () => {
 });
 
 describe('categories', () => {
-  it('returns 25 top-level categories with children nested', async () => {
+  it('returns the five top-level categories with children nested', async () => {
     const res = await request(app).get('/api/v1/categories').expect(200);
-    expect(res.body.data).toHaveLength(25);
+    expect(res.body.data.map((c: { slug: string }) => c.slug)).toEqual([
+      'electronics',
+      'houses',
+      'cars',
+      'land',
+      'livestock',
+    ]);
     const cars = res.body.data.find((c: { slug: string }) => c.slug === 'cars');
     expect(cars.children.map((c: { slug: string }) => c.slug)).toContain('cars-sale');
   });

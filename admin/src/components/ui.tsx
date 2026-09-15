@@ -221,10 +221,10 @@ export function Pagination({
 /* Formatting                                                                 */
 /* -------------------------------------------------------------------------- */
 
-const SYMBOLS: Record<string, string> = { USD: '$', SLSH: 'SL', SOS: 'Sh.So.', ETB: 'Br', KES: 'KSh' };
+const SYMBOLS: Record<string, string> = { USD: '$', SLSH: 'SL', SOS: 'Sh.So.', ETB: 'Br', KES: 'KSh', DJF: 'Fdj' };
 
 export function formatPrice(amount: number, currency: string): string {
-  const zeroDecimal = currency === 'SLSH' || currency === 'SOS';
+  const zeroDecimal = currency === 'SLSH' || currency === 'SOS' || currency === 'DJF';
   const number = new Intl.NumberFormat('en-GB', {
     minimumFractionDigits: zeroDecimal || amount % 1 === 0 ? 0 : 2,
     maximumFractionDigits: zeroDecimal || amount % 1 === 0 ? 0 : 2,

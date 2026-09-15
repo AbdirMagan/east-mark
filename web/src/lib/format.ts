@@ -24,10 +24,11 @@ const SYMBOLS: Record<string, string> = {
   SOS: 'Sh.So.',
   ETB: 'Br',
   KES: 'KSh',
+  DJF: 'Fdj',
 };
 
 /** Currencies where fractional units are not used in practice. */
-const ZERO_DECIMAL = new Set(['SLSH', 'SOS']);
+const ZERO_DECIMAL = new Set(['SLSH', 'SOS', 'DJF']);
 
 export function formatPrice(
   amount: number,

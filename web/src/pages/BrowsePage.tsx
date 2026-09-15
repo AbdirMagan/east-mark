@@ -101,7 +101,7 @@ export function BrowsePage() {
     title: heading,
     description: searchTerm
       ? `Listings matching "${searchTerm}" on East-Market.`
-      : `Browse ${category?.name ?? 'listings'} across Somaliland, Somalia, Ethiopia and Kenya.`,
+      : `Browse ${category?.name ?? 'listings'} across Somaliland, Somalia, Ethiopia, Kenya and Djibouti.`,
     path: `/browse${params.toString() ? `?${params.toString()}` : ''}`,
     // Filter permutations are near-infinite; indexing them all would be thin
     // content. Category and product pages carry the SEO weight instead.

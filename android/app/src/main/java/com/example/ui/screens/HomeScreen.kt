@@ -127,12 +127,12 @@ fun HomeScreen(
                         verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier.clickable { viewModel.resetFilters() }
                     ) {
+                        // The same mark as the web header and the launcher icon:
+                        // res/drawable/ic_logo_mark.xml mirrors web/public/favicon.svg.
                         Image(
-                            painter = painterResource(id = R.drawable.img_app_icon),
+                            painter = painterResource(id = R.drawable.ic_logo_mark),
                             contentDescription = "East-Market",
-                            modifier = Modifier
-                                .size(34.dp)
-                                .clip(RoundedCornerShape(8.dp))
+                            modifier = Modifier.size(34.dp)
                         )
                         Spacer(modifier = Modifier.width(8.dp))
                         Column {

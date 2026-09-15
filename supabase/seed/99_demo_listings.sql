@@ -1,7 +1,7 @@
 -- East-Market :: seed 99 :: DEMO LISTINGS (optional, removable)
 --
 -- Sample marketplace content so a fresh environment has something to look at:
--- two demo sellers and eight listings spread across all four countries.
+-- two demo sellers and eight listings spread across Somaliland, Somalia, Ethiopia and Kenya.
 --
 -- Images are inline SVG data URIs rather than photographs. The point is to
 -- exercise the card, gallery and detail layouts without committing binary
