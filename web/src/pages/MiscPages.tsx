@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { CulturalPattern } from '../components/brand/CulturalPattern.js';
 import { ProductGrid } from '../components/product/ProductCard.js';
 import { Button, EmptyState, Skeleton } from '../components/ui/index.js';
-import { Icon } from '../components/ui/Icon.js';
+import { Icon, categoryIcon } from '../components/ui/Icon.js';
 import { useCategories } from '../hooks/useMarketData.js';
 import { useSeo } from '../hooks/useSeo.js';
 import { useT } from '../i18n/index.js';
@@ -51,7 +51,7 @@ export function CategoriesPage() {
                     style={{ backgroundColor: category.accentColor ?? 'var(--brand)' }}
                     aria-hidden="true"
                   >
-                    <Icon name="package" size={19} />
+                    <Icon name={categoryIcon(category.slug, category.icon)} size={19} />
                   </span>
                   <h2 className="font-display text-base font-bold text-text-primary group-hover:text-brand">
                     {category.name}

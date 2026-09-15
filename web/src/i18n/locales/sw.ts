@@ -77,6 +77,9 @@ export const sw: Partial<Dictionary> = {
   'home.heroSubtitle':
     'Soko la Somaliland, Somalia, Ethiopia, Kenya na Jibuti. Tangaza ulicho nacho, pata unachohitaji, fanya biashara na watu walio karibu nawe.',
   'home.mapLabel': 'Ramani ya Afrika inayoonyesha masoko ya East-Market: Somaliland, Somalia, Ethiopia, Kenya na Jibuti',
+  'home.mapHint': 'Gusa nchi kuona kinachouzwa huko',
+  'home.browseCountry': 'Vinjari {country}',
+  'home.capital': 'Mji mkuu: {city}',
   'home.browseCategories': 'Vinjari kategoria',
   'home.startSelling': 'Anza kuuza',
   'home.categories': 'Kategoria',

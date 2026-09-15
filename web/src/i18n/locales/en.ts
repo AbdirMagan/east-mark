@@ -83,6 +83,9 @@ export const en = {
   'home.heroSubtitle':
     'The marketplace for Somaliland, Somalia, Ethiopia, Kenya and Djibouti. List what you have, find what you need, deal with people near you.',
   'home.mapLabel': 'Map of Africa showing the East-Market markets: Somaliland, Somalia, Ethiopia, Kenya and Djibouti',
+  'home.mapHint': 'Tap a country to see what is for sale there',
+  'home.browseCountry': 'Browse {country}',
+  'home.capital': 'Capital: {city}',
   'home.browseCategories': 'Browse categories',
   'home.startSelling': 'Start selling',
   'home.categories': 'Categories',

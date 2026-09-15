@@ -63,9 +63,7 @@ export function Layout() {
         }`}
       >
         <div className="flex h-14 items-center gap-2.5 border-b border-border-subtle px-4">
-          <span className="flex size-7 items-center justify-center rounded-lg bg-brand text-xs font-bold text-white dark:text-ink-950">
-            EM
-          </span>
+          <img src="/logo-mark.webp" width={32} height={32} alt="" className="size-8 shrink-0 object-contain" />
           <div className="min-w-0">
             <p className="truncate text-sm font-bold leading-tight text-text-primary">East-Market</p>
             <p className="text-[0.6875rem] leading-tight text-text-muted">Admin</p>

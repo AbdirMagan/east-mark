@@ -1,10 +1,14 @@
 {
-  "name": "East-Market",
-  "short_name": "East-Market",
-  "description": "Buy. Sell. Connect. The marketplace for Somaliland, Somalia, Ethiopia and Kenya.",
+  "name": "East Market",
+  "short_name": "East Market",
+  "description": "Buy. Sell. Connect. The online market for Somaliland, Somalia, Ethiopia, Kenya and Djibouti.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#faf7f2",
-  "theme_color": "#1e6f5c",
-  "icons": [{ "src": "/favicon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }]
+  "theme_color": "#1d3f72",
+  "icons": [
+    { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
 }

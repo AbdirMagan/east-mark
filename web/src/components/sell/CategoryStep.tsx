@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react';
 
 import { useT } from '../../i18n/index.js';
 import type { Category, CategoryField, CategoryTree } from '../../lib/api.js';
-import { Icon } from '../ui/Icon.js';
+import { Icon, categoryIcon } from '../ui/Icon.js';
 import { Checkbox, SelectField, TextField } from '../ui/index.js';
 
 /* -------------------------------------------------------------------------- */
@@ -84,7 +84,7 @@ export function CategoryStep({ categories, selected, onSelect }: CategoryStepPro
                     style={{ backgroundColor: parent.accentColor ?? 'var(--brand)' }}
                     aria-hidden="true"
                   >
-                    <Icon name="package" size={15} />
+                    <Icon name={categoryIcon(child?.slug ?? parent.slug, child?.icon ?? parent.icon)} size={15} />
                   </span>
                   <span className="min-w-0">
                     <span className="block truncate text-sm font-medium text-text-primary">
@@ -124,7 +124,7 @@ export function CategoryStep({ categories, selected, onSelect }: CategoryStepPro
                     style={{ backgroundColor: parent.accentColor ?? 'var(--brand)' }}
                     aria-hidden="true"
                   >
-                    <Icon name="package" size={15} />
+                    <Icon name={categoryIcon(parent.slug, parent.icon)} size={15} />
                   </span>
                   <span className="flex-1 truncate text-sm font-medium text-text-primary">
                     {parent.name}

@@ -127,8 +127,8 @@ fun HomeScreen(
                         verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier.clickable { viewModel.resetFilters() }
                     ) {
-                        // The same mark as the web header and the launcher icon:
-                        // res/drawable/ic_logo_mark.xml mirrors web/public/favicon.svg.
+                        // The East Market emblem, cut from the same artwork as the web
+                        // header logo and the launcher icon (drawable-nodpi/ic_logo_mark.png).
                         Image(
                             painter = painterResource(id = R.drawable.ic_logo_mark),
                             contentDescription = "East-Market",
@@ -402,6 +402,13 @@ fun HomeScreen(
                                     else viewModel.filterByCategory(category.id)
                                 },
                                 label = { Text(category.name, fontSize = 12.sp) },
+                                leadingIcon = {
+                                    Icon(
+                                        painter = painterResource(id = categoryIconRes(category.id)),
+                                        contentDescription = null,
+                                        modifier = Modifier.size(16.dp)
+                                    )
+                                },
                                 colors = FilterChipDefaults.filterChipColors(
                                     selectedContainerColor = BrandNavy,
                                     selectedLabelColor = Color.White
@@ -576,4 +583,14 @@ fun LocationPickerDialog(
             }
         }
     )
+}
+
+/** The same category glyphs as the web app (web/src/components/ui/Icon.tsx). */
+private fun categoryIconRes(categoryId: String): Int = when (categoryId) {
+    "electronics" -> R.drawable.ic_cat_electronics
+    "houses" -> R.drawable.ic_cat_house
+    "cars" -> R.drawable.ic_cat_car
+    "land" -> R.drawable.ic_cat_land
+    "livestock" -> R.drawable.ic_cat_livestock
+    else -> R.drawable.ic_cat_electronics
 }

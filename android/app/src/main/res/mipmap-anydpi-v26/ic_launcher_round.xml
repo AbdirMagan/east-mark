@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- East Market launcher icon. The foreground is the brand emblem, cut from the
+     logo artwork into mipmap-*/ic_launcher_foreground.png with the artwork
+     inside the 66dp safe zone, so no launcher mask shape clips it. There is no
+     monochrome layer: a full-colour illustration makes a poor silhouette. -->
 <adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">
     <background android:drawable="@drawable/ic_launcher_background" />
-    <foreground android:drawable="@drawable/ic_launcher_foreground" />
-    <monochrome android:drawable="@drawable/ic_launcher_foreground" />
+    <foreground android:drawable="@mipmap/ic_launcher_foreground" />
 </adaptive-icon>

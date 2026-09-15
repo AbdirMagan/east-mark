@@ -27,7 +27,7 @@ function AuthLayout({
       <div className="relative w-full max-w-sm">
         <div className="mb-7 text-center">
           <Link to="/" className="inline-block">
-            <Logo size={40} responsive={false} />
+            <Logo size={56} responsive={false} />
           </Link>
           <Tagline className="mt-2 block" />
         </div>

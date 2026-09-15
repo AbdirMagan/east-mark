@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Category icon: the same 24x24 stroke glyph as web/src/components/ui/Icon.tsx,
+     so both apps show identical category icons. Tinted by the Compose Icon. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <path
+        android:pathData="M5 4c0 2.2 1.2 3.6 3 4M19 4c0 2.2-1.2 3.6-3 4M8 8h8l1 5-1.4 5.4A2 2 0 0 1 13.7 20h-3.4a2 2 0 0 1-1.9-1.6L7 13l1-5ZM8 9.5 4 10.5l3.4 2M16 9.5l4 1-3.4 2M10 12.5h.01M14 12.5h.01M10.5 17h.01M13.5 17h.01"
+        android:fillColor="#00000000"
+        android:strokeColor="#FF000000"
+        android:strokeWidth="1.75"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round" />
+</vector>

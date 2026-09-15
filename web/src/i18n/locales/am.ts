@@ -77,6 +77,9 @@ export const am: Partial<Dictionary> = {
   'home.heroSubtitle':
     'የሶማሊላንድ፣ ሶማሊያ፣ ኢትዮጵያ፣ ኬንያ እና ጅቡቲ ገበያ። ያለዎትን ያስተዋውቁ፣ የሚፈልጉትን ያግኙ፣ ከአጠገብዎ ካሉ ሰዎች ጋር ይገበያዩ።',
   'home.mapLabel': 'የEast-Market ገበያዎችን የሚያሳይ የአፍሪካ ካርታ፦ ሶማሊላንድ፣ ሶማሊያ፣ ኢትዮጵያ፣ ኬንያ እና ጅቡቲ',
+  'home.mapHint': 'እዚያ የሚሸጠውን ለማየት አገር ይንኩ',
+  'home.browseCountry': '{country}ን ያስሱ',
+  'home.capital': 'ዋና ከተማ፦ {city}',
   'home.browseCategories': 'ምድቦችን ያስሱ',
   'home.startSelling': 'መሸጥ ይጀምሩ',
   'home.categories': 'ምድቦች',

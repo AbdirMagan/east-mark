@@ -77,6 +77,9 @@ export const so: Partial<Dictionary> = {
   'home.heroSubtitle':
     'Suuqa Somaliland, Soomaaliya, Itoobiya, Kiiniya iyo Jabuuti. Soo dhig waxaad haysato, hel waxaad u baahan tahay, kana ganacso dad kuu dhow.',
   'home.mapLabel': 'Khariidadda Afrika oo muujinaysa suuqyada East-Market: Somaliland, Soomaaliya, Itoobiya, Kiiniya iyo Jabuuti',
+  'home.mapHint': 'Taabo waddan si aad u aragto waxa halkaas lagu iibinayo',
+  'home.browseCountry': 'Daalaco {country}',
+  'home.capital': 'Caasimadda: {city}',
   'home.browseCategories': 'Fiiri qaybaha',
   'home.startSelling': 'Bilow iibinta',
   'home.categories': 'Qaybaha',

@@ -37,27 +37,47 @@ they cannot compete with a product photo or make text harder to read. They
 belong behind headers, heroes and empty states — **never behind a product
 grid**. A full-bleed banner costs a few hundred bytes.
 
-**The mark** — three diamonds joined into a triangle. A marketplace is people
-meeting, and three is the smallest number that reads as more than a
-transaction. The diamond is the same unit the pattern layer repeats, so the
-logo and the backgrounds are visibly one family. `public/favicon.svg` is the
-source drawing: the Android launcher icon (`res/drawable/ic_launcher_*.xml`,
-legacy `mipmap-*` PNGs rendered from it) and the in-app logo
-(`res/drawable/ic_logo_mark.xml`) are translations of it, not redraws.
+**The logo** — the East Market emblem: the sun over East Africa, market towns
+and traders, and a handshake closing the circle. It is raster artwork, so every
+size is cut from one source image rather than redrawn: `public/brand/logo-mark.webp`
+(256px, ~29 KB, preloaded from `index.html` because the header shows it on every
+page), `logo-mark.png` (512px), `logo-full.webp` (with the wordmark), the
+favicons and manifest icons in `public/`, the admin favicon and sidebar mark,
+and the Android launcher icons (`mipmap-*/ic_launcher*.png`, adaptive
+foreground inside the 66dp safe zone) plus the in-app logo
+(`drawable-nodpi/ic_logo_mark.png`). The background around the emblem is
+flood-filled to transparent from the edges, so it sits cleanly on dark surfaces.
 
-**The Africa map** is the page background and the hero's centrepiece. It is
-generated from Natural Earth's 1:110m outlines (public domain) by
-`scripts/build-africa-map.py` into `public/africa-map.svg`: 11 KB, 4 KB
-gzipped, fetched once and shared by both uses. Every country is filled in one
-colour with **no internal borders** — the product serves Somaliland and Somalia
-as separate markets, and a bordered map would have to draw lines (Somaliland,
-the Ogaden, Western Sahara) that a marketplace has no business taking a
-position on. It is applied as a CSS mask so its colour follows the theme via
-`--map-tint` (7% light, 6% dark), which is why it can sit behind product grids
-where the patterns may not: cards and forms are opaque, so it never touches the
-legibility of a photo or a price. The hero draws the five market cities on top,
-linked in a ring. The projection constants in `AfricaMap.tsx` must match the
-script.
+**The Horn of Africa map** (`components/brand/HornMap.tsx`) is the hero's
+centrepiece and, quietly, the page background — the brand's animated
+background design rebuilt in React and Tailwind. Somaliland, Somalia,
+Ethiopia, Kenya and Djibouti each have their own colour, with flowing dashed
+borders, pulsing capitals linked back to Hargeisa, a dot grid and drifting
+particles.
+
+- **The hero is interactive.** Hover (or keyboard focus) names a country and its
+  capital; click or tap selects it and offers "Browse {country}", which sets the
+  location filter from `public.countries.code` and opens the listings. Touch
+  screens have no hover, so the selection card is the phone interaction.
+- **The backdrop is not.** It is `pointer-events: none`, skips the drop-shadow
+  glow (the costly part to paint), and animates its borders only from `md` up.
+  Cards and forms are opaque, so it never touches the legibility of a photo or
+  a price.
+- **Colours are tokens** — `--horn-*` in `index.css`: muted on sand in light
+  mode, the original neon in dark mode, and always neon inside the hero
+  (`.horn-neon`).
+- **Motion respects `prefers-reduced-motion`.** Every animation is
+  `motion-safe:`, and the particle canvas never starts under reduced motion; it
+  also stops drawing when scrolled off screen or when the tab is hidden.
+
+The shapes are stylised, not survey outlines — they say "this is where we
+trade" at a glance in a few kilobytes of path.
+
+**Category icons** are inline stroke glyphs in `components/ui/Icon.tsx`:
+electronics, house, car, land and livestock, plus the subcategory icons the
+database names. `categoryIcon(slug, icon)` picks the glyph — top-level slug
+first, so the five markets always get their own icon. The Android chips use
+the same paths as vector drawables (`drawable/ic_cat_*.xml`).
 
 **No web font.** A system stack ships zero bytes, which matters more here than
 a signature typeface would; the stack includes Ethiopic and Arabic fallbacks so

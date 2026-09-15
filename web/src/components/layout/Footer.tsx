@@ -66,7 +66,7 @@ export function Footer() {
         </div>
 
         <div className="mt-10 flex flex-col gap-3 border-t border-border-subtle pt-6 text-xs text-text-muted sm:flex-row sm:items-center sm:justify-between">
-          <p>© {year} East-Market. {t('footer.rights')}</p>
+          <p>© {year} East-Market. Developed by Eng-Magan {t('footer.rights')}</p>
           {/* No flag emoji here. Somaliland and Somalia share a dialling
               plan but not a flag, and the only emoji that exists is Somalia's
               — using it for both is wrong in a way that matters to the people

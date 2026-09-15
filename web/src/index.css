@@ -109,6 +109,50 @@
   --shadow-raised: 0 2px 4px rgb(26 23 19 / 0.06), 0 12px 28px -8px rgb(26 23 19 / 0.14);
 
   --ease-out-soft: cubic-bezier(0.22, 1, 0.36, 1);
+
+  /* Horn of Africa map motion. Used as motion-safe:animate-*, so none of it
+     runs for someone who has asked for reduced motion. */
+  --animate-dash-flow: em-dash-flow 18s linear infinite;
+  --animate-map-float: em-map-float 14s ease-in-out infinite alternate;
+  --animate-node-ring: em-node-ring 2.5s ease-out infinite;
+  --animate-node-pulse: em-node-pulse 2.5s ease-in-out infinite alternate;
+
+  @keyframes em-dash-flow {
+    to {
+      stroke-dashoffset: -1000;
+    }
+  }
+  @keyframes em-map-float {
+    0% {
+      transform: translateY(0) rotate(0deg) scale(1);
+    }
+    50% {
+      transform: translateY(-10px) rotate(0.4deg) scale(1.004);
+    }
+    100% {
+      transform: translateY(8px) rotate(-0.4deg) scale(0.998);
+    }
+  }
+  @keyframes em-node-ring {
+    0% {
+      transform: scale(0.75);
+      opacity: 1;
+    }
+    100% {
+      transform: scale(4.5);
+      opacity: 0;
+    }
+  }
+  @keyframes em-node-pulse {
+    0% {
+      transform: scale(0.85);
+      opacity: 0.8;
+    }
+    100% {
+      transform: scale(1.35);
+      opacity: 1;
+    }
+  }
 }
 
 /* ==========================================================================
@@ -141,8 +185,20 @@
   /* Opacity of the cultural pattern layer. Tuned per theme: the same alpha
      that reads as a whisper on sand reads as noise on ink. */
   --pattern-opacity: 0.055;
-  /* Tint of the Africa map behind every page. Faint by design. */
-  --map-tint: rgb(30 111 92 / 0.07);
+  /* Horn of Africa map (components/brand/HornMap.tsx). Muted on sand so the
+     page background stays a background; the hero scopes its own neon set. */
+  --horn-somaliland: #0f9d6b;
+  --horn-somalia: #0a86b5;
+  --horn-ethiopia: #c79400;
+  --horn-kenya: #c2185b;
+  --horn-djibouti: #e0603f;
+  --horn-land: rgb(30 111 92 / 0.05);
+  --horn-land-border: rgb(30 111 92 / 0.28);
+  --horn-grid: rgb(30 111 92 / 0.12);
+  --horn-network: rgb(26 23 19 / 0.28);
+  --horn-node: #1d3f72;
+  --horn-dots: rgb(26 23 19 / 0.08);
+  --horn-backdrop-opacity: 0.5;
   color-scheme: light;
 }
 
@@ -168,8 +224,33 @@
   --accent-subtle: rgb(184 83 26 / 0.16);
 
   --pattern-opacity: 0.07;
-  --map-tint: rgb(114 184 162 / 0.06);
+  --horn-somaliland: #00ff9d;
+  --horn-somalia: #00d8ff;
+  --horn-ethiopia: #ffd700;
+  --horn-kenya: #ff007f;
+  --horn-djibouti: #ff6b4a;
+  --horn-land: rgb(255 255 255 / 0.03);
+  --horn-land-border: rgb(255 255 255 / 0.12);
+  --horn-grid: rgb(255 255 255 / 0.05);
+  --horn-network: rgb(255 255 255 / 0.22);
+  --horn-node: #ffffff;
+  --horn-dots: rgb(255 255 255 / 0.06);
+  --horn-backdrop-opacity: 0.35;
   color-scheme: dark;
+}
+
+/* The hero is always the dark, neon version of the map, whatever the theme. */
+.horn-neon {
+  --horn-somaliland: #00ff9d;
+  --horn-somalia: #00d8ff;
+  --horn-ethiopia: #ffd700;
+  --horn-kenya: #ff007f;
+  --horn-djibouti: #ff6b4a;
+  --horn-land: rgb(255 255 255 / 0.04);
+  --horn-land-border: rgb(255 255 255 / 0.12);
+  --horn-grid: rgb(255 255 255 / 0.05);
+  --horn-network: rgb(255 255 255 / 0.25);
+  --horn-node: #ffffff;
 }
 
 @theme inline {
