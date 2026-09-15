@@ -101,6 +101,19 @@ function defaultCodeForStatus(status: number): string {
  * constraint names. The original is attached as `cause` for the logs.
  */
 export function fromPostgrest(error: PostgrestError, resource = 'Resource'): AppError {
+  // Supabase refused the key itself (no Postgres code). In practice this is a
+  // wrong or placeholder SUPABASE_SERVICE_ROLE_KEY: reads as the user still
+  // work, so the only symptom is every moderation write failing. Say so, rather
+  // than a generic 500 that sends someone hunting through the logs.
+  if (/invalid api key/i.test(error.message ?? '')) {
+    return new AppError(
+      503,
+      'The backend\'s Supabase key was rejected ("Invalid API key"). Put the real service_role (secret) key ' +
+        'from Supabase: Settings -> API Keys into SUPABASE_SERVICE_ROLE_KEY in backend/.env, then restart the API.',
+      { code: 'supabase_key_invalid', expose: true, cause: error },
+    );
+  }
+
   switch (error.code) {
     case 'PGRST116': // .single() matched no rows
     case 'P0002': // raise exception ... errcode 'P0002'

@@ -33,6 +33,15 @@ describe('error translation from PostgREST', () => {
     expect(fromPostgrest(pg('23505') as never)).toBeInstanceOf(ConflictError);
   });
 
+  it('turns a rejected Supabase key into setup guidance, not a generic 500', () => {
+    // A placeholder service-role key otherwise surfaces as "Something went
+    // wrong on our side" on every moderation action, with no hint why.
+    const error = fromPostgrest({ message: 'Invalid API key', details: '', hint: '', code: '', name: 'PostgrestError' } as never);
+    expect(error.status).toBe(503);
+    expect(error.expose).toBe(true);
+    expect(error.message).toContain('SUPABASE_SERVICE_ROLE_KEY');
+  });
+
   it('never leaks the raw postgres message on a 500', () => {
     const error = fromPostgrest(pg('XX000') as never);
     expect(error.status).toBe(500);
