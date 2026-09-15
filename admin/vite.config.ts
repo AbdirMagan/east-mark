@@ -7,6 +7,15 @@ export default defineConfig({
   server: {
     // 5175 keeps the dashboard clear of the marketplace on 5173/5174.
     port: 5175,
-    proxy: { '/api': { target: 'http://localhost:4000', changeOrigin: true } },
+    proxy: {
+      '/api': {
+        target: 'http://localhost:4000',
+        changeOrigin: true,
+        // Same-origin through the proxy; see web/vite.config.ts for why Origin is dropped.
+        configure: (proxy) => {
+          proxy.on('proxyReq', (proxyReq) => proxyReq.removeHeader('origin'));
+        },
+      },
+    },
   },
 });

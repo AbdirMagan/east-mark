@@ -10,9 +10,21 @@ export default defineConfig({
   },
   server: {
     port: 5173,
+    allowedHosts: ['mulberry-strongbox-kosher.ngrok-free.dev'],
     proxy: {
       // Talk to the local API in development without CORS ceremony.
-      '/api': { target: 'http://localhost:4000', changeOrigin: true },
+      '/api': {
+        target: 'http://localhost:4000',
+        changeOrigin: true,
+        // To the browser /api is same-origin, so CORS has nothing to protect
+        // here. Browsers still attach Origin to POSTs, though, and when the dev
+        // server is opened through ngrok, a LAN IP or 127.0.0.1 the backend's
+        // CORS_ORIGINS allowlist refuses it ("This origin is not allowed") --
+        // reads work, every write fails. Drop the header at the proxy.
+        configure: (proxy) => {
+          proxy.on('proxyReq', (proxyReq) => proxyReq.removeHeader('origin'));
+        },
+      },
     },
   },
   build: {
