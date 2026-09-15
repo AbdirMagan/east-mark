@@ -8,7 +8,7 @@ import { Button, Icon, type IconName } from './ui.js';
 const NAV: Array<{ to: string; label: string; icon: IconName }> = [
   { to: '/', label: 'Dashboard', icon: 'dashboard' },
   { to: '/listings', label: 'Listings', icon: 'listings' },
-  { to: '/promotions', label: 'Promotions', icon: 'megaphone' },
+  { to: '/promotions', label: 'Advertisements', icon: 'megaphone' },
   { to: '/users', label: 'Users', icon: 'users' },
   { to: '/reports', label: 'Reports', icon: 'reports' },
   { to: '/verifications', label: 'Verification', icon: 'verified' },

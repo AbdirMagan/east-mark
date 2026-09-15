@@ -6,7 +6,6 @@ import { useT } from '../../i18n/index.js';
 import { endpoints, type HomeAd } from '../../lib/api.js';
 import { usePreferences } from '../../store/preferences.js';
 import { HornMap, ParticleField, type HornCountryCode } from '../brand/HornMap.js';
-import { Button } from '../ui/index.js';
 import { Icon, categoryIcon } from '../ui/Icon.js';
 
 /**
@@ -23,6 +22,23 @@ import { Icon, categoryIcon } from '../ui/Icon.js';
  */
 
 const INTERVAL_MS = 6000;
+
+/**
+ * Slide buttons use fixed colours rather than the theme tokens.
+ *
+ * Every slide sits on a dark artwork whatever the page theme is, so a button
+ * that follows light/dark would flip to an unreadable pairing -- which is
+ * exactly what happened to the clay slide in dark mode (white on white).
+ * These pairings are all at least 5:1 against their slide.
+ */
+const CTA_CLASS: Record<HomeAd['theme'], string> = {
+  night: 'bg-[#b8531a] text-white hover:bg-[#9c4516]',
+  acacia: 'bg-[#b8531a] text-white hover:bg-[#9c4516]',
+  navy: 'bg-[#b8531a] text-white hover:bg-[#9c4516]',
+  clay: 'bg-white text-[#7d3712] hover:bg-[#faebce]',
+  sun: 'bg-[#1a1713] text-white hover:bg-[#2c2620]',
+};
+
 
 // Literal class strings so Tailwind generates them.
 const THEME_BG: Record<HomeAd['theme'], string> = {
@@ -80,7 +96,7 @@ export function HeroCarousel({ slides, loading = false }: { slides: HomeAd[]; lo
   if (loading && count === 0) {
     return (
       <section aria-busy="true" className="relative overflow-hidden border-b border-white/10 bg-[#040914]">
-        <div className="mx-auto flex min-h-[22rem] max-w-[90rem] flex-col justify-center gap-4 px-4 sm:min-h-[26rem] lg:px-6">
+        <div className="mx-auto flex min-h-[14rem] max-w-[90rem] flex-col justify-center gap-4 px-4 sm:min-h-[15rem] lg:min-h-[16rem] lg:px-6">
           <div className="h-6 w-32 animate-pulse rounded-full bg-white/10" />
           <div className="h-12 w-3/4 max-w-xl animate-pulse rounded-xl bg-white/10" />
           <div className="h-5 w-2/3 max-w-lg animate-pulse rounded bg-white/10" />
@@ -134,7 +150,7 @@ export function HeroCarousel({ slides, loading = false }: { slides: HomeAd[]; lo
             <Icon name="chevron-right" size={22} />
           </button>
 
-          <div className="absolute inset-x-0 bottom-3 flex items-center justify-center gap-2">
+          <div className="absolute inset-x-0 bottom-2.5 flex items-center justify-center gap-2">
             {slides.map((slide, position) => (
               <button
                 key={slide.id}
@@ -200,9 +216,22 @@ function Slide({ slide, active, position, count }: { slide: HomeAd; active: bool
       aria-hidden={!active}
       className={`relative w-full shrink-0 overflow-hidden ${THEME_BG[slide.theme] ?? THEME_BG.night} ${night ? 'horn-neon' : ''}`}
     >
+      {slide.imageUrl ? (
+        <>
+          <img
+            src={slide.imageUrl}
+            alt=""
+            loading={position === 0 ? 'eager' : 'lazy'}
+            className="absolute inset-0 size-full object-cover"
+          />
+          {/* Keeps the words readable whatever the advertiser uploaded. */}
+          <div aria-hidden="true" className="absolute inset-0 bg-gradient-to-r from-black/85 via-black/60 to-black/25" />
+        </>
+      ) : null}
+
       {/* Decoration: the neon dot grid and particles on the night theme, soft
           light and a large faint glyph on the colour themes. */}
-      {night ? (
+      {slide.imageUrl ? null : night ? (
         <>
           <div
             aria-hidden="true"
@@ -215,11 +244,15 @@ function Slide({ slide, active, position, count }: { slide: HomeAd; active: bool
         <div aria-hidden="true" className="pointer-events-none absolute inset-0">
           <div className="absolute -right-24 -top-24 size-96 rounded-full bg-white/10 blur-3xl" />
           <div className="absolute -bottom-32 left-1/3 size-80 rounded-full bg-black/20 blur-3xl" />
-          <Icon name={icon} size={420} strokeWidth={0.6} className="absolute -right-16 top-1/2 -translate-y-1/2 text-white/[0.07] lg:hidden" />
+          <Icon name={icon} size={260} strokeWidth={0.6} className="absolute -right-10 top-1/2 size-64 -translate-y-1/2 text-white/[0.07] lg:hidden" />
         </div>
       )}
 
-      <div className="relative mx-auto grid min-h-[22rem] max-w-[90rem] items-center gap-6 px-4 pb-12 pt-10 sm:min-h-[26rem] md:px-16 lg:grid-cols-[1.15fr_1fr] lg:px-20">
+      <div
+        className={`relative mx-auto grid min-h-[14rem] max-w-[90rem] items-center gap-4 px-4 pb-8 pt-6 sm:min-h-[15rem] md:px-16 lg:min-h-[16rem] lg:px-20 ${
+          slide.imageUrl ? '' : 'lg:grid-cols-[1.15fr_0.85fr]'
+        }`}
+      >
         <div className="text-center lg:text-left">
           {slide.badge ? (
             <span className="inline-flex -rotate-2 items-center rounded-lg bg-sun-300 px-3 py-1 text-sm font-extrabold uppercase tracking-wide text-ink-950 shadow-lg shadow-black/20">
@@ -232,51 +265,47 @@ function Slide({ slide, active, position, count }: { slide: HomeAd; active: bool
             </span>
           )}
 
-          <Heading className="mx-auto mt-4 max-w-2xl text-balance font-display text-3xl font-extrabold leading-[1.1] tracking-tight text-white sm:text-5xl lg:mx-0 lg:text-[3.5rem]">
+          <Heading className="mx-auto mt-3 max-w-2xl text-balance font-display text-2xl font-extrabold leading-[1.15] tracking-tight text-white sm:text-3xl lg:mx-0 lg:text-4xl">
             {slide.title}
           </Heading>
 
           {slide.subtitle ? (
-            <p className="mx-auto mt-3 max-w-xl text-base leading-relaxed text-white/80 sm:text-lg lg:mx-0">{slide.subtitle}</p>
+            <p className="mx-auto mt-2 max-w-xl text-sm leading-relaxed text-white/85 sm:text-base lg:mx-0">{slide.subtitle}</p>
           ) : null}
 
           {slide.link && slide.ctaLabel ? (
-            <div className="mt-6 flex justify-center lg:justify-start">
-              <Button
-                size="lg"
-                variant={slide.theme === 'clay' ? 'secondary' : 'accent'}
-                icon="arrow-right"
+            <div className="mt-5 flex justify-center lg:justify-start">
+              <button
+                type="button"
                 onClick={open}
                 tabIndex={active ? 0 : -1}
-                className={slide.theme === 'clay' ? 'border-white/30 bg-white text-clay-700 hover:bg-sand-100' : ''}
+                className={`inline-flex h-11 items-center gap-2 rounded-[--radius-field] px-5 text-sm font-semibold shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70 ${
+                  CTA_CLASS[slide.theme] ?? CTA_CLASS.night
+                }`}
               >
                 {slide.ctaLabel}
-              </Button>
+                <Icon name="arrow-right" size={17} />
+              </button>
             </div>
           ) : null}
         </div>
 
+        {slide.imageUrl ? null : (
         <div className="hidden justify-center lg:flex">
-          {slide.imageUrl ? (
-            <img
-              src={slide.imageUrl}
-              alt=""
-              loading={position === 0 ? 'eager' : 'lazy'}
-              className="max-h-80 w-full max-w-lg rounded-3xl object-cover shadow-2xl shadow-black/30"
-            />
-          ) : night ? (
+          {night ? (
             <NightMap active={active} />
           ) : (
-            <div className="relative flex size-72 items-center justify-center rounded-[3rem] bg-white/10 ring-1 ring-white/25 backdrop-blur-sm">
-              <Icon name={icon} size={150} strokeWidth={1.1} className="text-white drop-shadow-lg" />
+            <div className="relative flex size-40 items-center justify-center rounded-[2rem] bg-white/10 ring-1 ring-white/25 backdrop-blur-sm">
+              <Icon name={icon} size={96} strokeWidth={1.1} className="text-white drop-shadow-lg" />
               {slide.badge ? (
-                <span className="absolute -right-6 -top-5 rotate-6 rounded-2xl bg-sun-300 px-4 py-2 text-lg font-black uppercase leading-none text-ink-950 shadow-xl">
+                <span className="absolute -right-5 -top-4 rotate-6 rounded-xl bg-sun-300 px-3 py-1.5 text-sm font-black uppercase leading-none text-ink-950 shadow-xl">
                   {slide.badge}
                 </span>
               ) : null}
             </div>
           )}
         </div>
+        )}
       </div>
     </div>
   );
@@ -301,7 +330,7 @@ function NightMap({ active }: { active: boolean }) {
   };
 
   return (
-    <div className={`w-full max-w-lg ${active ? '' : 'pointer-events-none'}`}>
+    <div className={`w-full max-w-[14rem] lg:max-w-[16rem] ${active ? '' : 'pointer-events-none'}`}>
       <HornMap variant="hero" className="aspect-[960/870] w-full" names={names} onSelect={browse} label={t('home.mapLabel')} />
     </div>
   );

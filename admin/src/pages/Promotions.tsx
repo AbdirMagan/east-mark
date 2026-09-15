@@ -1,15 +1,15 @@
 import { useState, type ReactNode } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
-import { api, type AdInput, type AdTheme, type AdminAd } from '../lib/api.js';
+import { api, uploadAdImage, type AdInput, type AdTheme, type AdminAd } from '../lib/api.js';
 import {
   Button, Card, EmptyState, ErrorState, Icon, MutationError, PageHeader, Skeleton, StatusPill, formatDate,
 } from '../components/ui.js';
 
 /**
- * The home carousel on the web and in the Android app. Both apps render the
- * same fields -- theme, badge, title, subtitle, button and icon -- so what the
- * preview here shows is what shoppers see.
+ * Advertisements: the slides in the home carousel, on the website and in the
+ * Android app. Both render the same fields -- image or colour theme, badge,
+ * title, subtitle, button and icon -- so the preview here is what shoppers see.
  */
 
 const THEMES: Array<{ value: AdTheme; label: string; background: string }> = [
@@ -115,6 +115,81 @@ function toInput(draft: Draft): AdInput {
   };
 }
 
+/** Resizes and re-encodes in the browser: an ad banner never needs the 5 MB original. */
+async function toWebp(file: File, maxWidth = 1600, maxHeight = 900): Promise<Blob> {
+  const bitmap = await createImageBitmap(file, { imageOrientation: 'from-image' });
+  const scale = Math.min(1, maxWidth / bitmap.width, maxHeight / bitmap.height);
+  const canvas = document.createElement('canvas');
+  canvas.width = Math.round(bitmap.width * scale);
+  canvas.height = Math.round(bitmap.height * scale);
+  const context = canvas.getContext('2d');
+  if (!context) throw new Error('Could not process the image');
+  context.imageSmoothingQuality = 'high';
+  context.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
+  bitmap.close();
+  return new Promise((resolve, reject) => {
+    canvas.toBlob((blob) => (blob ? resolve(blob) : reject(new Error('Could not process the image'))), 'image/webp', 0.85);
+  });
+}
+
+function ImagePicker({ value, onChange }: { value: string; onChange: (url: string) => void }) {
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const pick = async (file: File | undefined) => {
+    if (!file) return;
+    setBusy(true);
+    setError(null);
+    try {
+      const webp = await toWebp(file);
+      onChange(await uploadAdImage(webp, file.name.replace(/\.[^.]+$/, '.webp')));
+    } catch (uploadError) {
+      setError(uploadError instanceof Error ? uploadError.message : 'Could not upload the image');
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  return (
+    <div className="rounded-[--radius-card] border border-border-subtle p-3">
+      <div className="flex flex-wrap items-center gap-3">
+        {value ? (
+          <img src={value} alt="" className="h-16 w-28 rounded-[--radius-field] object-cover" />
+        ) : (
+          <div className="flex h-16 w-28 items-center justify-center rounded-[--radius-field] bg-surface-sunken text-xs text-text-muted">
+            No image
+          </div>
+        )}
+        <div className="min-w-0 flex-1">
+          <span className="block text-xs font-semibold text-text-secondary">Advertisement image (optional)</span>
+          <span className="block text-[0.6875rem] text-text-muted">
+            A wide banner works best (1600&times;900). It is resized and saved as WebP. Without an image the slide
+            shows its colour and icon.
+          </span>
+        </div>
+        <div className="flex items-center gap-2">
+          <label className="inline-flex h-9 cursor-pointer items-center rounded-[--radius-field] border border-border-subtle px-3 text-sm font-semibold text-text-primary hover:bg-surface-sunken">
+            {busy ? 'Uploading…' : value ? 'Replace' : 'Upload image'}
+            <input
+              type="file"
+              accept="image/png,image/jpeg,image/webp"
+              className="sr-only"
+              disabled={busy}
+              onChange={(event) => void pick(event.target.files?.[0])}
+            />
+          </label>
+          {value ? (
+            <Button type="button" size="sm" variant="ghost" onClick={() => onChange('')}>
+              Remove
+            </Button>
+          ) : null}
+        </div>
+      </div>
+      {error ? <p className="mt-2 text-xs text-[--color-danger]">{error}</p> : null}
+    </div>
+  );
+}
+
 export function Promotions() {
   const queryClient = useQueryClient();
   const [editing, setEditing] = useState<Draft | null>(null);
@@ -131,11 +206,11 @@ export function Promotions() {
   return (
     <>
       <PageHeader
-        title="Promotions"
-        description="The slides in the home page carousel, on the website and the Android app."
+        title="Advertisements"
+        description="Slides in the home page carousel, on the website and in the Android app."
         action={
           <Button icon="plus" onClick={() => setEditing({ ...EMPTY })}>
-            New promotion
+            New advertisement
           </Button>
         }
       />
@@ -144,7 +219,7 @@ export function Promotions() {
 
       {ads.isError ? (
         <Card>
-          <ErrorState message="Could not load promotions" onRetry={() => void ads.refetch()} />
+          <ErrorState message="Could not load advertisements" onRetry={() => void ads.refetch()} />
         </Card>
       ) : ads.isLoading ? (
         <div className="grid gap-4 md:grid-cols-2">
@@ -152,7 +227,7 @@ export function Promotions() {
         </div>
       ) : items.length === 0 ? (
         <Card>
-          <EmptyState title="No promotions yet" body="Create one and it appears in the home carousel straight away." />
+          <EmptyState title="No advertisements yet" body="Post one and it appears in the home carousel straight away." />
         </Card>
       ) : (
         <div className="grid gap-4 md:grid-cols-2">
@@ -249,10 +324,10 @@ function Editor({ initial, onClose }: { initial: Draft; onClose: () => void }) {
   const target = TARGETS.find((item) => item.value === draft.targetType) ?? TARGETS[0];
 
   return (
-    <div className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-ink-950/50 p-4" role="dialog" aria-modal="true" aria-label="Edit promotion">
+    <div className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-ink-950/50 p-4" role="dialog" aria-modal="true" aria-label="Edit advertisement">
       <Card className="my-6 w-full max-w-2xl">
         <div className="flex items-center justify-between border-b border-border-subtle px-5 py-3">
-          <h2 className="text-base font-bold text-text-primary">{draft.id ? 'Edit promotion' : 'New promotion'}</h2>
+          <h2 className="text-base font-bold text-text-primary">{draft.id ? 'Edit advertisement' : 'New advertisement'}</h2>
           <button type="button" onClick={onClose} aria-label="Close" className="rounded-[--radius-field] p-1.5 text-text-muted hover:bg-surface-sunken">
             <Icon name="close" size={18} />
           </button>
@@ -346,9 +421,7 @@ function Editor({ initial, onClose }: { initial: Draft; onClose: () => void }) {
             </Field>
           </div>
 
-          <Field label="Image address (optional)" hint="A full https:// image URL. Without one, the slide shows its icon.">
-            <input className={inputClass} value={draft.imageUrl} onChange={(e) => set('imageUrl', e.target.value)} placeholder="https://" />
-          </Field>
+          <ImagePicker value={draft.imageUrl} onChange={(url) => set('imageUrl', url)} />
 
           <div className="rounded-[--radius-card] border border-border-subtle">
             <div className="flex flex-wrap items-center gap-1.5 border-b border-border-subtle px-3 py-2">

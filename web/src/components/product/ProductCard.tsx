@@ -46,7 +46,7 @@ export const ProductCard = memo(function ProductCard({
         to={`/product/${product.ref}`}
         className="block overflow-hidden rounded-[--radius-card] border border-border-subtle bg-surface-raised transition-shadow duration-200 hover:shadow-[--shadow-raised]"
       >
-        <div className="relative aspect-[4/3] overflow-hidden bg-surface-sunken">
+        <div className="relative aspect-[4/3] max-h-64 overflow-hidden bg-surface-sunken">
           {image ? (
             <img
               src={image}
@@ -160,10 +160,11 @@ export function ProductCardSkeleton() {
 }
 
 /**
- * The responsive grid: 2 columns on a phone, 3 on a tablet, 4 on a laptop,
- * 5-6 on a wide screen, exactly as the product spec calls for. Two columns on
- * mobile rather than one keeps twice as many listings above the fold, which is
- * what browsing a marketplace actually feels like.
+ * The responsive grid: two columns on a phone -- which keeps twice as many
+ * listings above the fold -- and from `sm` up, as many ~13.5rem columns as the
+ * screen fits. auto-fit collapses the empty tracks, so a search that returns
+ * two listings shows two wide cards across the page rather than two small ones
+ * stranded on the left.
  */
 export function ProductGrid({
   products,
@@ -179,7 +180,7 @@ export function ProductGrid({
   showFavorite?: boolean;
 }) {
   return (
-    <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6">
+    <div className="grid grid-cols-2 gap-3 sm:gap-4 sm:[grid-template-columns:repeat(auto-fit,minmax(13.5rem,1fr))]">
       {loading
         ? Array.from({ length: skeletonCount }, (_, index) => <ProductCardSkeleton key={index} />)
         : products.map((product, index) => (
@@ -212,7 +213,7 @@ export function ProductRail({
       {(loading ? Array.from({ length: 6 }, (_, i) => i) : products).map((item, index) => (
         <div
           key={typeof item === 'number' ? item : item.id}
-          className="w-[46%] shrink-0 snap-start sm:w-[30%] lg:w-[22%] xl:w-[18%]"
+          className="w-[46%] shrink-0 grow snap-start sm:w-[15rem] sm:max-w-[24rem] lg:w-[17rem]"
         >
           {typeof item === 'number' ? (
             <ProductCardSkeleton />

@@ -167,20 +167,31 @@ private fun AdSlide(ad: HomeAd, onClick: () -> Unit) {
             .clickable(onClick = onClick)
             .semantics { contentDescription = listOfNotNull(ad.badge, ad.title, ad.subtitle).joinToString(". ") }
     ) {
-        if (night) DotGrid(Modifier.fillMaxSize())
-
-        // Right-hand artwork: a photo if the promotion has one, else the neon
-        // Horn of Africa map for the night theme, else the category glyph.
-        when {
-            ad.imageUrl != null -> AsyncImage(
+        if (ad.imageUrl != null) {
+            AsyncImage(
                 model = ad.imageUrl,
                 contentDescription = null,
                 contentScale = ContentScale.Crop,
-                modifier = Modifier
-                    .align(Alignment.CenterEnd)
-                    .fillMaxHeight()
-                    .fillMaxWidth(0.4f)
+                modifier = Modifier.fillMaxSize()
             )
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(
+                        Brush.horizontalGradient(
+                            listOf(Color.Black.copy(alpha = 0.85f), Color.Black.copy(alpha = 0.3f))
+                        )
+                    )
+            )
+        } else if (night) {
+            DotGrid(Modifier.fillMaxSize())
+        }
+
+        // Artwork on the right: the neon Horn of Africa map for the night
+        // theme, else the category glyph. An advertisement image covers the
+        // whole slide instead, so neither is drawn then.
+        when {
+            ad.imageUrl != null -> Unit
             night || glyph == null -> HornMapMini(
                 Modifier
                     .align(Alignment.CenterEnd)
@@ -243,10 +254,15 @@ private fun AdSlide(ad: HomeAd, onClick: () -> Unit) {
             }
             ad.ctaLabel?.let { label ->
                 Spacer(modifier = Modifier.height(8.dp))
-                Surface(color = Color(0xFFB8531A), shape = RoundedCornerShape(8.dp)) {
+                val chipBackground = when (ad.theme) {
+                    "clay" -> Color.White
+                    "sun" -> Color(0xFF1A1713)
+                    else -> Color(0xFFB8531A)
+                }
+                Surface(color = chipBackground, shape = RoundedCornerShape(8.dp)) {
                     Text(
                         text = label,
-                        color = Color.White,
+                        color = if (ad.theme == "clay") Color(0xFF7D3712) else Color.White,
                         fontWeight = FontWeight.Bold,
                         fontSize = 12.sp,
                         modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp)

@@ -5,7 +5,9 @@ import {
 } from 'recharts';
 
 import { api } from '../lib/api.js';
-import { Card, ErrorState, PageHeader, Skeleton, formatPrice } from '../components/ui.js';
+import { Link } from 'react-router-dom';
+
+import { Button, Card, ErrorState, PageHeader, Skeleton, formatPrice } from '../components/ui.js';
 
 /**
  * Chart colours come from the brand ramps rather than Recharts' defaults, and
@@ -26,7 +28,15 @@ export function Dashboard() {
 
   return (
     <>
-      <PageHeader title="Dashboard" description="Marketplace health at a glance." />
+      <PageHeader
+        title="Dashboard"
+        description="Marketplace health at a glance."
+        action={
+          <Link to="/promotions">
+            <Button icon="megaphone">Post an advertisement</Button>
+          </Link>
+        }
+      />
 
       <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
         <Stat

@@ -62,13 +62,13 @@ export function HomePage() {
           <SectionHeading title={t('home.categories')} action={t('common.seeAll')} to="/categories" />
 
           {categoriesLoading ? (
-            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
+            <div className="grid grid-cols-2 gap-3 sm:[grid-template-columns:repeat(auto-fit,minmax(9rem,1fr))]">
               {Array.from({ length: 5 }, (_, index) => (
                 <Skeleton key={index} className="h-24" />
               ))}
             </div>
           ) : (
-            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
+            <div className="grid grid-cols-2 gap-3 sm:[grid-template-columns:repeat(auto-fit,minmax(9rem,1fr))]">
               {(categories ?? []).slice(0, 16).map((category) => (
                 <CategoryTile
                   key={category.id}

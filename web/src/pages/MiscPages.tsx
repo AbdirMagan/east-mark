@@ -28,13 +28,13 @@ export function CategoriesPage() {
       </h1>
 
       {isLoading ? (
-        <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="mt-8 grid gap-6 [grid-template-columns:repeat(auto-fit,minmax(19rem,1fr))]">
           {Array.from({ length: 9 }, (_, index) => (
             <Skeleton key={index} className="h-40" />
           ))}
         </div>
       ) : (
-        <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="mt-8 grid gap-6 [grid-template-columns:repeat(auto-fit,minmax(19rem,1fr))]">
           {(categories ?? []).map((category) => (
             <section
               key={category.id}

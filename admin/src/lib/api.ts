@@ -227,6 +227,41 @@ export interface Me {
 /* Endpoints                                                                  */
 /* -------------------------------------------------------------------------- */
 
+/**
+ * Uploads an advertisement image to the `ad-creatives` bucket and returns its
+ * public URL.
+ *
+ * The bytes go straight from this browser to Supabase Storage with the staff
+ * member's own token: the bucket's policy (0010_storage.sql) only lets an
+ * admin write there, so no service-role key is involved and the backend never
+ * has to proxy the file.
+ */
+export async function uploadAdImage(file: Blob, filename: string): Promise<string> {
+  const { data } = await auth.getSession();
+  const token = data.session?.access_token;
+  if (!token) throw new ApiError(401, 'Your session expired. Sign in again.', 'unauthorized');
+
+  const safe = filename.toLowerCase().replace(/[^a-z0-9.]+/g, '-').replace(/^-+|-+$/g, '').slice(-40) || 'image.webp';
+  const path = `${crypto.randomUUID()}-${safe}`;
+
+  const response = await fetch(`${url}/storage/v1/object/ad-creatives/${path}`, {
+    method: 'POST',
+    headers: {
+      apikey: anonKey as string,
+      Authorization: `Bearer ${token}`,
+      'Content-Type': file.type || 'image/webp',
+      'x-upsert': 'true',
+    },
+    body: file,
+  });
+
+  if (!response.ok) {
+    const detail = await response.text();
+    throw new ApiError(response.status, `Could not upload the image: ${detail.slice(0, 140)}`, 'upload_failed');
+  }
+  return `${url}/storage/v1/object/public/ad-creatives/${path}`;
+}
+
 export const api = {
   me: () => request<Me>('/users/me').then((r) => r.data),
 
