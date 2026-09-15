@@ -211,3 +211,22 @@ describe('config', () => {
     expect(res.body.data.settings.moderation).toBeUndefined();
   });
 });
+
+describe('messages', () => {
+  const id = '00000000-0000-4000-8000-000000000000';
+
+  it('requires sign-in for the inbox', async () => {
+    await request(app).get('/api/v1/messages/conversations').expect(401);
+  });
+
+  it('requires sign-in to start a conversation', async () => {
+    await request(app).post('/api/v1/messages/conversations').send({ productId: id }).expect(401);
+  });
+
+  it('requires sign-in to send a message', async () => {
+    await request(app)
+      .post(`/api/v1/messages/conversations/${id}/messages`)
+      .send({ body: 'hello' })
+      .expect(401);
+  });
+});

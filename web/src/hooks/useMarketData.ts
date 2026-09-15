@@ -162,3 +162,16 @@ export function useToggleFavorite() {
     },
   });
 }
+
+/** Unread message total for the header and bottom-nav badges. */
+export function useUnreadMessages() {
+  const session = useAuth((state) => state.session);
+  return useQuery({
+    queryKey: ['messages-unread', session?.user.id],
+    queryFn: () => endpoints.unreadMessages(),
+    enabled: Boolean(session),
+    // A cheap poll as a backstop; an open inbox also invalidates it live.
+    refetchInterval: 30_000,
+    staleTime: 15_000,
+  });
+}

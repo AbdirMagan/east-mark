@@ -2,7 +2,7 @@ import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { Link, NavLink, useNavigate, useSearchParams } from 'react-router-dom';
 
 import { LANGUAGES, useI18n, useT } from '../../i18n/index.js';
-import { useCities, useConfig, useCountries, useMe } from '../../hooks/useMarketData.js';
+import { useCities, useConfig, useCountries, useMe, useUnreadMessages } from '../../hooks/useMarketData.js';
 import { useAuth } from '../../store/auth.js';
 import { usePreferences, type ThemeChoice } from '../../store/preferences.js';
 import { Logo } from '../brand/Logo.js';
@@ -162,6 +162,7 @@ export function Header() {
   const session = useAuth((state) => state.session);
   const signOut = useAuth((state) => state.signOut);
   const { data: me } = useMe();
+  const { data: unread } = useUnreadMessages();
   const { data: config } = useConfig();
   const { data: countries } = useCountries();
 
@@ -279,6 +280,17 @@ export function Header() {
 
             <ThemeToggle />
           </div>
+
+          {session ? (
+            <Link
+              to="/messages"
+              aria-label={t('nav.messages')}
+              className="relative hidden size-9 items-center justify-center rounded-[--radius-field] text-text-secondary transition-colors hover:bg-surface-sunken hover:text-text-primary md:inline-flex"
+            >
+              <Icon name="message" size={19} />
+              <UnreadBadge count={unread?.total ?? 0} />
+            </Link>
+          ) : null}
 
           {session ? (
             <Popover
@@ -546,16 +558,26 @@ function MobileMenu({ onClose }: { onClose: () => void }) {
 /* Mobile bottom navigation                                                   */
 /* -------------------------------------------------------------------------- */
 
+function UnreadBadge({ count }: { count: number }) {
+  if (count <= 0) return null;
+  return (
+    <span className="absolute -right-1 -top-1 inline-flex min-w-[1.125rem] items-center justify-center rounded-full bg-accent px-1 text-[0.625rem] font-bold leading-[1.125rem] text-white">
+      {count > 99 ? '99+' : count}
+    </span>
+  );
+}
+
 export function BottomNav() {
   const t = useT();
   const session = useAuth((state) => state.session);
+  const { data: unread } = useUnreadMessages();
 
-  const items: Array<{ to: string; icon: IconName; labelKey: 'nav.home' | 'nav.browse' | 'nav.sell' | 'nav.saved' | 'nav.account' }> = [
+  const items: Array<{ to: string; icon: IconName; labelKey: 'nav.home' | 'nav.browse' | 'nav.sell' | 'nav.saved' | 'nav.messages' }> = [
     { to: '/', icon: 'grid', labelKey: 'nav.home' },
     { to: '/browse', icon: 'search', labelKey: 'nav.browse' },
     { to: session ? '/sell' : '/signin?next=/sell', icon: 'plus', labelKey: 'nav.sell' },
     { to: session ? '/saved' : '/signin?next=/saved', icon: 'heart', labelKey: 'nav.saved' },
-    { to: session ? '/my-listings' : '/signin', icon: 'user', labelKey: 'nav.account' },
+    { to: session ? '/messages' : '/signin?next=/messages', icon: 'message', labelKey: 'nav.messages' },
   ];
 
   return (
@@ -577,7 +599,10 @@ export function BottomNav() {
                 }`
               }
             >
-              <Icon name={item.icon} size={20} />
+              <span className="relative">
+                <Icon name={item.icon} size={20} />
+                {item.labelKey === 'nav.messages' ? <UnreadBadge count={unread?.total ?? 0} /> : null}
+              </span>
               {t(item.labelKey)}
             </NavLink>
           </li>

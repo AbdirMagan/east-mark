@@ -24,6 +24,9 @@ const CategoriesPage = lazy(() =>
 );
 const SavedPage = lazy(() => import('./pages/MiscPages.js').then((m) => ({ default: m.SavedPage })));
 const SellPage = lazy(() => import('./pages/SellPage.js').then((m) => ({ default: m.SellPage })));
+const MessagesPage = lazy(() =>
+  import('./pages/MessagesPage.js').then((m) => ({ default: m.MessagesPage })),
+);
 const NotFoundPage = lazy(() =>
   import('./pages/MiscPages.js').then((m) => ({ default: m.NotFoundPage })),
 );
@@ -63,6 +66,10 @@ function PageFallback() {
 
 function Shell() {
   const theme = usePreferences((state) => state.theme);
+  const { pathname } = useLocation();
+  // The messages screen fills the viewport like a chat app; a footer under it
+  // would push the composer off screen.
+  const fullHeight = pathname.startsWith('/messages');
 
   useEffect(() => applyTheme(theme), [theme]);
   useEffect(() => initAuth(), []);
@@ -92,13 +99,14 @@ function Shell() {
             <Route path="/register" element={<RegisterPage />} />
             <Route path="/sell" element={<SellPage />} />
             <Route path="/my-listings" element={<ComingSoonPage titleKey="nav.myListings" />} />
-            <Route path="/messages/*" element={<ComingSoonPage titleKey="nav.messages" />} />
+            <Route path="/messages" element={<MessagesPage />} />
+            <Route path="/messages/:conversationId" element={<MessagesPage />} />
             <Route path="*" element={<NotFoundPage />} />
           </Routes>
         </Suspense>
       </main>
 
-      <Footer />
+      {fullHeight ? null : <Footer />}
       <BottomNav />
     </div>
   );

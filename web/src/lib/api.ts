@@ -280,6 +280,40 @@ export interface UploadSlot {
   path: string;
 }
 
+export interface ConversationSummary {
+  id: string;
+  role: 'buyer' | 'seller';
+  otherParty: { id: string; name: string; avatarUrl: string | null };
+  product: {
+    id: string;
+    ref: number;
+    title: string;
+    price: number;
+    currency: string;
+    thumbnailUrl: string | null;
+    status: string;
+  } | null;
+  productRemoved: boolean;
+  lastMessageAt: string | null;
+  lastMessagePreview: string | null;
+  lastSenderIsMe: boolean;
+  unreadCount: number;
+  createdAt: string;
+}
+
+export interface ChatMessage {
+  id: string;
+  conversationId: string;
+  senderId: string;
+  type: string;
+  body: string | null;
+  createdAt: string;
+  readAt: string | null;
+  isMine: boolean;
+  /** Client-only: an optimistic message not yet confirmed by the server. */
+  status?: 'sending' | 'failed';
+}
+
 export interface AppConfig {
   settings: Record<string, Record<string, unknown>>;
   languages: Array<{ code: string; name: string; nativeName: string; rtl: boolean }>;
@@ -443,6 +477,28 @@ export const endpoints = {
 
   updateContact: (input: { phone?: string | null; whatsapp?: string | null }) =>
     api<Me['contact']>('/users/me/contact', { method: 'PATCH', body: input }),
+
+  /* --- messaging --- */
+
+  conversations: () => api<ConversationSummary[]>('/messages/conversations'),
+
+  conversation: (id: string) => api<ConversationSummary>(`/messages/conversations/${id}`),
+
+  messages: (id: string, before?: string) =>
+    api<{ items: ChatMessage[]; hasMore: boolean }>(`/messages/conversations/${id}/messages`, {
+      query: { before, limit: 50 },
+    }),
+
+  sendMessage: (id: string, body: string) =>
+    api<ChatMessage>(`/messages/conversations/${id}/messages`, { method: 'POST', body: { body } }),
+
+  startConversation: (productId: string) =>
+    api<{ id: string }>('/messages/conversations', { method: 'POST', body: { productId } }),
+
+  markConversationRead: (id: string) =>
+    api<null>(`/messages/conversations/${id}/read`, { method: 'POST' }),
+
+  unreadMessages: () => api<{ total: number; conversations: number }>('/messages/unread'),
 };
 
 /**

@@ -164,15 +164,25 @@ export function ProductPage() {
                 </a>
               ) : null}
 
-              <Button
-                variant="secondary"
-                fullWidth
-                size="lg"
-                icon="message"
-                onClick={() => navigate(session ? `/messages/new?product=${product.id}` : '/signin')}
-              >
-                {t('product.message')}
-              </Button>
+              {session?.user.id === product.seller.id ? (
+                <p className="text-center text-sm font-medium text-text-muted">{t('messages.ownListing')}</p>
+              ) : (
+                <Button
+                  variant="secondary"
+                  fullWidth
+                  size="lg"
+                  icon="message"
+                  onClick={() =>
+                    navigate(
+                      session
+                        ? `/messages/new?product=${product.id}`
+                        : `/signin?next=${encodeURIComponent(`/product/${product.ref}`)}`,
+                    )
+                  }
+                >
+                  {t('product.message')}
+                </Button>
+              )}
 
               {!hasContact ? (
                 <p className="text-center text-xs text-text-muted">{t('product.contactHidden')}</p>
