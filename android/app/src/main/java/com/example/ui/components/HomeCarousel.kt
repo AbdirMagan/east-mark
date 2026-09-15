@@ -90,7 +90,7 @@ fun HomeCarousel(
             pageSpacing = 12.dp,
             modifier = Modifier
                 .fillMaxWidth()
-                .height(148.dp)
+                .height(176.dp)
                 .testTag("home_carousel")
         ) { page ->
             val ad = ads[page]
@@ -212,8 +212,8 @@ private fun AdSlide(ad: HomeAd, onClick: () -> Unit) {
         Column(
             modifier = Modifier
                 .fillMaxHeight()
-                .fillMaxWidth(0.66f)
-                .padding(14.dp),
+                .fillMaxWidth(0.68f)
+                .padding(horizontal = 14.dp, vertical = 12.dp),
             verticalArrangement = Arrangement.Center
         ) {
             ad.badge?.let { badge ->
@@ -237,7 +237,7 @@ private fun AdSlide(ad: HomeAd, onClick: () -> Unit) {
                 color = Color.White,
                 fontWeight = FontWeight.Black,
                 fontSize = 16.sp,
-                lineHeight = 19.sp,
+                lineHeight = 18.sp,
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis
             )
@@ -247,13 +247,13 @@ private fun AdSlide(ad: HomeAd, onClick: () -> Unit) {
                     text = subtitle,
                     color = Color.White.copy(alpha = 0.85f),
                     fontSize = 11.sp,
-                    lineHeight = 14.sp,
+                    lineHeight = 13.sp,
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis
                 )
             }
             ad.ctaLabel?.let { label ->
-                Spacer(modifier = Modifier.height(8.dp))
+                Spacer(modifier = Modifier.height(7.dp))
                 val chipBackground = when (ad.theme) {
                     "clay" -> Color.White
                     "sun" -> Color(0xFF1A1713)
