@@ -57,7 +57,7 @@ function Popover({
         aria-expanded={open}
         aria-haspopup="true"
         aria-label={label}
-        className="inline-flex h-9 items-center gap-1.5 rounded-[--radius-field] px-2.5 text-sm font-medium text-text-secondary transition-colors hover:bg-surface-sunken hover:text-text-primary"
+        className="inline-flex h-9 items-center gap-1.5 rounded-(--radius-field) px-2.5 text-sm font-medium text-text-secondary transition-colors hover:bg-surface-sunken hover:text-text-primary"
       >
         {icon ? <Icon name={icon} size={16} /> : null}
         <span className="max-w-[7.5rem] truncate">{value}</span>
@@ -67,7 +67,7 @@ function Popover({
       {open ? (
         <div
           role="menu"
-          className={`absolute top-full z-50 mt-2 max-h-[22rem] w-60 overflow-y-auto rounded-[--radius-card] border border-border-subtle bg-surface-raised p-1.5 shadow-[--shadow-raised] ${
+          className={`absolute top-full z-50 mt-2 max-h-[22rem] w-60 overflow-y-auto rounded-(--radius-card) border border-border-subtle bg-surface-raised p-1.5 shadow-(--shadow-raised) ${
             align === 'end' ? 'right-0' : 'left-0'
           }`}
         >
@@ -92,7 +92,7 @@ function MenuItem({
       type="button"
       role="menuitem"
       onClick={onClick}
-      className={`flex w-full items-center justify-between gap-2 rounded-[--radius-field] px-3 py-2 text-left text-sm transition-colors hover:bg-surface-sunken ${
+      className={`flex w-full items-center justify-between gap-2 rounded-(--radius-field) px-3 py-2 text-left text-sm transition-colors hover:bg-surface-sunken ${
         selected ? 'font-semibold text-brand' : 'text-text-secondary'
       }`}
     >
@@ -136,7 +136,7 @@ function SearchBar({ className = '' }: { className?: string }) {
         // enterKeyHint turns the phone keyboard's return key into "Search",
         // which is a small thing that makes mobile search feel native.
         enterKeyHint="search"
-        className="h-11 w-full rounded-[--radius-pill] border border-border-subtle bg-surface-raised pl-10 pr-4 text-sm text-text-primary placeholder:text-text-muted focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/25"
+        className="h-11 w-full rounded-(--radius-pill) border border-border-subtle bg-surface-raised pl-10 pr-4 text-sm text-text-primary placeholder:text-text-muted focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/25"
       />
     </form>
   );
@@ -289,7 +289,7 @@ export function Header() {
             <Link
               to="/messages"
               aria-label={t('nav.messages')}
-              className="relative hidden size-9 items-center justify-center rounded-[--radius-field] text-text-secondary transition-colors hover:bg-surface-sunken hover:text-text-primary md:inline-flex"
+              className="relative hidden size-9 items-center justify-center rounded-(--radius-field) text-text-secondary transition-colors hover:bg-surface-sunken hover:text-text-primary md:inline-flex"
             >
               <Icon name="message" size={19} />
               <UnreadBadge count={unread?.total ?? 0} />
@@ -322,7 +322,7 @@ export function Header() {
                         target="_blank"
                         rel="noreferrer"
                         onClick={close}
-                        className="flex w-full items-center gap-2 rounded-[--radius-field] px-3 py-2 text-left text-sm font-semibold text-brand transition-colors hover:bg-surface-sunken"
+                        className="flex w-full items-center gap-2 rounded-(--radius-field) px-3 py-2 text-left text-sm font-semibold text-brand transition-colors hover:bg-surface-sunken"
                       >
                         <Icon name="sliders" size={15} />
                         {t('nav.admin')}
@@ -350,7 +350,7 @@ export function Header() {
           ) : (
             <Link
               to="/signin"
-              className="hidden h-9 items-center rounded-[--radius-field] px-3 text-sm font-semibold text-text-secondary transition-colors hover:bg-surface-sunken hover:text-text-primary sm:inline-flex"
+              className="hidden h-9 items-center rounded-(--radius-field) px-3 text-sm font-semibold text-text-secondary transition-colors hover:bg-surface-sunken hover:text-text-primary sm:inline-flex"
             >
               {t('nav.signIn')}
             </Link>
@@ -370,7 +370,7 @@ export function Header() {
             type="button"
             onClick={() => setMenuOpen(true)}
             aria-label={t('nav.settings')}
-            className="inline-flex size-9 items-center justify-center rounded-[--radius-field] text-text-secondary hover:bg-surface-sunken lg:hidden"
+            className="inline-flex size-9 items-center justify-center rounded-(--radius-field) text-text-secondary hover:bg-surface-sunken lg:hidden"
           >
             <Icon name="menu" size={20} />
           </button>
@@ -449,14 +449,14 @@ function MobileMenu({ onClose }: { onClose: () => void }) {
         onClick={onClose}
         aria-hidden="true"
       />
-      <div className="absolute inset-y-0 right-0 flex w-[min(21rem,88vw)] flex-col bg-surface-raised shadow-[--shadow-raised]">
+      <div className="absolute inset-y-0 right-0 flex w-[min(21rem,88vw)] flex-col bg-surface-raised shadow-(--shadow-raised)">
         <div className="flex h-16 items-center justify-between border-b border-border-subtle px-4">
           <span className="font-display font-bold text-text-primary">{t('nav.settings')}</span>
           <button
             type="button"
             onClick={onClose}
             aria-label={t('common.close')}
-            className="inline-flex size-9 items-center justify-center rounded-[--radius-field] text-text-secondary hover:bg-surface-sunken"
+            className="inline-flex size-9 items-center justify-center rounded-(--radius-field) text-text-secondary hover:bg-surface-sunken"
           >
             <Icon name="close" size={20} />
           </button>

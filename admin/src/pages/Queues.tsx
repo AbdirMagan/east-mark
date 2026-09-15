@@ -94,7 +94,7 @@ export function Reports() {
                         onChange={(event) => setNote((n) => ({ ...n, [report.id]: event.target.value }))}
                         placeholder="What did you decide? (optional)"
                         aria-label="Resolution note"
-                        className="h-9 min-w-0 flex-1 rounded-[--radius-field] border border-border-subtle bg-surface-raised px-3 text-sm text-text-primary placeholder:text-text-muted focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/25"
+                        className="h-9 min-w-0 flex-1 rounded-(--radius-field) border border-border-subtle bg-surface-raised px-3 text-sm text-text-primary placeholder:text-text-muted focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/25"
                       />
                       <Button
                         size="sm"
@@ -206,7 +206,7 @@ export function Verifications() {
                         onChange={(event) => setNote((n) => ({ ...n, [request.id]: event.target.value }))}
                         placeholder="Note for the applicant (optional)"
                         aria-label="Review note"
-                        className="h-9 min-w-0 flex-1 rounded-[--radius-field] border border-border-subtle bg-surface-raised px-3 text-sm text-text-primary placeholder:text-text-muted focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/25"
+                        className="h-9 min-w-0 flex-1 rounded-(--radius-field) border border-border-subtle bg-surface-raised px-3 text-sm text-text-primary placeholder:text-text-muted focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/25"
                       />
                       <Button
                         size="sm"

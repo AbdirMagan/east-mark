@@ -313,7 +313,7 @@ export function SellPage() {
       <StepIndicator current={step} />
 
       {restored && step === 0 ? (
-        <div className="mb-5 flex items-center justify-between gap-3 rounded-[--radius-field] bg-brand-subtle px-4 py-2.5 text-sm text-brand">
+        <div className="mb-5 flex items-center justify-between gap-3 rounded-(--radius-field) bg-brand-subtle px-4 py-2.5 text-sm text-brand">
           <span className="flex items-center gap-2">
             <Icon name="check" size={16} />
             {t('sell.draftRestored')}
@@ -367,7 +367,7 @@ export function SellPage() {
                 }}
               />
               {errors.categoryId ? (
-                <p className="text-sm text-[--color-danger]">{errors.categoryId}</p>
+                <p className="text-sm text-(--color-danger)">{errors.categoryId}</p>
               ) : null}
             </>
           )
@@ -377,7 +377,7 @@ export function SellPage() {
         {step === 1 ? (
           <>
             {selected ? (
-              <div className="flex items-center justify-between gap-3 rounded-[--radius-field] border border-border-subtle bg-surface-raised px-4 py-2.5">
+              <div className="flex items-center justify-between gap-3 rounded-(--radius-field) border border-border-subtle bg-surface-raised px-4 py-2.5">
                 <span className="min-w-0 truncate text-sm">
                   <span className="text-text-muted">{selected.parent.name}</span>
                   {selected.child ? (
@@ -397,7 +397,7 @@ export function SellPage() {
               </div>
             ) : null}
 
-            <section className="space-y-4 rounded-[--radius-card] border border-border-subtle bg-surface-raised p-5">
+            <section className="space-y-4 rounded-(--radius-card) border border-border-subtle bg-surface-raised p-5">
               <h2 className="font-display text-base font-bold text-text-primary">
                 {t('sell.detailsTitle')}
               </h2>
@@ -425,7 +425,7 @@ export function SellPage() {
                   value={draft.description}
                   onChange={(event) => update('description', event.target.value)}
                   placeholder={t('sell.descriptionPlaceholder')}
-                  className="w-full rounded-[--radius-field] border border-border-subtle bg-surface-raised px-3 py-2.5 text-text-primary placeholder:text-text-muted focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/25"
+                  className="w-full rounded-(--radius-field) border border-border-subtle bg-surface-raised px-3 py-2.5 text-text-primary placeholder:text-text-muted focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/25"
                 />
                 <p className="text-right text-xs text-text-muted">{draft.description.length}/5000</p>
               </div>
@@ -543,7 +543,7 @@ export function SellPage() {
               </div>
             </section>
 
-            <section className="space-y-3 rounded-[--radius-card] border border-border-subtle bg-surface-raised p-5">
+            <section className="space-y-3 rounded-(--radius-card) border border-border-subtle bg-surface-raised p-5">
               <h2 className="font-display text-base font-bold text-text-primary">
                 {t('sell.photosTitle')}
               </h2>
@@ -560,7 +560,7 @@ export function SellPage() {
         {/* Step 3 — location and contact ------------------------------------ */}
         {step === 2 ? (
           <>
-            <section className="space-y-4 rounded-[--radius-card] border border-border-subtle bg-surface-raised p-5">
+            <section className="space-y-4 rounded-(--radius-card) border border-border-subtle bg-surface-raised p-5">
               <div>
                 <h2 className="font-display text-base font-bold text-text-primary">
                   {t('sell.locationTitle')}
@@ -592,7 +592,7 @@ export function SellPage() {
                 ))}
               </SelectField>
               {errors.countryId ? (
-                <p className="-mt-2 text-sm text-[--color-danger]">{errors.countryId}</p>
+                <p className="-mt-2 text-sm text-(--color-danger)">{errors.countryId}</p>
               ) : null}
 
               {regions.length > 0 ? (
@@ -630,7 +630,7 @@ export function SellPage() {
               ) : null}
             </section>
 
-            <section className="space-y-4 rounded-[--radius-card] border border-border-subtle bg-surface-raised p-5">
+            <section className="space-y-4 rounded-(--radius-card) border border-border-subtle bg-surface-raised p-5">
               <div>
                 <h2 className="font-display text-base font-bold text-text-primary">
                   {t('sell.contactTitle')}
@@ -705,7 +705,7 @@ export function SellPage() {
       {progress.stage === 'error' ? (
         <p
           role="alert"
-          className="mt-4 flex items-start gap-2 rounded-[--radius-field] bg-[--color-danger]/10 px-4 py-3 text-sm text-[--color-danger]"
+          className="mt-4 flex items-start gap-2 rounded-(--radius-field) bg-(--color-danger)/10 px-4 py-3 text-sm text-(--color-danger)"
         >
           <Icon name="alert" size={16} className="mt-0.5" />
           {progress.error === 'offline' ? t('error.offlineBody') : progress.error}
@@ -727,7 +727,7 @@ export function SellPage() {
 
     return (
       <div className="fixed inset-0 z-50 flex items-center justify-center bg-ink-950/60 p-4 backdrop-blur-sm">
-        <div className="w-full max-w-sm rounded-[--radius-card] bg-surface-raised p-6 text-center shadow-[--shadow-raised]">
+        <div className="w-full max-w-sm rounded-(--radius-card) bg-surface-raised p-6 text-center shadow-(--shadow-raised)">
           <p className="font-display font-bold text-text-primary">{label}</p>
           <div
             className="mt-4 h-2 overflow-hidden rounded-full bg-surface-sunken"
@@ -807,7 +807,7 @@ function SuccessScreen({
 
   return (
     <div className="mx-auto max-w-lg px-4 py-16">
-      <div className="relative overflow-hidden rounded-[--radius-card] border border-border-subtle bg-surface-raised p-8 text-center">
+      <div className="relative overflow-hidden rounded-(--radius-card) border border-border-subtle bg-surface-raised p-8 text-center">
         <CulturalPattern variant="weave" scale={48} />
         <div className="relative">
           <span className="mx-auto mb-4 flex size-14 items-center justify-center rounded-full bg-brand-subtle text-brand">
@@ -822,7 +822,7 @@ function SuccessScreen({
           </p>
 
           {failedImages > 0 ? (
-            <p className="mt-4 rounded-[--radius-field] bg-sun-100 px-3 py-2 text-xs text-sun-800 dark:bg-sun-900/40 dark:text-sun-200">
+            <p className="mt-4 rounded-(--radius-field) bg-sun-100 px-3 py-2 text-xs text-sun-800 dark:bg-sun-900/40 dark:text-sun-200">
               {t('sell.someImagesFailed', { count: failedImages })}
             </p>
           ) : null}
@@ -831,7 +831,7 @@ function SuccessScreen({
             {!isDraft ? (
               <Link
                 to={`/product/${productRef}`}
-                className="inline-flex h-11 items-center rounded-[--radius-field] bg-brand px-4 text-sm font-semibold text-white hover:bg-brand-hover dark:text-ink-950"
+                className="inline-flex h-11 items-center rounded-(--radius-field) bg-brand px-4 text-sm font-semibold text-white hover:bg-brand-hover dark:text-ink-950"
               >
                 {t('sell.viewListing')}
               </Link>

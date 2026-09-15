@@ -78,7 +78,7 @@ fun ReportListingDialog(
             Button(
                 onClick = { onSubmit(selectedReason) },
                 colors = ButtonDefaults.buttonColors(containerColor = BrandNavy),
-                shape = RoundedCornerShape(8.dp),
+                shape = RoundedCornerShape(24.dp),
                 modifier = Modifier.testTag("submit_report_btn")
             ) {
                 Text("Submit Report")

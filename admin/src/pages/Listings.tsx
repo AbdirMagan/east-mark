@@ -80,7 +80,7 @@ export function Listings() {
             onChange={(event) => setSearch(event.target.value)}
             placeholder="Search titles"
             aria-label="Search listings"
-            className="h-9 w-56 rounded-[--radius-field] border border-border-subtle bg-surface-raised pl-9 pr-3 text-sm text-text-primary placeholder:text-text-muted focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/25"
+            className="h-9 w-56 rounded-(--radius-field) border border-border-subtle bg-surface-raised pl-9 pr-3 text-sm text-text-primary placeholder:text-text-muted focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/25"
           />
         </form>
       </div>
@@ -125,10 +125,10 @@ export function Listings() {
                               width={44}
                               height={44}
                               loading="lazy"
-                              className="size-11 shrink-0 rounded-[--radius-field] object-cover"
+                              className="size-11 shrink-0 rounded-(--radius-field) object-cover"
                             />
                           ) : (
-                            <span className="flex size-11 shrink-0 items-center justify-center rounded-[--radius-field] bg-surface-sunken text-text-muted">
+                            <span className="flex size-11 shrink-0 items-center justify-center rounded-(--radius-field) bg-surface-sunken text-text-muted">
                               <Icon name="listings" size={16} />
                             </span>
                           )}
@@ -147,7 +147,7 @@ export function Listings() {
                               {item.imageCount === 1 ? '' : 's'}
                             </p>
                             {item.rejection_reason ? (
-                              <p className="mt-0.5 text-xs text-[--color-danger]">{item.rejection_reason}</p>
+                              <p className="mt-0.5 text-xs text-(--color-danger)">{item.rejection_reason}</p>
                             ) : null}
                           </div>
                         </div>
@@ -260,7 +260,7 @@ function ReasonDialog({
               key={preset}
               type="button"
               onClick={() => setReason(preset)}
-              className={`block w-full rounded-[--radius-field] border px-3 py-2 text-left text-sm transition-colors ${
+              className={`block w-full rounded-(--radius-field) border px-3 py-2 text-left text-sm transition-colors ${
                 reason === preset
                   ? 'border-brand bg-brand-subtle text-brand'
                   : 'border-border-subtle text-text-secondary hover:bg-surface-sunken'
@@ -278,7 +278,7 @@ function ReasonDialog({
           maxLength={500}
           placeholder="Or write your own. The seller sees this."
           aria-label="Reason"
-          className="mt-3 w-full rounded-[--radius-field] border border-border-subtle bg-surface-raised px-3 py-2 text-sm text-text-primary placeholder:text-text-muted focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/25"
+          className="mt-3 w-full rounded-(--radius-field) border border-border-subtle bg-surface-raised px-3 py-2 text-sm text-text-primary placeholder:text-text-muted focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/25"
         />
 
         <div className="mt-4 flex justify-end gap-2">

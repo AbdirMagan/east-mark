@@ -63,7 +63,7 @@ export function CategoryStep({ categories, selected, onSelect }: CategoryStepPro
           onChange={(event) => setQuery(event.target.value)}
           placeholder={t('sell.searchCategory')}
           aria-label={t('sell.searchCategory')}
-          className="h-11 w-full rounded-[--radius-field] border border-border-subtle bg-surface-raised pl-10 pr-4 text-sm text-text-primary placeholder:text-text-muted focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/25"
+          className="h-11 w-full rounded-(--radius-field) border border-border-subtle bg-surface-raised pl-10 pr-4 text-sm text-text-primary placeholder:text-text-muted focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/25"
         />
       </div>
 
@@ -71,7 +71,7 @@ export function CategoryStep({ categories, selected, onSelect }: CategoryStepPro
         matches.length === 0 ? (
           <p className="py-8 text-center text-sm text-text-muted">{t('sell.noCategoryMatch')}</p>
         ) : (
-          <ul className="divide-y divide-border-subtle overflow-hidden rounded-[--radius-card] border border-border-subtle">
+          <ul className="divide-y divide-border-subtle overflow-hidden rounded-(--radius-card) border border-border-subtle">
             {matches.map(({ parent, child }) => (
               <li key={`${parent.id}-${child?.id ?? 'self'}`}>
                 <button
@@ -80,7 +80,7 @@ export function CategoryStep({ categories, selected, onSelect }: CategoryStepPro
                   className="flex w-full items-center gap-3 bg-surface-raised px-4 py-3 text-left transition-colors hover:bg-surface-sunken"
                 >
                   <span
-                    className="flex size-8 shrink-0 items-center justify-center rounded-[--radius-field] text-white"
+                    className="flex size-8 shrink-0 items-center justify-center rounded-(--radius-field) text-white"
                     style={{ backgroundColor: parent.accentColor ?? 'var(--brand)' }}
                     aria-hidden="true"
                   >
@@ -107,7 +107,7 @@ export function CategoryStep({ categories, selected, onSelect }: CategoryStepPro
             return (
               <li
                 key={parent.id}
-                className="overflow-hidden rounded-[--radius-card] border border-border-subtle bg-surface-raised"
+                className="overflow-hidden rounded-(--radius-card) border border-border-subtle bg-surface-raised"
               >
                 <button
                   type="button"
@@ -120,7 +120,7 @@ export function CategoryStep({ categories, selected, onSelect }: CategoryStepPro
                   className="flex w-full items-center gap-3 px-4 py-3 text-left transition-colors hover:bg-surface-sunken"
                 >
                   <span
-                    className="flex size-8 shrink-0 items-center justify-center rounded-[--radius-field] text-white"
+                    className="flex size-8 shrink-0 items-center justify-center rounded-(--radius-field) text-white"
                     style={{ backgroundColor: parent.accentColor ?? 'var(--brand)' }}
                     aria-hidden="true"
                   >

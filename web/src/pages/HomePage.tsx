@@ -136,7 +136,7 @@ export function HomePage() {
         <TrustSection countryCount={countries?.length ?? 4} categoryCount={categories?.length ?? 5} />
 
         {/* Sell call to action --------------------------------------------- */}
-        <section className="relative overflow-hidden rounded-[--radius-card] bg-acacia-900 px-6 py-12 text-center text-sand-50 sm:px-12">
+        <section className="relative overflow-hidden rounded-(--radius-card) bg-acacia-900 px-6 py-12 text-center text-sand-50 sm:px-12">
           <CulturalPattern variant="weave" scale={52} className="text-sand-100" />
           <div className="relative mx-auto max-w-xl">
             <h2 className="font-display text-2xl font-bold tracking-tight sm:text-3xl">
@@ -196,7 +196,7 @@ function CategoryTile({
   return (
     <Link
       to={`/browse?category=${slug}`}
-      className="group relative flex flex-col items-center justify-center gap-2 overflow-hidden rounded-[--radius-card] border border-border-subtle bg-surface-raised p-3 text-center transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[--shadow-card]"
+      className="group relative flex flex-col items-center justify-center gap-2 overflow-hidden rounded-(--radius-card) border border-border-subtle bg-surface-raised p-3 text-center transition-all duration-200 hover:-translate-y-0.5 hover:shadow-(--shadow-card)"
     >
       <span
         className="flex size-10 items-center justify-center rounded-full text-white transition-transform duration-200 group-hover:scale-110"
@@ -230,7 +230,7 @@ function TrustSection({
   ];
 
   return (
-    <section className="rounded-[--radius-card] border border-border-subtle bg-surface-raised p-6 sm:p-8">
+    <section className="rounded-(--radius-card) border border-border-subtle bg-surface-raised p-6 sm:p-8">
       <div className="mb-6 flex flex-wrap items-baseline justify-between gap-4">
         <h2 className="font-display text-lg font-bold tracking-tight text-text-primary sm:text-xl">
           {t('home.trustTitle')}
@@ -248,7 +248,7 @@ function TrustSection({
       <div className="grid gap-6 sm:grid-cols-3">
         {points.map((point) => (
           <div key={point.title}>
-            <span className="mb-3 flex size-9 items-center justify-center rounded-[--radius-field] bg-brand-subtle text-brand">
+            <span className="mb-3 flex size-9 items-center justify-center rounded-(--radius-field) bg-brand-subtle text-brand">
               <Icon name={point.icon} size={18} />
             </span>
             <h3 className="text-sm font-semibold text-text-primary">{point.title}</h3>

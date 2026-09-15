@@ -63,12 +63,20 @@ export function Spinner({ size = 16 }: { size?: number }) {
 type Variant = 'primary' | 'secondary' | 'ghost' | 'danger' | 'success';
 
 const VARIANTS: Record<Variant, string> = {
-  primary: 'bg-brand text-white hover:bg-brand-hover dark:text-ink-950',
-  secondary: 'bg-surface-raised border border-border-subtle text-text-primary hover:bg-surface-sunken',
-  ghost: 'text-text-secondary hover:bg-surface-sunken hover:text-text-primary',
-  danger: 'bg-[--color-danger] text-white hover:brightness-110',
-  success: 'bg-[--color-success] text-white hover:brightness-110',
+  primary: 'border-brand bg-brand text-white shadow-sm hover:bg-brand-hover hover:shadow-md dark:text-ink-950',
+  secondary: 'border-border-strong bg-surface-raised text-text-primary hover:border-brand hover:bg-surface-sunken hover:text-brand',
+  ghost: 'border-transparent text-text-secondary hover:border-border-subtle hover:bg-surface-sunken hover:text-text-primary',
+  danger: 'border-(--color-danger) bg-(--color-danger) text-white hover:brightness-110 hover:shadow-md',
+  success: 'border-(--color-success) bg-(--color-success) text-white hover:brightness-110 hover:shadow-md',
 };
+
+/** Matches the marketplace's buttons: pill, border, lift, press, focus ring. */
+const BASE =
+  'group inline-flex items-center justify-center gap-1.5 rounded-(--radius-pill) border font-semibold ' +
+  'transition-[color,background-color,border-color,box-shadow,translate,scale] duration-200 ' +
+  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/45 focus-visible:ring-offset-2 ' +
+  'focus-visible:ring-offset-surface active:scale-[0.97] motion-safe:hover:-translate-y-0.5 ' +
+  'disabled:cursor-not-allowed disabled:opacity-50 disabled:shadow-none disabled:hover:translate-y-0 disabled:active:scale-100';
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: Variant;
@@ -84,11 +92,13 @@ export function Button({
     <button
       {...rest}
       disabled={disabled || loading}
-      className={`inline-flex items-center justify-center gap-1.5 rounded-[--radius-field] font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-50 ${
-        size === 'sm' ? 'h-8 px-2.5 text-xs' : 'h-10 px-3.5 text-sm'
-      } ${VARIANTS[variant]} ${className}`}
+      className={`${BASE} ${size === 'sm' ? 'h-8 px-3 text-xs' : 'h-10 px-4 text-sm'} ${VARIANTS[variant]} ${className}`}
     >
-      {loading ? <Spinner size={14} /> : icon ? <Icon name={icon} size={15} /> : null}
+      {loading ? (
+        <Spinner size={14} />
+      ) : icon ? (
+        <Icon name={icon} size={15} className="motion-safe:transition-transform motion-safe:group-hover:scale-110" />
+      ) : null}
       {children}
     </button>
   );
@@ -138,7 +148,7 @@ export function StatusPill({ status }: { status: string }) {
 
 export function Card({ children, className = '' }: { children: ReactNode; className?: string }) {
   return (
-    <div className={`rounded-[--radius-card] border border-border-subtle bg-surface-raised ${className}`}>
+    <div className={`rounded-(--radius-card) border border-border-subtle bg-surface-raised ${className}`}>
       {children}
     </div>
   );
@@ -157,7 +167,7 @@ export function PageHeader({ title, description, action }: { title: string; desc
 }
 
 export function Skeleton({ className = '' }: { className?: string }) {
-  return <div className={`em-skeleton rounded-[--radius-field] ${className}`} />;
+  return <div className={`em-skeleton rounded-(--radius-field) ${className}`} />;
 }
 
 export function EmptyState({ title, body }: { title: string; body?: string }) {
@@ -172,7 +182,7 @@ export function EmptyState({ title, body }: { title: string; body?: string }) {
 export function ErrorState({ message, onRetry }: { message: string; onRetry?: () => void }) {
   return (
     <div className="px-6 py-14 text-center">
-      <span className="mx-auto mb-3 flex size-10 items-center justify-center rounded-full bg-[--color-danger]/10 text-[--color-danger]">
+      <span className="mx-auto mb-3 flex size-10 items-center justify-center rounded-full bg-(--color-danger)/10 text-(--color-danger)">
         <Icon name="alert" size={20} />
       </span>
       <p className="font-semibold text-text-primary">{message}</p>
@@ -197,7 +207,7 @@ export function MutationError({ error }: { error: unknown }) {
   return (
     <div
       role="alert"
-      className="mb-3 flex items-start gap-2 rounded-[--radius-field] bg-[--color-danger]/10 px-3 py-2.5 text-sm text-[--color-danger]"
+      className="mb-3 flex items-start gap-2 rounded-(--radius-field) bg-(--color-danger)/10 px-3 py-2.5 text-sm text-(--color-danger)"
     >
       <Icon name="alert" size={15} className="mt-0.5" />
       <span>{message}</span>

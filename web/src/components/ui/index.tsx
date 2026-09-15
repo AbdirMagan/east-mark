@@ -11,15 +11,33 @@ import { Icon, type IconName } from './Icon.js';
 type ButtonVariant = 'primary' | 'accent' | 'secondary' | 'ghost' | 'danger';
 type ButtonSize = 'sm' | 'md' | 'lg';
 
+/**
+ * Every variant carries a border, so the shape reads as a button even against
+ * a busy photo or a coloured panel, and lifts with a tinted shadow on hover.
+ */
 const VARIANTS: Record<ButtonVariant, string> = {
   primary:
-    'bg-brand text-white hover:bg-brand-hover active:brightness-95 dark:text-ink-950 shadow-sm',
-  accent: 'bg-accent text-white hover:bg-accent-hover active:brightness-95 dark:text-ink-950 shadow-sm',
+    'border-brand bg-brand text-white shadow-sm hover:bg-brand-hover hover:shadow-lg hover:shadow-brand/25 dark:text-ink-950',
+  accent:
+    'border-accent bg-accent text-white shadow-sm hover:bg-accent-hover hover:shadow-lg hover:shadow-accent/25 dark:text-ink-950',
   secondary:
-    'bg-surface-raised text-text-primary border border-border-subtle hover:border-border-strong hover:bg-surface-sunken',
-  ghost: 'text-text-secondary hover:bg-surface-sunken hover:text-text-primary',
-  danger: 'bg-[--color-danger] text-white hover:brightness-110',
+    'border-border-strong bg-surface-raised text-text-primary hover:border-brand hover:bg-surface-sunken hover:text-brand hover:shadow-md',
+  ghost:
+    'border-transparent text-text-secondary hover:border-border-subtle hover:bg-surface-sunken hover:text-text-primary',
+  danger: 'border-(--color-danger) bg-(--color-danger) text-white hover:brightness-110 hover:shadow-lg',
 };
+
+/**
+ * Shared interaction: pill corners, a press that presses, a hover lift, and a
+ * focus ring a keyboard user can actually see. Movement is behind motion-safe,
+ * so someone who asked for reduced motion gets the colour change only.
+ */
+const BUTTON_BASE =
+  'group inline-flex items-center justify-center rounded-(--radius-pill) border font-semibold ' +
+  'transition-[color,background-color,border-color,box-shadow,translate,scale] duration-200 ease-(--ease-out-soft) ' +
+  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/45 focus-visible:ring-offset-2 ' +
+  'focus-visible:ring-offset-surface active:scale-[0.97] motion-safe:hover:-translate-y-0.5 ' +
+  'disabled:cursor-not-allowed disabled:opacity-55 disabled:shadow-none disabled:hover:translate-y-0 disabled:active:scale-100';
 
 const SIZES: Record<ButtonSize, string> = {
   // 44px minimum touch target on the two larger sizes: these are tapped on a
@@ -54,11 +72,21 @@ export function Button({
     <button
       {...rest}
       disabled={disabled || loading}
-      className={`inline-flex items-center justify-center rounded-[--radius-field] font-semibold transition-colors duration-150 disabled:cursor-not-allowed disabled:opacity-55 ${VARIANTS[variant]} ${SIZES[size]} ${fullWidth ? 'w-full' : ''} ${className}`}
+      className={`${BUTTON_BASE} ${VARIANTS[variant]} ${SIZES[size]} ${fullWidth ? 'w-full' : ''} ${className}`}
     >
-      {loading ? <Spinner size={size === 'lg' ? 18 : 16} /> : icon ? <Icon name={icon} size={18} /> : null}
+      {loading ? (
+        <Spinner size={size === 'lg' ? 18 : 16} />
+      ) : icon ? (
+        <Icon name={icon} size={18} className="motion-safe:transition-transform motion-safe:group-hover:scale-110" />
+      ) : null}
       {children}
-      {iconRight && !loading ? <Icon name={iconRight} size={18} /> : null}
+      {iconRight && !loading ? (
+        <Icon
+          name={iconRight}
+          size={18}
+          className="motion-safe:transition-transform motion-safe:group-hover:translate-x-0.5"
+        />
+      ) : null}
     </button>
   );
 }
@@ -112,7 +140,7 @@ export function Badge({
 }) {
   return (
     <span
-      className={`inline-flex items-center gap-1 rounded-[--radius-pill] px-2 py-0.5 text-[0.6875rem] font-semibold leading-5 ${BADGE_TONES[tone]} ${className}`}
+      className={`inline-flex items-center gap-1 rounded-(--radius-pill) px-2 py-0.5 text-[0.6875rem] font-semibold leading-5 ${BADGE_TONES[tone]} ${className}`}
     >
       {icon ? <Icon name={icon} size={12} strokeWidth={2.25} /> : null}
       {children}
@@ -125,7 +153,7 @@ export function Badge({
 /* -------------------------------------------------------------------------- */
 
 const FIELD_BASE =
-  'w-full rounded-[--radius-field] border border-border-subtle bg-surface-raised px-3 text-text-primary placeholder:text-text-muted transition-colors focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/25 disabled:opacity-60';
+  'w-full rounded-(--radius-field) border border-border-subtle bg-surface-raised px-3 text-text-primary placeholder:text-text-muted transition-colors focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/25 disabled:opacity-60';
 
 interface TextFieldProps extends InputHTMLAttributes<HTMLInputElement> {
   label?: string;
@@ -147,10 +175,10 @@ export function TextField({ label, hint, error, className = '', id, ...rest }: T
         id={fieldId}
         aria-invalid={error ? true : undefined}
         aria-describedby={error ? `${fieldId}-error` : hint ? `${fieldId}-hint` : undefined}
-        className={`${FIELD_BASE} h-11 ${error ? 'border-[--color-danger] focus:border-[--color-danger] focus:ring-[--color-danger]/25' : ''} ${className}`}
+        className={`${FIELD_BASE} h-11 ${error ? 'border-(--color-danger) focus:border-(--color-danger) focus:ring-(--color-danger)/25' : ''} ${className}`}
       />
       {error ? (
-        <p id={`${fieldId}-error`} className="text-sm text-[--color-danger]">
+        <p id={`${fieldId}-error`} className="text-sm text-(--color-danger)">
           {error}
         </p>
       ) : hint ? (
@@ -211,7 +239,7 @@ export function Checkbox({
         type="checkbox"
         checked={checked}
         onChange={(event) => onChange(event.target.checked)}
-        className="size-4 rounded border-border-strong text-brand accent-[--brand] focus:ring-brand"
+        className="size-4 rounded border-border-strong text-brand accent-(--brand) focus:ring-brand"
       />
       {label}
     </label>
@@ -223,7 +251,7 @@ export function Checkbox({
 /* -------------------------------------------------------------------------- */
 
 export function Skeleton({ className = '' }: { className?: string }) {
-  return <div className={`em-skeleton rounded-[--radius-field] ${className}`} />;
+  return <div className={`em-skeleton rounded-(--radius-field) ${className}`} />;
 }
 
 /**
@@ -245,7 +273,7 @@ export function EmptyState({
   action?: ReactNode;
 }) {
   return (
-    <div className="relative overflow-hidden rounded-[--radius-card] border border-border-subtle bg-surface-raised px-6 py-14 text-center">
+    <div className="relative overflow-hidden rounded-(--radius-card) border border-border-subtle bg-surface-raised px-6 py-14 text-center">
       <CulturalPattern variant="weave" scale={44} />
       <div className="relative mx-auto max-w-sm">
         <span className="mx-auto mb-4 flex size-12 items-center justify-center rounded-full bg-brand-subtle text-brand">

@@ -32,7 +32,7 @@ function AuthLayout({
           <Tagline className="mt-2 block" />
         </div>
 
-        <div className="rounded-[--radius-card] border border-border-subtle bg-surface-raised p-6 shadow-[--shadow-card]">
+        <div className="rounded-(--radius-card) border border-border-subtle bg-surface-raised p-6 shadow-(--shadow-card)">
           <h1 className="font-display text-xl font-bold tracking-tight text-text-primary">{title}</h1>
           <p className="mt-1 text-sm text-text-secondary">{subtitle}</p>
           <div className="mt-6">{children}</div>
@@ -48,7 +48,7 @@ function FormError({ message }: { message: string }) {
   return (
     <div
       role="alert"
-      className="flex items-start gap-2 rounded-[--radius-field] bg-[--color-danger]/10 px-3 py-2.5 text-sm text-[--color-danger]"
+      className="flex items-start gap-2 rounded-(--radius-field) bg-(--color-danger)/10 px-3 py-2.5 text-sm text-(--color-danger)"
     >
       <Icon name="alert" size={16} className="mt-0.5" />
       <span>{message}</span>
@@ -184,7 +184,7 @@ export function RegisterPage() {
           </Link>
         }
       >
-        <div className="flex items-center gap-3 rounded-[--radius-field] bg-brand-subtle px-4 py-3 text-sm text-brand">
+        <div className="flex items-center gap-3 rounded-(--radius-field) bg-brand-subtle px-4 py-3 text-sm text-brand">
           <Icon name="check" size={18} />
           {t('auth.checkEmail')}
         </div>

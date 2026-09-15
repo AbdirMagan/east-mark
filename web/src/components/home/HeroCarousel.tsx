@@ -137,7 +137,7 @@ export function HeroCarousel({ slides, loading = false }: { slides: HomeAd[]; lo
             type="button"
             onClick={() => go(current - 1)}
             aria-label={t('home.prevSlide')}
-            className="absolute left-3 top-1/2 hidden size-11 -translate-y-1/2 items-center justify-center rounded-full bg-black/25 text-white ring-1 ring-white/20 backdrop-blur transition hover:bg-black/40 md:flex"
+            className="absolute left-3 top-1/2 hidden size-11 -translate-y-1/2 items-center justify-center rounded-full border border-white/25 bg-black/25 text-white backdrop-blur transition duration-200 hover:bg-black/45 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70 active:scale-90 motion-safe:hover:scale-110 md:flex"
           >
             <Icon name="chevron-left" size={22} />
           </button>
@@ -145,7 +145,7 @@ export function HeroCarousel({ slides, loading = false }: { slides: HomeAd[]; lo
             type="button"
             onClick={() => go(current + 1)}
             aria-label={t('home.nextSlide')}
-            className="absolute right-3 top-1/2 hidden size-11 -translate-y-1/2 items-center justify-center rounded-full bg-black/25 text-white ring-1 ring-white/20 backdrop-blur transition hover:bg-black/40 md:flex"
+            className="absolute right-3 top-1/2 hidden size-11 -translate-y-1/2 items-center justify-center rounded-full border border-white/25 bg-black/25 text-white backdrop-blur transition duration-200 hover:bg-black/45 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70 active:scale-90 motion-safe:hover:scale-110 md:flex"
           >
             <Icon name="chevron-right" size={22} />
           </button>
@@ -259,7 +259,7 @@ function Slide({ slide, active, position, count }: { slide: HomeAd; active: bool
               {slide.badge}
             </span>
           ) : (
-            <span className="inline-flex items-center gap-1.5 rounded-[--radius-pill] bg-white/5 px-3 py-1 text-xs font-semibold text-cyan-200 ring-1 ring-inset ring-white/15">
+            <span className="inline-flex items-center gap-1.5 rounded-(--radius-pill) bg-white/5 px-3 py-1 text-xs font-semibold text-cyan-200 ring-1 ring-inset ring-white/15">
               <Icon name="map-pin" size={13} />
               {t('footer.countries')}
             </span>
@@ -279,12 +279,16 @@ function Slide({ slide, active, position, count }: { slide: HomeAd; active: bool
                 type="button"
                 onClick={open}
                 tabIndex={active ? 0 : -1}
-                className={`inline-flex h-11 items-center gap-2 rounded-[--radius-field] px-5 text-sm font-semibold shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70 ${
+                className={`group/cta inline-flex h-11 items-center gap-2 rounded-(--radius-pill) border border-white/25 px-5 text-sm font-semibold shadow-sm transition-[background-color,box-shadow,translate,scale] duration-200 ease-(--ease-out-soft) hover:shadow-lg hover:shadow-black/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70 focus-visible:ring-offset-2 focus-visible:ring-offset-black/40 active:scale-[0.97] motion-safe:hover:-translate-y-0.5 ${
                   CTA_CLASS[slide.theme] ?? CTA_CLASS.night
                 }`}
               >
                 {slide.ctaLabel}
-                <Icon name="arrow-right" size={17} />
+                <Icon
+                  name="arrow-right"
+                  size={17}
+                  className="motion-safe:transition-transform motion-safe:group-hover/cta:translate-x-1"
+                />
               </button>
             </div>
           ) : null}

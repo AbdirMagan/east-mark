@@ -114,7 +114,7 @@ export function ImageUploader({ images, onChange, targets, maxImages = 10 }: Ima
             setDragOver(false);
             if (event.dataTransfer.files.length) void addFiles(event.dataTransfer.files);
           }}
-          className={`flex w-full flex-col items-center justify-center gap-2 rounded-[--radius-card] border-2 border-dashed p-10 text-center transition-colors ${
+          className={`flex w-full flex-col items-center justify-center gap-2 rounded-(--radius-card) border-2 border-dashed p-10 text-center transition-colors ${
             dragOver
               ? 'border-brand bg-brand-subtle'
               : 'border-border-strong bg-surface-sunken hover:border-brand'
@@ -131,7 +131,7 @@ export function ImageUploader({ images, onChange, targets, maxImages = 10 }: Ima
           {images.map((image, index) => (
             <figure
               key={image.previewUrl}
-              className="group relative aspect-square overflow-hidden rounded-[--radius-field] border border-border-subtle bg-surface-sunken"
+              className="group relative aspect-square overflow-hidden rounded-(--radius-field) border border-border-subtle bg-surface-sunken"
             >
               <img
                 src={image.previewUrl}
@@ -161,7 +161,7 @@ export function ImageUploader({ images, onChange, targets, maxImages = 10 }: Ima
                   type="button"
                   onClick={() => remove(index)}
                   aria-label={t('sell.removePhoto')}
-                  className="flex size-6 items-center justify-center rounded text-white hover:text-[--color-danger]"
+                  className="flex size-6 items-center justify-center rounded text-white hover:text-(--color-danger)"
                 >
                   <Icon name="close" size={14} />
                 </button>
@@ -182,7 +182,7 @@ export function ImageUploader({ images, onChange, targets, maxImages = 10 }: Ima
             ? Array.from({ length: busy }, (_, index) => (
                 <div
                   key={`busy-${index}`}
-                  className="flex aspect-square items-center justify-center rounded-[--radius-field] border border-border-subtle bg-surface-sunken text-text-muted"
+                  className="flex aspect-square items-center justify-center rounded-(--radius-field) border border-border-subtle bg-surface-sunken text-text-muted"
                 >
                   <Spinner size={20} />
                 </div>
@@ -193,7 +193,7 @@ export function ImageUploader({ images, onChange, targets, maxImages = 10 }: Ima
             <button
               type="button"
               onClick={() => inputRef.current?.click()}
-              className="flex aspect-square flex-col items-center justify-center gap-1 rounded-[--radius-field] border-2 border-dashed border-border-strong text-text-muted transition-colors hover:border-brand hover:text-brand"
+              className="flex aspect-square flex-col items-center justify-center gap-1 rounded-(--radius-field) border-2 border-dashed border-border-strong text-text-muted transition-colors hover:border-brand hover:text-brand"
             >
               <Icon name="plus" size={20} />
               <span className="text-[0.625rem] font-medium">{t('sell.addMore')}</span>
@@ -210,7 +210,7 @@ export function ImageUploader({ images, onChange, targets, maxImages = 10 }: Ima
         {savedBytes > 0 ? (
           // Worth surfacing: it explains why uploading felt fast, and it is the
           // seller's data allowance being saved.
-          <span className="inline-flex items-center gap-1 text-[--color-success]">
+          <span className="inline-flex items-center gap-1 text-(--color-success)">
             <Icon name="check" size={13} />
             {t('sell.compressed', { saved: formatBytes(savedBytes) })}
           </span>
@@ -218,7 +218,7 @@ export function ImageUploader({ images, onChange, targets, maxImages = 10 }: Ima
       </div>
 
       {error ? (
-        <p role="alert" className="flex items-start gap-2 text-sm text-[--color-danger]">
+        <p role="alert" className="flex items-start gap-2 text-sm text-(--color-danger)">
           <Icon name="alert" size={15} className="mt-0.5" />
           {error}
         </p>

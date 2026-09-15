@@ -94,7 +94,7 @@ export function ProductPage() {
 
         {/* Buy panel — sticky on desktop so the contact buttons never scroll away */}
         <aside className="lg:sticky lg:top-24 lg:self-start">
-          <div className="space-y-4 rounded-[--radius-card] border border-border-subtle bg-surface-raised p-5">
+          <div className="space-y-4 rounded-(--radius-card) border border-border-subtle bg-surface-raised p-5">
             <div>
               <div className="flex flex-wrap items-center gap-2">
                 {product.status === 'sold' ? <Badge tone="neutral">{t('product.sold')}</Badge> : null}
@@ -157,7 +157,7 @@ export function ProductPage() {
                   )}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-[--radius-field] bg-[#25D366] text-base font-semibold text-ink-950 transition-colors hover:brightness-95"
+                  className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-(--radius-field) bg-[#25D366] text-base font-semibold text-ink-950 transition-colors hover:brightness-95"
                 >
                   <WhatsAppIcon size={20} />
                   {t('product.whatsapp')}
@@ -231,7 +231,7 @@ function Gallery({ product }: { product: ProductDetail }) {
 
   if (images.length === 0) {
     return (
-      <div className="flex aspect-[4/3] items-center justify-center rounded-[--radius-card] border border-border-subtle bg-surface-sunken text-text-muted">
+      <div className="flex aspect-[4/3] items-center justify-center rounded-(--radius-card) border border-border-subtle bg-surface-sunken text-text-muted">
         <div className="flex flex-col items-center gap-2">
           <Icon name="image" size={28} />
           <span className="text-sm">{t('product.noImage')}</span>
@@ -242,7 +242,7 @@ function Gallery({ product }: { product: ProductDetail }) {
 
   return (
     <div>
-      <div className="relative aspect-[4/3] overflow-hidden rounded-[--radius-card] border border-border-subtle bg-surface-sunken">
+      <div className="relative aspect-[4/3] overflow-hidden rounded-(--radius-card) border border-border-subtle bg-surface-sunken">
         <img
           src={active?.url}
           alt={`${product.title} — ${index + 1}`}
@@ -268,7 +268,7 @@ function Gallery({ product }: { product: ProductDetail }) {
               onClick={() => setIndex((i) => (i + 1) % images.length)}
               label={t('common.next')}
             />
-            <span className="absolute bottom-3 right-3 rounded-[--radius-pill] bg-ink-900/70 px-2.5 py-1 text-xs font-semibold text-white backdrop-blur-sm">
+            <span className="absolute bottom-3 right-3 rounded-(--radius-pill) bg-ink-900/70 px-2.5 py-1 text-xs font-semibold text-white backdrop-blur-sm">
               {index + 1} / {images.length}
             </span>
           </>
@@ -284,7 +284,7 @@ function Gallery({ product }: { product: ProductDetail }) {
               onClick={() => setIndex(i)}
               aria-label={`${t('common.next')} ${i + 1}`}
               aria-current={i === index}
-              className={`size-16 shrink-0 overflow-hidden rounded-[--radius-field] border-2 transition-colors ${
+              className={`size-16 shrink-0 overflow-hidden rounded-(--radius-field) border-2 transition-colors ${
                 i === index ? 'border-brand' : 'border-transparent opacity-70 hover:opacity-100'
               }`}
             >
@@ -379,7 +379,7 @@ function SellerCard({ product }: { product: ProductDetail }) {
   const { language } = useI18n();
 
   return (
-    <div className="mt-4 rounded-[--radius-card] border border-border-subtle bg-surface-raised p-5">
+    <div className="mt-4 rounded-(--radius-card) border border-border-subtle bg-surface-raised p-5">
       <h2 className="mb-3 text-xs font-semibold uppercase tracking-wide text-text-muted">
         {t('product.seller')}
       </h2>
@@ -456,12 +456,12 @@ function ProductSkeleton() {
     <div className="mx-auto max-w-[80rem] px-4 py-6 lg:px-6">
       <div className="grid gap-8 lg:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)]">
         <div className="space-y-4">
-          <Skeleton className="aspect-[4/3] rounded-[--radius-card]" />
+          <Skeleton className="aspect-[4/3] rounded-(--radius-card)" />
           <Skeleton className="h-4 w-3/4" />
           <Skeleton className="h-4 w-full" />
           <Skeleton className="h-4 w-2/3" />
         </div>
-        <div className="space-y-3 rounded-[--radius-card] border border-border-subtle p-5">
+        <div className="space-y-3 rounded-(--radius-card) border border-border-subtle p-5">
           <Skeleton className="h-6 w-2/3" />
           <Skeleton className="h-8 w-1/2" />
           <Skeleton className="h-12 w-full" />

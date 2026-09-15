@@ -195,7 +195,7 @@ function Stat({
   small?: boolean;
 }) {
   const accent =
-    tone === 'warning' ? 'text-[--color-warning]' : tone === 'danger' ? 'text-[--color-danger]' : 'text-text-primary';
+    tone === 'warning' ? 'text-(--color-warning)' : tone === 'danger' ? 'text-(--color-danger)' : 'text-text-primary';
 
   return (
     <Card className="p-4">
@@ -232,7 +232,7 @@ function ChartTooltip({ active, payload, label }: {
 }) {
   if (!active || !payload?.length) return null;
   return (
-    <div className="rounded-[--radius-field] border border-border-subtle bg-surface-raised px-2.5 py-1.5 text-xs shadow-lg">
+    <div className="rounded-(--radius-field) border border-border-subtle bg-surface-raised px-2.5 py-1.5 text-xs shadow-lg">
       <p className="font-medium text-text-primary">{label}</p>
       <p className="text-text-secondary">{payload[0]?.value} listings</p>
     </div>

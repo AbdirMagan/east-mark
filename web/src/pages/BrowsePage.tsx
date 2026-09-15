@@ -163,7 +163,7 @@ export function BrowsePage() {
           >
             {t('common.filters')}
             {activeFilterCount > 0 ? (
-              <span className="ml-1 rounded-[--radius-pill] bg-brand px-1.5 text-[0.625rem] text-white">
+              <span className="ml-1 rounded-(--radius-pill) bg-brand px-1.5 text-[0.625rem] text-white">
                 {activeFilterCount}
               </span>
             ) : null}
@@ -176,7 +176,7 @@ export function BrowsePage() {
             id="sort-select"
             value={query.sort}
             onChange={(event) => update({ sort: event.target.value })}
-            className="h-9 rounded-[--radius-field] border border-border-subtle bg-surface-raised px-3 text-sm text-text-primary focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/25"
+            className="h-9 rounded-(--radius-field) border border-border-subtle bg-surface-raised px-3 text-sm text-text-primary focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/25"
           >
             {SORTS.map((sort) => (
               <option key={sort} value={sort}>
@@ -292,7 +292,7 @@ function FilterPanel({
   };
 
   return (
-    <div className="space-y-5 rounded-[--radius-card] border border-border-subtle bg-surface-raised p-4">
+    <div className="space-y-5 rounded-(--radius-card) border border-border-subtle bg-surface-raised p-4">
       {activeFilterCount > 0 ? (
         <button
           type="button"
@@ -457,14 +457,14 @@ function FilterSheet({ children, onClose }: { children: React.ReactNode; onClose
   return (
     <div className="fixed inset-0 z-50 lg:hidden" role="dialog" aria-modal="true">
       <div className="absolute inset-0 bg-ink-950/50 backdrop-blur-sm" onClick={onClose} aria-hidden="true" />
-      <div className="absolute inset-x-0 bottom-0 flex max-h-[85vh] flex-col rounded-t-[1.25rem] bg-surface-raised shadow-[--shadow-raised]">
+      <div className="absolute inset-x-0 bottom-0 flex max-h-[85vh] flex-col rounded-t-[1.25rem] bg-surface-raised shadow-(--shadow-raised)">
         <div className="flex items-center justify-between border-b border-border-subtle px-4 py-3">
           <span className="font-display font-bold text-text-primary">{t('common.filters')}</span>
           <button
             type="button"
             onClick={onClose}
             aria-label={t('common.close')}
-            className="inline-flex size-9 items-center justify-center rounded-[--radius-field] text-text-secondary hover:bg-surface-sunken"
+            className="inline-flex size-9 items-center justify-center rounded-(--radius-field) text-text-secondary hover:bg-surface-sunken"
           >
             <Icon name="close" size={20} />
           </button>

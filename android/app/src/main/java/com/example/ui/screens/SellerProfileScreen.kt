@@ -185,7 +185,7 @@ fun SellerProfileScreen(
                                     context.startActivity(dialIntent)
                                 },
                                 colors = ButtonDefaults.buttonColors(containerColor = BrandNavy),
-                                shape = RoundedCornerShape(8.dp),
+                                shape = RoundedCornerShape(24.dp),
                                 modifier = Modifier.weight(1f)
                             ) {
                                 Icon(Icons.Filled.Phone, contentDescription = null, modifier = Modifier.size(16.dp))
@@ -200,7 +200,7 @@ fun SellerProfileScreen(
                                     try { context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url))) } catch (e: Exception) {}
                                 },
                                 colors = ButtonDefaults.buttonColors(containerColor = WhatsAppGreen),
-                                shape = RoundedCornerShape(8.dp),
+                                shape = RoundedCornerShape(24.dp),
                                 modifier = Modifier.weight(1f)
                             ) {
                                 Text("WhatsApp", fontSize = 12.sp, color = Color.White)

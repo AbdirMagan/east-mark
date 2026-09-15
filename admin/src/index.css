@@ -63,6 +63,8 @@
 
   --radius-card: 0.75rem;
   --radius-field: 0.5rem;
+  /* Buttons are pills, as in the marketplace app. */
+  --radius-pill: 999px;
 }
 
 :root {

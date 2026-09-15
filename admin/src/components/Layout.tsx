@@ -79,7 +79,7 @@ export function Layout() {
               end={item.to === '/'}
               onClick={() => setSidebarOpen(false)}
               className={({ isActive }) =>
-                `flex items-center gap-2.5 rounded-[--radius-field] px-3 py-2 text-sm font-medium transition-colors ${
+                `flex items-center gap-2.5 rounded-(--radius-field) px-3 py-2 text-sm font-medium transition-colors ${
                   isActive ? 'bg-brand-subtle text-brand' : 'text-text-secondary hover:bg-surface-sunken'
                 }`
               }
@@ -87,7 +87,7 @@ export function Layout() {
               <Icon name={item.icon} size={17} />
               <span className="flex-1">{item.label}</span>
               {badges[item.to] ? (
-                <span className="rounded-full bg-[--color-warning] px-1.5 text-[0.625rem] font-bold text-white">
+                <span className="rounded-full bg-(--color-warning) px-1.5 text-[0.625rem] font-bold text-white">
                   {badges[item.to]}
                 </span>
               ) : null}
@@ -112,7 +112,7 @@ export function Layout() {
             href="http://localhost:5173"
             target="_blank"
             rel="noreferrer"
-            className="mt-2 flex items-center justify-center gap-1.5 rounded-[--radius-field] px-2 py-1.5 text-xs text-text-muted hover:bg-surface-sunken"
+            className="mt-2 flex items-center justify-center gap-1.5 rounded-(--radius-field) px-2 py-1.5 text-xs text-text-muted hover:bg-surface-sunken"
           >
             <Icon name="external" size={13} />
             Open marketplace
@@ -134,7 +134,7 @@ export function Layout() {
             type="button"
             onClick={() => setSidebarOpen(true)}
             aria-label="Open menu"
-            className="rounded-[--radius-field] p-2 text-text-secondary hover:bg-surface-sunken"
+            className="rounded-(--radius-field) p-2 text-text-secondary hover:bg-surface-sunken"
           >
             <Icon name="dashboard" size={18} />
           </button>

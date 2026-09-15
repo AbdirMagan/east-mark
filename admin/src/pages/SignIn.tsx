@@ -49,7 +49,7 @@ export function SignIn({ onSignedIn, notice }: { onSignedIn: () => void; notice?
 
           <form onSubmit={submit} className="mt-5 space-y-4">
             {error || notice ? (
-              <p role="alert" className="flex items-start gap-2 rounded-[--radius-field] bg-[--color-danger]/10 px-3 py-2 text-sm text-[--color-danger]">
+              <p role="alert" className="flex items-start gap-2 rounded-(--radius-field) bg-(--color-danger)/10 px-3 py-2 text-sm text-(--color-danger)">
                 <Icon name="alert" size={15} className="mt-0.5" />
                 {error ?? notice}
               </p>
@@ -60,7 +60,7 @@ export function SignIn({ onSignedIn, notice }: { onSignedIn: () => void; notice?
               <input
                 id="email" type="email" required autoComplete="email" value={email}
                 onChange={(event) => setEmail(event.target.value)}
-                className="h-10 w-full rounded-[--radius-field] border border-border-subtle bg-surface-raised px-3 text-sm text-text-primary focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/25"
+                className="h-10 w-full rounded-(--radius-field) border border-border-subtle bg-surface-raised px-3 text-sm text-text-primary focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/25"
               />
             </div>
 
@@ -69,7 +69,7 @@ export function SignIn({ onSignedIn, notice }: { onSignedIn: () => void; notice?
               <input
                 id="password" type="password" required autoComplete="current-password" value={password}
                 onChange={(event) => setPassword(event.target.value)}
-                className="h-10 w-full rounded-[--radius-field] border border-border-subtle bg-surface-raised px-3 text-sm text-text-primary focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/25"
+                className="h-10 w-full rounded-(--radius-field) border border-border-subtle bg-surface-raised px-3 text-sm text-text-primary focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/25"
               />
             </div>
 

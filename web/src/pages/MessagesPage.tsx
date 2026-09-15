@@ -87,7 +87,7 @@ export function MessagesPage() {
 
   return (
     <div className="mx-auto max-w-[80rem] md:px-6 md:py-6">
-      <div className="overflow-hidden bg-surface-raised md:grid md:h-[calc(100dvh-7rem)] md:grid-cols-[22rem_1fr] md:grid-rows-1 md:rounded-[--radius-card] md:border md:border-border-subtle">
+      <div className="overflow-hidden bg-surface-raised md:grid md:h-[calc(100dvh-7rem)] md:grid-cols-[22rem_1fr] md:grid-rows-1 md:rounded-(--radius-card) md:border md:border-border-subtle">
         {/* On a phone the list and a thread are separate screens; side by side from md up. */}
         <aside
           className={`${conversationId ? 'hidden md:flex' : 'flex'} min-h-0 flex-col border-border-subtle md:border-r`}
@@ -227,7 +227,7 @@ function ConversationList({ activeId, myId }: { activeId?: string; myId: string 
             action={
               <Link
                 to="/browse"
-                className="inline-flex h-11 items-center rounded-[--radius-field] bg-brand px-4 text-sm font-semibold text-white hover:bg-brand-hover dark:text-ink-950"
+                className="inline-flex h-11 items-center rounded-(--radius-field) bg-brand px-4 text-sm font-semibold text-white hover:bg-brand-hover dark:text-ink-950"
               >
                 {t('empty.browse')}
               </Link>
@@ -274,7 +274,7 @@ function ConversationRow({ conversation: c, active }: { conversation: Conversati
             height={44}
             loading="lazy"
             decoding="async"
-            className="size-11 shrink-0 rounded-[--radius-field] object-cover"
+            className="size-11 shrink-0 rounded-(--radius-field) object-cover"
           />
         ) : (
           <Avatar name={c.otherParty.name} imageUrl={c.otherParty.avatarUrl} size={44} />
@@ -567,7 +567,7 @@ function Thread({ id, myId }: { id: string; myId: string }) {
         <Link
           to="/messages"
           aria-label={t('messages.back')}
-          className="inline-flex size-9 items-center justify-center rounded-[--radius-field] text-text-secondary hover:bg-surface-sunken md:hidden"
+          className="inline-flex size-9 items-center justify-center rounded-(--radius-field) text-text-secondary hover:bg-surface-sunken md:hidden"
         >
           <Icon name="chevron-left" size={20} />
         </Link>
@@ -600,10 +600,10 @@ function Thread({ id, myId }: { id: string; myId: string }) {
               width={40}
               height={40}
               loading="lazy"
-              className="size-10 shrink-0 rounded-[--radius-field] object-cover"
+              className="size-10 shrink-0 rounded-(--radius-field) object-cover"
             />
           ) : (
-            <span className="flex size-10 shrink-0 items-center justify-center rounded-[--radius-field] bg-surface-sunken text-text-muted">
+            <span className="flex size-10 shrink-0 items-center justify-center rounded-(--radius-field) bg-surface-sunken text-text-muted">
               <Icon name="image" size={16} />
             </span>
           )}
@@ -665,7 +665,7 @@ function Thread({ id, myId }: { id: string; myId: string }) {
                     <button
                       type="button"
                       onClick={() => void send(message.body ?? '', message.id)}
-                      className="font-semibold text-[--color-danger] hover:underline"
+                      className="font-semibold text-(--color-danger) hover:underline"
                     >
                       {t('messages.failed')}
                     </button>
@@ -710,7 +710,7 @@ function Thread({ id, myId }: { id: string; myId: string }) {
               event.currentTarget.form?.requestSubmit();
             }
           }}
-          className="max-h-32 min-h-11 flex-1 resize-none rounded-[--radius-field] border border-border-subtle bg-surface px-3 py-2.5 text-sm text-text-primary placeholder:text-text-muted focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/25"
+          className="max-h-32 min-h-11 flex-1 resize-none rounded-(--radius-field) border border-border-subtle bg-surface px-3 py-2.5 text-sm text-text-primary placeholder:text-text-muted focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/25"
         />
         <Button type="submit" icon="arrow-right" disabled={!draft.trim()} aria-label={t('messages.send')}>
           <span className="hidden sm:inline">{t('messages.send')}</span>

@@ -67,7 +67,7 @@ export function Users() {
             onChange={(event) => setSearch(event.target.value)}
             placeholder="Search name or username"
             aria-label="Search users"
-            className="h-9 w-60 rounded-[--radius-field] border border-border-subtle bg-surface-raised pl-9 pr-3 text-sm text-text-primary placeholder:text-text-muted focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/25"
+            className="h-9 w-60 rounded-(--radius-field) border border-border-subtle bg-surface-raised pl-9 pr-3 text-sm text-text-primary placeholder:text-text-muted focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/25"
           />
         </form>
       </div>
@@ -112,7 +112,7 @@ export function Users() {
                               {user.username ? `@${user.username}` : user.id.slice(0, 8)}
                             </p>
                             {user.is_banned ? (
-                              <p className="mt-0.5 text-xs text-[--color-danger]">
+                              <p className="mt-0.5 text-xs text-(--color-danger)">
                                 Suspended{user.ban_reason ? `: ${user.ban_reason}` : ''}
                               </p>
                             ) : null}
@@ -188,7 +188,7 @@ function BanForm({
         maxLength={500}
         placeholder="Why is this account being suspended?"
         aria-label="Suspension reason"
-        className="mt-4 w-full rounded-[--radius-field] border border-border-subtle bg-surface-raised px-3 py-2 text-sm text-text-primary placeholder:text-text-muted focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/25"
+        className="mt-4 w-full rounded-(--radius-field) border border-border-subtle bg-surface-raised px-3 py-2 text-sm text-text-primary placeholder:text-text-muted focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/25"
       />
       <div className="mt-4 flex justify-end gap-2">
         <Button variant="ghost" onClick={onCancel}>Cancel</Button>

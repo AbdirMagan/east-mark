@@ -160,7 +160,7 @@ fun ProductDetailScreen(
                             }
                         },
                         colors = ButtonDefaults.buttonColors(containerColor = BrandNavy),
-                        shape = RoundedCornerShape(10.dp),
+                        shape = RoundedCornerShape(24.dp),
                         modifier = Modifier
                             .weight(1f)
                             .height(48.dp)

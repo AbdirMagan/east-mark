@@ -259,7 +259,7 @@ private fun AdSlide(ad: HomeAd, onClick: () -> Unit) {
                     "sun" -> Color(0xFF1A1713)
                     else -> Color(0xFFB8531A)
                 }
-                Surface(color = chipBackground, shape = RoundedCornerShape(8.dp)) {
+                Surface(color = chipBackground, shape = RoundedCornerShape(20.dp)) {
                     Text(
                         text = label,
                         color = if (ad.theme == "clay") Color(0xFF7D3712) else Color.White,

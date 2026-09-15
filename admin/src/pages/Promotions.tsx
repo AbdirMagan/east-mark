@@ -151,12 +151,12 @@ function ImagePicker({ value, onChange }: { value: string; onChange: (url: strin
   };
 
   return (
-    <div className="rounded-[--radius-card] border border-border-subtle p-3">
+    <div className="rounded-(--radius-card) border border-border-subtle p-3">
       <div className="flex flex-wrap items-center gap-3">
         {value ? (
-          <img src={value} alt="" className="h-16 w-28 rounded-[--radius-field] object-cover" />
+          <img src={value} alt="" className="h-16 w-28 rounded-(--radius-field) object-cover" />
         ) : (
-          <div className="flex h-16 w-28 items-center justify-center rounded-[--radius-field] bg-surface-sunken text-xs text-text-muted">
+          <div className="flex h-16 w-28 items-center justify-center rounded-(--radius-field) bg-surface-sunken text-xs text-text-muted">
             No image
           </div>
         )}
@@ -168,7 +168,7 @@ function ImagePicker({ value, onChange }: { value: string; onChange: (url: strin
           </span>
         </div>
         <div className="flex items-center gap-2">
-          <label className="inline-flex h-9 cursor-pointer items-center rounded-[--radius-field] border border-border-subtle px-3 text-sm font-semibold text-text-primary hover:bg-surface-sunken">
+          <label className="inline-flex h-9 cursor-pointer items-center rounded-(--radius-field) border border-border-subtle px-3 text-sm font-semibold text-text-primary hover:bg-surface-sunken">
             {busy ? 'Uploading…' : value ? 'Replace' : 'Upload image'}
             <input
               type="file"
@@ -185,7 +185,7 @@ function ImagePicker({ value, onChange }: { value: string; onChange: (url: strin
           ) : null}
         </div>
       </div>
-      {error ? <p className="mt-2 text-xs text-[--color-danger]">{error}</p> : null}
+      {error ? <p className="mt-2 text-xs text-(--color-danger)">{error}</p> : null}
     </div>
   );
 }
@@ -298,7 +298,7 @@ function Field({ label, hint, children }: { label: string; hint?: string; childr
 }
 
 const inputClass =
-  'w-full rounded-[--radius-field] border border-border-subtle bg-surface-raised px-3 py-2 text-sm text-text-primary placeholder:text-text-muted focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/25';
+  'w-full rounded-(--radius-field) border border-border-subtle bg-surface-raised px-3 py-2 text-sm text-text-primary placeholder:text-text-muted focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/25';
 
 function Editor({ initial, onClose }: { initial: Draft; onClose: () => void }) {
   const queryClient = useQueryClient();
@@ -328,7 +328,7 @@ function Editor({ initial, onClose }: { initial: Draft; onClose: () => void }) {
       <Card className="my-6 w-full max-w-2xl">
         <div className="flex items-center justify-between border-b border-border-subtle px-5 py-3">
           <h2 className="text-base font-bold text-text-primary">{draft.id ? 'Edit advertisement' : 'New advertisement'}</h2>
-          <button type="button" onClick={onClose} aria-label="Close" className="rounded-[--radius-field] p-1.5 text-text-muted hover:bg-surface-sunken">
+          <button type="button" onClick={onClose} aria-label="Close" className="rounded-(--radius-field) p-1.5 text-text-muted hover:bg-surface-sunken">
             <Icon name="close" size={18} />
           </button>
         </div>
@@ -423,7 +423,7 @@ function Editor({ initial, onClose }: { initial: Draft; onClose: () => void }) {
 
           <ImagePicker value={draft.imageUrl} onChange={(url) => set('imageUrl', url)} />
 
-          <div className="rounded-[--radius-card] border border-border-subtle">
+          <div className="rounded-(--radius-card) border border-border-subtle">
             <div className="flex flex-wrap items-center gap-1.5 border-b border-border-subtle px-3 py-2">
               <span className="mr-1 text-xs font-semibold text-text-secondary">Translations</span>
               {LANGUAGES.map((lang) => (

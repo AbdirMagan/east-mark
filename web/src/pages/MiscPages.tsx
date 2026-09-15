@@ -38,7 +38,7 @@ export function CategoriesPage() {
           {(categories ?? []).map((category) => (
             <section
               key={category.id}
-              className="relative overflow-hidden rounded-[--radius-card] border border-border-subtle bg-surface-raised p-5"
+              className="relative overflow-hidden rounded-(--radius-card) border border-border-subtle bg-surface-raised p-5"
             >
               <CulturalPattern variant="beads" scale={38} />
               <div className="relative">
@@ -47,7 +47,7 @@ export function CategoriesPage() {
                   className="group flex items-center gap-3"
                 >
                   <span
-                    className="flex size-10 items-center justify-center rounded-[--radius-field] text-white"
+                    className="flex size-10 items-center justify-center rounded-(--radius-field) text-white"
                     style={{ backgroundColor: category.accentColor ?? 'var(--brand)' }}
                     aria-hidden="true"
                   >

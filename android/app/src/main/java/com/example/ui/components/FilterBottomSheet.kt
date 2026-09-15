@@ -231,7 +231,7 @@ fun FilterBottomSheet(
                     .fillMaxWidth()
                     .height(50.dp)
                     .testTag("filter_apply_btn"),
-                shape = RoundedCornerShape(12.dp),
+                shape = RoundedCornerShape(24.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = BrandNavy)
             ) {
                 Text(

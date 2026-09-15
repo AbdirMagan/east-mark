@@ -41,7 +41,7 @@ export const ProductCard = memo(function ProductCard({
   const image = product.thumbnailUrl ?? product.imageUrl;
 
   return (
-    <article className="group relative flex h-full flex-col overflow-hidden rounded-[1.25rem] border border-border-subtle bg-surface-raised transition-shadow duration-200 hover:shadow-[--shadow-raised]">
+    <article className="group relative flex h-full flex-col overflow-hidden rounded-[1.25rem] border border-border-subtle bg-surface-raised transition-shadow duration-200 hover:shadow-(--shadow-raised)">
       <Link to={`/product/${product.ref}`} className="block">
         <div className="relative aspect-[4/3] overflow-hidden bg-surface-sunken">
           {image ? (
@@ -79,7 +79,7 @@ export const ProductCard = memo(function ProductCard({
           </div>
 
           {product.distanceKm != null ? (
-            <span className="absolute bottom-2 left-2 rounded-[--radius-pill] bg-ink-900/70 px-2 py-0.5 text-[0.6875rem] font-semibold text-white backdrop-blur-sm">
+            <span className="absolute bottom-2 left-2 rounded-(--radius-pill) bg-ink-900/70 px-2 py-0.5 text-[0.6875rem] font-semibold text-white backdrop-blur-sm">
               {formatDistance(product.distanceKm, language)}
             </span>
           ) : null}
@@ -129,9 +129,9 @@ export const ProductCard = memo(function ProductCard({
       <div className="mt-auto px-3 pb-3">
         <Link
           to={`/product/${product.ref}`}
-          className="flex h-10 w-full items-center justify-center gap-1.5 rounded-[--radius-pill] bg-accent text-sm font-semibold text-white transition-colors hover:bg-accent-hover dark:text-ink-950"
+          className="group/buy flex h-10 w-full items-center justify-center gap-1.5 rounded-(--radius-pill) border border-accent bg-accent text-sm font-semibold text-white shadow-sm transition-[background-color,box-shadow,translate,scale] duration-200 ease-(--ease-out-soft) hover:bg-accent-hover hover:shadow-md hover:shadow-accent/25 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50 focus-visible:ring-offset-2 focus-visible:ring-offset-surface-raised active:scale-[0.97] motion-safe:hover:-translate-y-0.5 dark:text-ink-950"
         >
-          <Icon name="cart" size={16} />
+          <Icon name="cart" size={16} className="motion-safe:transition-transform motion-safe:group-hover/buy:scale-110" />
           {t('product.buy')}
         </Link>
       </div>
