@@ -41,12 +41,9 @@ export const ProductCard = memo(function ProductCard({
   const image = product.thumbnailUrl ?? product.imageUrl;
 
   return (
-    <article className="group relative">
-      <Link
-        to={`/product/${product.ref}`}
-        className="block overflow-hidden rounded-[--radius-card] border border-border-subtle bg-surface-raised transition-shadow duration-200 hover:shadow-[--shadow-raised]"
-      >
-        <div className="relative aspect-[4/3] max-h-64 overflow-hidden bg-surface-sunken">
+    <article className="group relative flex h-full flex-col overflow-hidden rounded-[1.25rem] border border-border-subtle bg-surface-raised transition-shadow duration-200 hover:shadow-[--shadow-raised]">
+      <Link to={`/product/${product.ref}`} className="block">
+        <div className="relative aspect-[4/3] overflow-hidden bg-surface-sunken">
           {image ? (
             <img
               src={image}
@@ -126,6 +123,19 @@ export const ProductCard = memo(function ProductCard({
         </div>
       </Link>
 
+      {/* Buy opens the same listing as the card; the seller is contacted from
+          there. mt-auto keeps it on the bottom edge when titles differ in
+          length, so a row of cards lines up. */}
+      <div className="mt-auto px-3 pb-3">
+        <Link
+          to={`/product/${product.ref}`}
+          className="flex h-10 w-full items-center justify-center gap-1.5 rounded-[--radius-pill] bg-accent text-sm font-semibold text-white transition-colors hover:bg-accent-hover dark:text-ink-950"
+        >
+          <Icon name="cart" size={16} />
+          {t('product.buy')}
+        </Link>
+      </div>
+
       {showFavorite && onToggleFavorite ? (
         <button
           type="button"
@@ -147,13 +157,14 @@ export const ProductCard = memo(function ProductCard({
 
 export function ProductCardSkeleton() {
   return (
-    <div className="overflow-hidden rounded-[--radius-card] border border-border-subtle bg-surface-raised">
+    <div className="overflow-hidden rounded-[1.25rem] border border-border-subtle bg-surface-raised">
       <Skeleton className="aspect-[4/3] rounded-none" />
       <div className="space-y-2 p-3">
         <Skeleton className="h-4 w-1/2" />
         <Skeleton className="h-3.5 w-full" />
         <Skeleton className="h-3.5 w-3/4" />
         <Skeleton className="h-3 w-2/5" />
+        <Skeleton className="h-10 w-full rounded-full" />
       </div>
     </div>
   );
@@ -161,10 +172,12 @@ export function ProductCardSkeleton() {
 
 /**
  * The responsive grid: two columns on a phone -- which keeps twice as many
- * listings above the fold -- and from `sm` up, as many ~13.5rem columns as the
- * screen fits. auto-fit collapses the empty tracks, so a search that returns
- * two listings shows two wide cards across the page rather than two small ones
- * stranded on the left.
+ * listings above the fold -- and from `sm` up, as many columns as the screen
+ * fits, each between 13.5rem and 24rem. auto-fit collapses the empty tracks and
+ * the row is centred, so a search returning two listings shows two full-size
+ * cards in the middle of the page rather than two small ones stranded on the
+ * left. The 24rem ceiling stops a single result blowing its photo up to
+ * full-page size.
  */
 export function ProductGrid({
   products,
@@ -180,7 +193,7 @@ export function ProductGrid({
   showFavorite?: boolean;
 }) {
   return (
-    <div className="grid grid-cols-2 gap-3 sm:gap-4 sm:[grid-template-columns:repeat(auto-fit,minmax(13.5rem,1fr))]">
+    <div className="grid grid-cols-2 gap-3 sm:gap-4 sm:[grid-template-columns:repeat(auto-fit,minmax(13.5rem,24rem))] sm:[justify-content:safe_center]">
       {loading
         ? Array.from({ length: skeletonCount }, (_, index) => <ProductCardSkeleton key={index} />)
         : products.map((product, index) => (
@@ -209,7 +222,7 @@ export function ProductRail({
   showFavorite?: boolean;
 }) {
   return (
-    <div className="em-scroll-x -mx-4 flex gap-3 px-4 pb-1 sm:mx-0 sm:px-0">
+    <div className="em-scroll-x -mx-4 flex gap-3 px-4 pb-1 sm:mx-0 sm:px-0 sm:[justify-content:safe_center]">
       {(loading ? Array.from({ length: 6 }, (_, i) => i) : products).map((item, index) => (
         <div
           key={typeof item === 'number' ? item : item.id}

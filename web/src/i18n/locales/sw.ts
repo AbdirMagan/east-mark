@@ -156,6 +156,7 @@ export const sw: Partial<Dictionary> = {
   'product.callSeller': 'Piga simu',
   'product.whatsapp': 'WhatsApp',
   'product.message': 'Tuma ujumbe',
+  'product.buy': 'Nunua',
   'product.save': 'Hifadhi',
   'product.saved': 'Imehifadhiwa',
   'product.share': 'Shiriki',

@@ -161,6 +161,7 @@ export const en = {
   'product.callSeller': 'Call',
   'product.whatsapp': 'WhatsApp',
   'product.message': 'Message',
+  'product.buy': 'Buy',
   'product.save': 'Save',
   'product.saved': 'Saved',
   'product.share': 'Share',

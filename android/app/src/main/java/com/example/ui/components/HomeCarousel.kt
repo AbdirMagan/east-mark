@@ -90,7 +90,7 @@ fun HomeCarousel(
             pageSpacing = 12.dp,
             modifier = Modifier
                 .fillMaxWidth()
-                .height(172.dp)
+                .height(148.dp)
                 .testTag("home_carousel")
         ) { page ->
             val ad = ads[page]
@@ -196,7 +196,7 @@ private fun AdSlide(ad: HomeAd, onClick: () -> Unit) {
                 Modifier
                     .align(Alignment.CenterEnd)
                     .padding(end = 8.dp)
-                    .size(width = 150.dp, height = 140.dp)
+                    .size(width = 118.dp, height = 112.dp)
             )
             else -> Icon(
                 painter = painterResource(id = glyph),
@@ -204,8 +204,8 @@ private fun AdSlide(ad: HomeAd, onClick: () -> Unit) {
                 tint = Color.White.copy(alpha = 0.92f),
                 modifier = Modifier
                     .align(Alignment.CenterEnd)
-                    .padding(end = 20.dp)
-                    .size(96.dp)
+                    .padding(end = 18.dp)
+                    .size(76.dp)
             )
         }
 
@@ -213,7 +213,7 @@ private fun AdSlide(ad: HomeAd, onClick: () -> Unit) {
             modifier = Modifier
                 .fillMaxHeight()
                 .fillMaxWidth(0.66f)
-                .padding(16.dp),
+                .padding(14.dp),
             verticalArrangement = Arrangement.Center
         ) {
             ad.badge?.let { badge ->
@@ -236,8 +236,8 @@ private fun AdSlide(ad: HomeAd, onClick: () -> Unit) {
                 text = ad.title,
                 color = Color.White,
                 fontWeight = FontWeight.Black,
-                fontSize = 18.sp,
-                lineHeight = 21.sp,
+                fontSize = 16.sp,
+                lineHeight = 19.sp,
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis
             )

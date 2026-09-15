@@ -155,6 +155,7 @@ export const am: Partial<Dictionary> = {
   'product.callSeller': 'ደውል',
   'product.whatsapp': 'ዋትስአፕ',
   'product.message': 'መልዕክት',
+  'product.buy': 'ይግዙ',
   'product.save': 'አስቀምጥ',
   'product.saved': 'ተቀምጧል',
   'product.share': 'አጋራ',

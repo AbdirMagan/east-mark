@@ -37,6 +37,7 @@ export type IconName =
   | 'package'
   | 'grid'
   | 'coins'
+  | 'cart'
   // Categories. Top level first, then the subcategory glyphs the database names.
   | 'electronics'
   | 'house'
@@ -95,6 +96,7 @@ const PATHS: Record<IconName, string> = {
   offline: 'M2 2l20 20M8.5 16.4a5 5 0 0 1 7 0M5 12.9a10 10 0 0 1 3-2M19 12.9a10 10 0 0 0-7-2.9M1.4 9.3a15 15 0 0 1 5-3.3M22.6 9.3a15 15 0 0 0-8-3.9M12 20h.01',
   package: 'M21 8v8l-9 5-9-5V8l9-5 9 5ZM3.3 7.3 12 12l8.7-4.7M12 12v9',
   grid: 'M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM13 13h7v7h-7z',
+  cart: 'M3 4h2l2.3 11.1a2 2 0 0 0 2 1.6h8.1a2 2 0 0 0 2-1.6L21 7.5H6M10 20.5a1.2 1.2 0 1 0 0-2.4 1.2 1.2 0 0 0 0 2.4ZM17.5 20.5a1.2 1.2 0 1 0 0-2.4 1.2 1.2 0 0 0 0 2.4Z',
   coins: 'M9 14a6 6 0 1 0 0-12 6 6 0 0 0 0 12ZM15 22a6 6 0 1 0 0-12 6 6 0 0 0 0 12ZM9 8h.01M15 16h.01',
 
   // A laptop with a phone in front of it: reads as "devices", not one product.

@@ -156,6 +156,7 @@ export const so: Partial<Dictionary> = {
   'product.callSeller': 'Wac',
   'product.whatsapp': 'WhatsApp',
   'product.message': 'Fariin',
+  'product.buy': 'Iibso',
   'product.save': 'Keydi',
   'product.saved': 'La keydiyay',
   'product.share': 'Wadaag',
