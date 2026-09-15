@@ -5,6 +5,7 @@ import { anon } from '../config/supabase.js';
 import { cacheStats } from '../utils/cache.js';
 import { ok } from '../utils/response.js';
 import { adminRouter } from './admin.routes.js';
+import { adsRouter } from './ads.routes.js';
 import { categoriesRouter } from './categories.routes.js';
 import { locationsRouter } from './locations.routes.js';
 import { messagesRouter } from './messages.routes.js';
@@ -18,6 +19,7 @@ apiRouter.use('/categories', categoriesRouter);
 apiRouter.use('/products', productsRouter);
 apiRouter.use('/users', usersRouter);
 apiRouter.use('/messages', messagesRouter);
+apiRouter.use('/ads', adsRouter);
 apiRouter.use('/admin', adminRouter);
 
 /**
@@ -86,6 +88,7 @@ healthRouter.get('/', (_req, res) => {
         locations: '/api/v1/locations/countries',
         categories: '/api/v1/categories',
         products: '/api/v1/products',
+        ads: '/api/v1/ads?placement=home_hero',
       },
     },
     'This is the East-Market API. The marketplace runs separately on port 5173.',

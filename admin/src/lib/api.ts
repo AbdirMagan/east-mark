@@ -169,6 +169,54 @@ export interface AuditEntry {
   created_at: string;
 }
 
+export type AdTheme = 'night' | 'acacia' | 'clay' | 'sun' | 'navy';
+
+export interface AdminAd {
+  id: string;
+  placement: string;
+  title: string;
+  subtitle: string | null;
+  badge: string | null;
+  ctaLabel: string | null;
+  theme: AdTheme;
+  icon: string | null;
+  imageUrl: string | null;
+  targetType: string;
+  targetValue: string | null;
+  link: string | null;
+  status: string;
+  priority: number;
+  startsAt: string;
+  endsAt: string | null;
+  impressions: number;
+  clicks: number;
+  translations: Record<string, Record<string, string>>;
+  updatedAt: string;
+}
+
+export interface AdInput {
+  placement: 'home_hero';
+  title: string;
+  subtitle?: string;
+  badge?: string;
+  ctaLabel?: string;
+  theme: AdTheme;
+  icon?: string;
+  imageUrl?: string | null;
+  targetType: 'url' | 'product' | 'business' | 'category' | 'search';
+  targetValue?: string;
+  status: 'draft' | 'scheduled' | 'running' | 'paused' | 'ended' | 'rejected';
+  priority: number;
+  endsAt?: string | null;
+  translations?: Record<string, Record<string, string>>;
+}
+
+export interface CategoryOption {
+  id: number;
+  slug: string;
+  name: string;
+}
+
 export interface Me {
   id: string;
   fullName: string | null;
@@ -211,6 +259,17 @@ export const api = {
 
   decideVerification: (id: string, body: { status: 'verified' | 'rejected'; reviewNote?: string }) =>
     request<AdminVerification>(`/admin/verifications/${id}`, { method: 'PATCH', body }).then((r) => r.data),
+
+  ads: () => request<AdminAd[]>('/admin/ads').then((r) => r.data),
+
+  createAd: (body: AdInput) => request<AdminAd>('/admin/ads', { method: 'POST', body }).then((r) => r.data),
+
+  updateAd: (id: string, body: AdInput) =>
+    request<AdminAd>(`/admin/ads/${id}`, { method: 'PATCH', body }).then((r) => r.data),
+
+  deleteAd: (id: string) => request<null>(`/admin/ads/${id}`, { method: 'DELETE' }).then((r) => r.data),
+
+  categories: () => request<CategoryOption[]>('/categories').then((r) => r.data),
 
   audit: (query: { page?: number; limit?: number }) => request<AuditEntry[]>('/admin/audit', { query }),
 };

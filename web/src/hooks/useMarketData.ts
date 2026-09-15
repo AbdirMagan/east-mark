@@ -3,6 +3,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useI18n } from '../i18n/index.js';
 import { ApiError, endpoints, type ProductCard, type ProductSearchParams } from '../lib/api.js';
 import { useAuth } from '../store/auth.js';
+import { usePreferences } from '../store/preferences.js';
 
 /**
  * Reference data barely changes and is needed on nearly every screen, so it is
@@ -173,5 +174,16 @@ export function useUnreadMessages() {
     // A cheap poll as a backstop; an open inbox also invalidates it live.
     refetchInterval: 30_000,
     staleTime: 15_000,
+  });
+}
+
+/** Home carousel promotions, localized and scoped to the chosen country. */
+export function useHomeAds() {
+  const { language } = useI18n();
+  const countryId = usePreferences((state) => state.countryId);
+  return useQuery({
+    queryKey: ['ads', 'home_hero', language, countryId],
+    queryFn: () => endpoints.ads('home_hero', language, countryId ?? undefined),
+    staleTime: 60_000,
   });
 }

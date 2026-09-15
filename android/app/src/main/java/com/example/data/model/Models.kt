@@ -119,7 +119,10 @@ data class Conversation(
     val productTitle: String,
     val productPrice: Double,
     val productCurrency: String,
-    val productImage: String
+    val productImage: String,
+    val lastSenderIsMe: Boolean = false,
+    val role: String = "buyer",
+    val productRef: Int? = null
 )
 
 data class ChatMessage(
@@ -129,7 +132,11 @@ data class ChatMessage(
     val senderName: String,
     val text: String,
     val timestamp: Long,
-    val isFromMe: Boolean
+    val isFromMe: Boolean,
+    /** When the other person read it; null until then. */
+    val readAt: Long? = null,
+    /** Not yet confirmed by the server. */
+    val pending: Boolean = false
 )
 
 data class FilterCriteria(
@@ -151,3 +158,18 @@ enum class SortOption {
     PRICE_HIGH_LOW,
     POPULAR
 }
+
+/** A home-carousel promotion (GET /ads?placement=home_hero). */
+data class HomeAd(
+    val id: String,
+    val title: String,
+    val subtitle: String?,
+    val badge: String?,
+    val ctaLabel: String?,
+    val theme: String,
+    val icon: String?,
+    val imageUrl: String?,
+    val targetType: String,
+    val targetValue: String?,
+    val categoryId: Int?
+)

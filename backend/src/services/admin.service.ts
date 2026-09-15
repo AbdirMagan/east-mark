@@ -2,6 +2,7 @@ import { anon, admin as serviceRoleClient, hasServiceRole } from '../config/supa
 import type { Db } from '../config/supabase.js';
 import type { Database, Json } from '../types/database.js';
 import type { AuthContext } from '../types/express.js';
+import { AD_TARGET_TYPES, invalidateAdsCache, linkFor, type AdPlacement, type AdTheme } from './ads.service.js';
 import { invalidateCategoryCache } from './categories.service.js';
 import { invalidateLocationCache } from './locations.service.js';
 import { AppError, NotFoundError, fromPostgrest } from '../utils/errors.js';
@@ -577,4 +578,169 @@ export async function listAuditLog(
 
   if (error) throw fromPostgrest(error, 'Audit log');
   return { items: data ?? [], meta: buildPageMeta(count ?? 0, options.page, options.limit) };
+}
+
+
+/* -------------------------------------------------------------------------- */
+/* Promotions (advertisements)                                                */
+/* -------------------------------------------------------------------------- */
+
+export interface AdminAd {
+  id: string;
+  placement: string;
+  title: string;
+  subtitle: string | null;
+  badge: string | null;
+  ctaLabel: string | null;
+  theme: string;
+  icon: string | null;
+  imageUrl: string | null;
+  targetType: string;
+  targetValue: string | null;
+  link: string | null;
+  status: string;
+  priority: number;
+  startsAt: string;
+  endsAt: string | null;
+  impressions: number;
+  clicks: number;
+  translations: Record<string, Record<string, string>>;
+  updatedAt: string;
+}
+
+export interface AdInput {
+  placement: AdPlacement;
+  title: string;
+  subtitle?: string;
+  badge?: string;
+  ctaLabel?: string;
+  theme: AdTheme;
+  icon?: string;
+  imageUrl?: string | null;
+  targetType: (typeof AD_TARGET_TYPES)[number];
+  targetValue?: string;
+  status: Database['public']['Enums']['ad_status'];
+  priority: number;
+  startsAt?: string;
+  endsAt?: string | null;
+  translations?: Record<string, Partial<Record<'title' | 'subtitle' | 'badge' | 'cta_label', string | undefined>>>;
+}
+
+const AD_COLUMNS =
+  'id, placement, title, subtitle, badge, cta_label, theme, icon, image_url, target_type, target_value, status, priority, starts_at, ends_at, impressions, clicks, translations, updated_at';
+
+type AdRow = Database['public']['Tables']['advertisements']['Row'];
+type AdSelectRow = Pick<
+  AdRow,
+  | 'id' | 'placement' | 'title' | 'subtitle' | 'badge' | 'cta_label' | 'theme' | 'icon' | 'image_url'
+  | 'target_type' | 'target_value' | 'status' | 'priority' | 'starts_at' | 'ends_at' | 'impressions'
+  | 'clicks' | 'translations' | 'updated_at'
+>;
+
+function toAdminAd(row: AdSelectRow): AdminAd {
+  return {
+    id: row.id,
+    placement: row.placement,
+    title: row.title,
+    subtitle: row.subtitle,
+    badge: row.badge,
+    ctaLabel: row.cta_label,
+    theme: row.theme,
+    icon: row.icon,
+    imageUrl: row.image_url,
+    targetType: row.target_type,
+    targetValue: row.target_value,
+    link: linkFor(row.target_type, row.target_value),
+    status: row.status,
+    priority: row.priority,
+    startsAt: row.starts_at,
+    endsAt: row.ends_at,
+    impressions: row.impressions,
+    clicks: row.clicks,
+    translations: (row.translations ?? {}) as Record<string, Record<string, string>>,
+    updatedAt: row.updated_at,
+  };
+}
+
+/** Drops empty strings so a cleared translation field falls back to English. */
+function cleanTranslations(input: AdInput['translations']): Json {
+  const out: Record<string, Record<string, string>> = {};
+  for (const [lang, copy] of Object.entries(input ?? {})) {
+    const kept = Object.fromEntries(
+      Object.entries(copy ?? {}).filter((entry): entry is [string, string] => typeof entry[1] === 'string' && entry[1].trim() !== ''),
+    );
+    if (Object.keys(kept).length) out[lang] = kept;
+  }
+  return out as Json;
+}
+
+/**
+ * The dashboard form always sends the whole promotion, so an update replaces
+ * every editable field: a subtitle cleared in the form is cleared here.
+ */
+function toAdRow(input: AdInput): Database['public']['Tables']['advertisements']['Update'] {
+  return {
+    placement: input.placement,
+    title: input.title,
+    subtitle: input.subtitle ?? null,
+    badge: input.badge ?? null,
+    cta_label: input.ctaLabel ?? null,
+    theme: input.theme,
+    icon: input.icon ?? null,
+    image_url: input.imageUrl ?? null,
+    target_type: input.targetType,
+    target_value: input.targetValue ?? null,
+    status: input.status,
+    priority: input.priority,
+    ...(input.startsAt ? { starts_at: input.startsAt } : {}),
+    ends_at: input.endsAt ?? null,
+    translations: cleanTranslations(input.translations),
+  };
+}
+
+export async function listAds(auth: AuthContext): Promise<AdminAd[]> {
+  const { data, error } = await auth.db
+    .from('advertisements')
+    .select(AD_COLUMNS)
+    .order('placement')
+    .order('priority', { ascending: false })
+    .order('created_at', { ascending: false })
+    .limit(200);
+
+  if (error) throw fromPostgrest(error, 'Promotions');
+  return (data ?? []).map(toAdminAd);
+}
+
+export async function createAd(auth: AuthContext, input: AdInput): Promise<AdminAd> {
+  const row = { ...toAdRow(input), created_by: auth.userId } as Database['public']['Tables']['advertisements']['Insert'];
+  const { data, error } = await service().from('advertisements').insert(row).select(AD_COLUMNS).single();
+
+  if (error) throw fromPostgrest(error, 'Promotion');
+  await audit(auth, 'ad.create', 'advertisement', data.id, { title: data.title, status: data.status });
+  invalidateAdsCache();
+  return toAdminAd(data);
+}
+
+export async function updateAd(auth: AuthContext, id: string, input: AdInput): Promise<AdminAd> {
+  const { data, error } = await service()
+    .from('advertisements')
+    .update(toAdRow(input))
+    .eq('id', id)
+    .select(AD_COLUMNS)
+    .maybeSingle();
+
+  if (error) throw fromPostgrest(error, 'Promotion');
+  if (!data) throw new NotFoundError('Promotion');
+  await audit(auth, 'ad.update', 'advertisement', id, { title: data.title, status: data.status });
+  invalidateAdsCache();
+  return toAdminAd(data);
+}
+
+export async function deleteAd(auth: AuthContext, id: string): Promise<void> {
+  const { data, error } = await service().from('advertisements').delete().eq('id', id).select('id, title').maybeSingle();
+
+  if (error) throw fromPostgrest(error, 'Promotion');
+  if (!data) throw new NotFoundError('Promotion');
+  await audit(auth, 'ad.delete', 'advertisement', id, { title: data.title });
+  invalidateAdsCache();
 }

@@ -1,5 +1,6 @@
 package com.example.ui.screens
 
+import androidx.compose.runtime.DisposableEffect
 import android.content.Intent
 import android.net.Uri
 import androidx.compose.foundation.background
@@ -80,6 +81,12 @@ fun ChatDetailScreen(
 
     var inputText by remember { mutableStateOf("") }
     val listState = rememberLazyListState()
+
+    // Loads the earlier messages and keeps the thread fresh while it is open.
+    DisposableEffect(conversationId) {
+        viewModel.openConversation(conversationId)
+        onDispose { viewModel.closeConversation() }
+    }
 
     LaunchedEffect(messages.size) {
         if (messages.isNotEmpty()) {
@@ -238,6 +245,18 @@ fun ChatDetailScreen(
                 .padding(horizontal = 16.dp, vertical = 8.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
+            if (messages.isEmpty()) {
+                item {
+                    Text(
+                        text = "Say hello. Ask about the item, the price or where to meet.",
+                        color = Color.Gray,
+                        fontSize = 13.sp,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 24.dp)
+                    )
+                }
+            }
             items(messages, key = { it.id }) { msg ->
                 val isMe = msg.isFromMe
                 val align = if (isMe) Alignment.End else Alignment.Start
@@ -268,7 +287,11 @@ fun ChatDetailScreen(
                             Spacer(modifier = Modifier.height(3.dp))
                             val time = SimpleDateFormat("h:mm a", Locale.getDefault()).format(Date(msg.timestamp))
                             Text(
-                                text = time,
+                                text = when {
+                                    msg.pending -> "Sending…"
+                                    isMe && msg.readAt != null -> "$time · Seen"
+                                    else -> time
+                                },
                                 color = if (isMe) Color.White.copy(alpha = 0.7f) else Color.Gray,
                                 fontSize = 10.sp,
                                 modifier = Modifier.align(Alignment.End)

@@ -4,8 +4,9 @@ import { z } from 'zod';
 import { authOf, requireAdmin, requireAuth, requireSuperAdmin } from '../middleware/auth.js';
 import { readLimiter, writeLimiter } from '../middleware/rateLimit.js';
 import { validateBody, validateParams, validateQuery, validatedQuery } from '../middleware/validate.js';
+import { AD_PLACEMENTS, AD_TARGET_TYPES, AD_THEMES } from '../services/ads.service.js';
 import * as admin from '../services/admin.service.js';
-import { ok, paginated } from '../utils/response.js';
+import { created, ok, paginated } from '../utils/response.js';
 import { idParam, optionalText, pagination, refId, uuid } from '../validators/common.js';
 
 export const adminRouter: Router = Router();
@@ -225,6 +226,57 @@ adminRouter.get('/audit', readLimiter, validateQuery(pagination), async (req, re
   const query = validatedQuery<z.infer<typeof pagination>>(req);
   const { items, meta } = await admin.listAuditLog(authOf(req), query);
   paginated(res, items, meta);
+});
+
+/* -------------------------------------------------------------------------- */
+/* Promotions: the home carousel slides on the web and Android                */
+/* -------------------------------------------------------------------------- */
+
+const isoDate = z.string().datetime({ offset: true, message: 'Must be a date and time' });
+
+const adCopy = z.object({
+  title: optionalText(80),
+  subtitle: optionalText(200),
+  badge: optionalText(24),
+  cta_label: optionalText(40),
+});
+
+const adBody = z.object({
+  placement: z.enum(AD_PLACEMENTS).default('home_hero'),
+  title: z.string().trim().min(2, 'Give the slide a title').max(80, 'Must be 80 characters or fewer'),
+  subtitle: optionalText(200),
+  badge: optionalText(24),
+  ctaLabel: optionalText(40),
+  theme: z.enum(AD_THEMES).default('night'),
+  icon: optionalText(32),
+  imageUrl: z
+    .union([z.literal('').transform(() => null), z.string().trim().url('Must be a full https:// address').max(500)])
+    .nullable()
+    .optional(),
+  targetType: z.enum(AD_TARGET_TYPES).default('url'),
+  targetValue: optionalText(300),
+  status: z.enum(['draft', 'scheduled', 'running', 'paused', 'ended', 'rejected']).default('running'),
+  priority: z.coerce.number().int().min(0).max(1000).default(0),
+  startsAt: isoDate.optional(),
+  endsAt: isoDate.nullable().optional(),
+  translations: z.record(z.enum(['so', 'am', 'sw']), adCopy).optional(),
+});
+
+adminRouter.get('/ads', readLimiter, async (req, res) => {
+  ok(res, await admin.listAds(authOf(req)));
+});
+
+adminRouter.post('/ads', writeLimiter, validateBody(adBody), async (req, res) => {
+  created(res, await admin.createAd(authOf(req), req.body as admin.AdInput), 'Promotion created');
+});
+
+adminRouter.patch('/ads/:id', writeLimiter, validateParams(idParam), validateBody(adBody), async (req, res) => {
+  ok(res, await admin.updateAd(authOf(req), req.params.id as string, req.body as admin.AdInput), 'Promotion saved');
+});
+
+adminRouter.delete('/ads/:id', writeLimiter, validateParams(idParam), async (req, res) => {
+  await admin.deleteAd(authOf(req), req.params.id as string);
+  ok(res, null, 'Promotion deleted');
 });
 
 export { uuid };

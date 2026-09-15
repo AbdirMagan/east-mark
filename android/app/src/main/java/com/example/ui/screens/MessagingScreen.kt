@@ -1,5 +1,11 @@
 package com.example.ui.screens
 
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.text.style.TextAlign
+import com.example.data.repository.AuthState
+import kotlinx.coroutines.delay
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -50,10 +56,21 @@ import java.util.Locale
 fun MessagingScreen(
     viewModel: MarketplaceViewModel,
     onOpenConversation: (String) -> Unit,
+    onSignIn: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     val language by viewModel.selectedLanguage.collectAsState()
     val conversations by viewModel.conversations.collectAsState()
+    val authState by viewModel.authState.collectAsState()
+    val signedIn = authState is AuthState.SignedIn
+
+    // Fresh when the tab opens, then every 15 seconds while it is showing.
+    LaunchedEffect(signedIn) {
+        while (signedIn) {
+            viewModel.refreshConversations()
+            delay(15_000)
+        }
+    }
 
     Column(
         modifier = modifier
@@ -89,11 +106,27 @@ fun MessagingScreen(
                     .padding(32.dp),
                 contentAlignment = Alignment.Center
             ) {
-                Text(
-                    text = "No conversations yet. Inquire about any listing to chat with the seller!",
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    fontSize = 14.sp
-                )
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    Text(
+                        text = if (signedIn) {
+                            "No conversations yet. Message a seller from any listing and the chat appears here."
+                        } else {
+                            "Sign in to see your messages with buyers and sellers."
+                        },
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        fontSize = 14.sp,
+                        textAlign = TextAlign.Center
+                    )
+                    if (!signedIn) {
+                        Spacer(modifier = Modifier.height(14.dp))
+                        Button(
+                            onClick = onSignIn,
+                            colors = ButtonDefaults.buttonColors(containerColor = BrandNavy)
+                        ) {
+                            Text("Sign in")
+                        }
+                    }
+                }
             }
         } else {
             LazyColumn(
@@ -155,7 +188,10 @@ fun MessagingScreen(
                                         overflow = TextOverflow.Ellipsis
                                     )
 
-                                    val timeStr = SimpleDateFormat("h:mm a", Locale.getDefault()).format(Date(conv.lastTimestamp))
+                                    val timeStr = SimpleDateFormat(
+                                        if (android.text.format.DateUtils.isToday(conv.lastTimestamp)) "h:mm a" else "MMM d",
+                                        Locale.getDefault()
+                                    ).format(Date(conv.lastTimestamp))
                                     Text(
                                         text = timeStr,
                                         fontSize = 11.sp,
@@ -164,7 +200,7 @@ fun MessagingScreen(
                                 }
 
                                 Text(
-                                    text = "Re: ${conv.productTitle}",
+                                    text = if (conv.productTitle.isNotBlank()) "Re: ${conv.productTitle}" else "Listing no longer available",
                                     fontSize = 12.sp,
                                     fontWeight = FontWeight.SemiBold,
                                     color = BrandTeal,
@@ -180,7 +216,7 @@ fun MessagingScreen(
                                     verticalAlignment = Alignment.CenterVertically
                                 ) {
                                     Text(
-                                        text = conv.lastMessage,
+                                        text = if (conv.lastSenderIsMe) "You: ${conv.lastMessage}" else conv.lastMessage,
                                         fontSize = 13.sp,
                                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                                         maxLines = 1,

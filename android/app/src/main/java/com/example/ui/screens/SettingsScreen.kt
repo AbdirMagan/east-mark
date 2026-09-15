@@ -18,21 +18,26 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Logout
 import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Language
 import androidx.compose.material.icons.filled.MonetizationOn
 import androidx.compose.material.icons.filled.NetworkCheck
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Public
 import androidx.compose.material.icons.filled.Security
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
@@ -55,10 +60,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.data.model.AppLanguage
 import com.example.data.model.Currency
+import com.example.data.repository.AuthState
 import com.example.domain.LocalizationManager
 import com.example.ui.theme.BrandGold
 import com.example.ui.theme.BrandNavy
 import com.example.ui.theme.BrandTeal
+import com.example.ui.theme.ErrorRed
 import com.example.ui.viewmodel.MarketplaceViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -66,6 +73,8 @@ import com.example.ui.viewmodel.MarketplaceViewModel
 fun SettingsScreen(
     viewModel: MarketplaceViewModel,
     onNavigateToFavorites: () -> Unit,
+    onNavigateToLogin: () -> Unit,
+    onNavigateToSignUp: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val language by viewModel.selectedLanguage.collectAsState()
@@ -74,6 +83,22 @@ fun SettingsScreen(
     val city by viewModel.selectedCity.collectAsState()
     val dataSaver by viewModel.isDataSaverEnabled.collectAsState()
     val favorites by viewModel.favoriteProducts.collectAsState()
+    val authState by viewModel.authState.collectAsState()
+    val profile by viewModel.profile.collectAsState()
+
+    // The person's name, not their email: profile name, then username, then
+    // the part of the email before the @ while the profile is still loading.
+    val signedIn = authState as? AuthState.SignedIn
+    val displayName = profile?.fullName?.takeIf { it.isNotBlank() }
+        ?: profile?.username?.takeIf { it.isNotBlank() }
+        ?: signedIn?.email?.substringBefore('@')
+    val initials = displayName
+        ?.split(" ")
+        ?.filter { it.isNotBlank() }
+        ?.take(2)
+        ?.joinToString("") { it.first().uppercase() }
+        ?.takeIf { it.isNotBlank() }
+        ?: "EA"
 
     var showLanguageDialog by remember { mutableStateOf(false) }
     var showCurrencyDialog by remember { mutableStateOf(false) }
@@ -103,7 +128,7 @@ fun SettingsScreen(
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
-                            text = "EA",
+                            text = if (signedIn != null) initials else "EA",
                             color = Color.White,
                             fontWeight = FontWeight.Black,
                             fontSize = 20.sp
@@ -114,7 +139,7 @@ fun SettingsScreen(
 
                     Column {
                         Text(
-                            text = "East Africa Trader",
+                            text = if (signedIn != null) displayName ?: "East Market" else "Guest",
                             color = Color.White,
                             fontWeight = FontWeight.Bold,
                             fontSize = 18.sp
@@ -130,6 +155,98 @@ fun SettingsScreen(
         }
 
         Column(modifier = Modifier.padding(16.dp)) {
+            // Account (Sign In / Sign Up / Log Out)
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .testTag("settings_account_card"),
+                shape = RoundedCornerShape(12.dp),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
+            ) {
+                when (val state = authState) {
+                    is AuthState.SignedIn -> {
+                        Column(modifier = Modifier.padding(16.dp)) {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Icon(
+                                    imageVector = Icons.Filled.Person,
+                                    contentDescription = null,
+                                    tint = BrandTeal,
+                                    modifier = Modifier.size(24.dp)
+                                )
+                                Spacer(modifier = Modifier.width(14.dp))
+                                Column(modifier = Modifier.weight(1f)) {
+                                    Text(displayName ?: "Signed in", fontWeight = FontWeight.Bold, fontSize = 15.sp)
+                                    Text(
+                                        text = state.email ?: state.userId,
+                                        fontSize = 12.sp,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
+                                }
+                            }
+                            Spacer(modifier = Modifier.height(12.dp))
+                            OutlinedButton(
+                                onClick = { viewModel.signOut() },
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .testTag("settings_logout_btn"),
+                                colors = ButtonDefaults.outlinedButtonColors(contentColor = ErrorRed)
+                            ) {
+                                Icon(Icons.AutoMirrored.Filled.Logout, contentDescription = null, modifier = Modifier.size(18.dp))
+                                Spacer(modifier = Modifier.width(8.dp))
+                                Text("Log Out")
+                            }
+                        }
+                    }
+                    else -> {
+                        Column(modifier = Modifier.padding(16.dp)) {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Icon(
+                                    imageVector = Icons.Filled.Person,
+                                    contentDescription = null,
+                                    tint = BrandTeal,
+                                    modifier = Modifier.size(24.dp)
+                                )
+                                Spacer(modifier = Modifier.width(14.dp))
+                                Column(modifier = Modifier.weight(1f)) {
+                                    Text("You're not signed in", fontWeight = FontWeight.Bold, fontSize = 15.sp)
+                                    Text(
+                                        text = "Sign in to manage your listings and messages",
+                                        fontSize = 12.sp,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
+                                }
+                            }
+                            Spacer(modifier = Modifier.height(12.dp))
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.spacedBy(10.dp)
+                            ) {
+                                OutlinedButton(
+                                    onClick = onNavigateToLogin,
+                                    modifier = Modifier
+                                        .weight(1f)
+                                        .testTag("settings_signin_btn")
+                                ) {
+                                    Text("Sign In")
+                                }
+                                Button(
+                                    onClick = onNavigateToSignUp,
+                                    modifier = Modifier
+                                        .weight(1f)
+                                        .testTag("settings_signup_btn"),
+                                    colors = ButtonDefaults.buttonColors(containerColor = BrandNavy)
+                                ) {
+                                    Text("Sign Up")
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            Spacer(modifier = Modifier.height(20.dp))
+
             // Favorites Quick Access
             Card(
                 modifier = Modifier

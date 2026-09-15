@@ -43,6 +43,7 @@ export type IconName =
   | 'car'
   | 'land'
   | 'livestock'
+  | 'goods'
   | 'cpu'
   | 'tv'
   | 'smartphone'
@@ -106,6 +107,8 @@ const PATHS: Record<IconName, string> = {
   // A cow's head, the most recognisable livestock silhouette at 18px.
   livestock:
     'M5 4c0 2.2 1.2 3.6 3 4M19 4c0 2.2-1.2 3.6-3 4M8 8h8l1 5-1.4 5.4A2 2 0 0 1 13.7 20h-3.4a2 2 0 0 1-1.9-1.6L7 13l1-5ZM8 9.5 4 10.5l3.4 2M16 9.5l4 1-3.4 2M10 12.5h.01M14 12.5h.01M10.5 17h.01M13.5 17h.01',
+  // A sofa: home and office goods.
+  goods: 'M4 11V8a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v3M2 13a2 2 0 0 1 4 0v2h12v-2a2 2 0 0 1 4 0v5H2v-5ZM5 18v2M19 18v2',
   cpu: 'M6 6h12v12H6zM9.5 9.5h5v5h-5zM9 2v4M15 2v4M9 18v4M15 18v4M2 9h4M2 15h4M18 9h4M18 15h4',
   tv: 'M3 7h18v12H3zM8 3l4 4 4-4',
   smartphone: 'M7.5 2h9a1 1 0 0 1 1 1v18a1 1 0 0 1-1 1h-9a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1ZM11 18.5h2',
@@ -139,6 +142,7 @@ const CATEGORY_BY_SLUG: Record<string, IconName> = {
   land: 'land',
   lands: 'land',
   livestock: 'livestock',
+  'home-office-goods': 'goods',
 };
 
 const CATEGORY_BY_ICON: Record<string, IconName> = {

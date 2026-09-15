@@ -163,6 +163,10 @@ export function Header() {
   const signOut = useAuth((state) => state.signOut);
   const { data: me } = useMe();
   const { data: unread } = useUnreadMessages();
+  // The signed-in person's name rather than a generic "Account": profile
+  // name, then username, then the part of the email before the @.
+  const displayName = me?.fullName?.trim() || me?.username || session?.user.email?.split('@')[0] || '';
+  const firstName = displayName.split(/\s+/)[0] || t('nav.account');
   const { data: config } = useConfig();
   const { data: countries } = useCountries();
 
@@ -296,10 +300,21 @@ export function Header() {
             <Popover
               label={t('nav.account')}
               icon="user"
-              value={me?.fullName?.split(' ')[0] ?? t('nav.account')}
+              value={firstName}
             >
               {(close) => (
                 <>
+                  {displayName ? (
+                    <>
+                      <div className="px-3 pb-2 pt-1.5">
+                        <p className="truncate text-sm font-semibold text-text-primary">{displayName}</p>
+                        {session?.user.email ? (
+                          <p className="truncate text-xs text-text-muted">{session.user.email}</p>
+                        ) : null}
+                      </div>
+                      <div className="my-1 h-px bg-border-subtle" />
+                    </>
+                  ) : null}
                   {me?.role === 'admin' || me?.role === 'moderator' ? (
                     <>
                       <a

@@ -7,7 +7,8 @@ import type { ButtonHTMLAttributes, ReactNode } from 'react';
 export type IconName =
   | 'dashboard' | 'listings' | 'users' | 'reports' | 'verified' | 'audit'
   | 'check' | 'close' | 'ban' | 'search' | 'chevron-left' | 'chevron-right'
-  | 'sun' | 'moon' | 'logout' | 'alert' | 'external' | 'clock';
+  | 'sun' | 'moon' | 'logout' | 'alert' | 'external' | 'clock'
+  | 'megaphone' | 'plus' | 'edit' | 'trash';
 
 const PATHS: Record<IconName, string> = {
   dashboard: 'M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM13 13h7v7h-7z',
@@ -28,6 +29,10 @@ const PATHS: Record<IconName, string> = {
   alert: 'M12 8v5M12 17h.01M12 3 2 20h20L12 3Z',
   external: 'M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14 21 3',
   clock: 'M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18ZM12 7v5l3 2',
+  megaphone: 'M3 11v2a1 1 0 0 0 1 1h2l5 4V6L6 10H4a1 1 0 0 0-1 1ZM15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13',
+  plus: 'M12 5v14M5 12h14',
+  edit: 'M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z',
+  trash: 'M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6M10 11v6M14 11v6',
 };
 
 export function Icon({ name, size = 18, className = '' }: { name: IconName; size?: number; className?: string }) {

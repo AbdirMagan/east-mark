@@ -1,6 +1,5 @@
 package com.example.ui.components
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -43,6 +42,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.AsyncImage
 import com.example.R
 import com.example.data.model.AppLanguage
 import com.example.data.model.Currency
@@ -79,17 +79,21 @@ fun ProductCard(
                     .aspectRatio(1.25f)
                     .background(MaterialTheme.colorScheme.surfaceVariant)
             ) {
-                val imageRes = when (product.imageUrls.firstOrNull()) {
+                val firstImage = product.imageUrls.firstOrNull()
+                val fallbackRes = when (firstImage) {
                     "img_vehicle" -> R.drawable.img_vehicle
                     "img_hero_banner" -> R.drawable.img_hero_banner
                     "img_app_icon" -> R.drawable.img_app_icon
                     else -> R.drawable.img_electronics
                 }
 
-                Image(
-                    painter = painterResource(id = imageRes),
+                AsyncImage(
+                    model = firstImage.toCoilModel(),
                     contentDescription = product.title,
                     contentScale = ContentScale.Crop,
+                    placeholder = painterResource(id = fallbackRes),
+                    error = painterResource(id = fallbackRes),
+                    fallback = painterResource(id = fallbackRes),
                     modifier = Modifier.fillMaxSize()
                 )
 

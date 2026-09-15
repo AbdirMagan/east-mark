@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Debug-only override. The local backend runs over plain HTTP on 10.0.2.2
+  (emulator) or a LAN IP (physical device) during development; production
+  builds never set this and stay HTTPS-only.
+-->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <application android:usesCleartextTraffic="true" />
+</manifest>

@@ -61,9 +61,10 @@ object DatabaseInitializer {
     val CATEGORIES = listOf(
         CategoryItem("electronics", "Electronics", "Devices", listOf("Smartphones", "Tablets", "Laptops", "Desktops", "Smart TVs", "Audio & Sound", "Cameras", "Gaming")),
         CategoryItem("houses", "Houses", "Home", listOf("Houses for Sale", "Houses for Rent", "Apartments", "Villas")),
-        CategoryItem("cars", "Cars", "DirectionsCar", listOf("Sedans", "4x4 / SUVs", "Pickups", "Toyota", "Nissan")),
-        CategoryItem("land", "Lands", "Landscape", listOf("Residential Land", "Commercial Plots", "Agricultural Land")),
-        CategoryItem("livestock", "Livestock", "Pets", listOf("Camels", "Goats & Sheep", "Cattle", "Poultry"))
+        CategoryItem("cars", "Cars", "DirectionsCar", listOf("Cars for Sale", "Car Rental", "Motorcycles", "Bicycles", "Buses & Vans")),
+        CategoryItem("land", "Lands", "Landscape", listOf("Land for Sale", "Land for Rent", "Commercial Property")),
+        CategoryItem("livestock", "Livestock", "Pets", listOf("Camels", "Cows & Cattle", "Goats & Sheep", "Poultry")),
+        CategoryItem("home-office-goods", "Home & Office Goods", "goods", listOf("Furniture", "Home Appliances", "Kitchenware", "Home Decor", "Office Furniture", "Office Equipment"))
     )
 
     val SAMPLE_SELLERS = listOf(

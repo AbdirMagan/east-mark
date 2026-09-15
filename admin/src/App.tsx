@@ -7,6 +7,7 @@ import { Spinner } from './components/ui.js';
 import { ApiError, api, auth } from './lib/api.js';
 import { Dashboard } from './pages/Dashboard.js';
 import { Listings } from './pages/Listings.js';
+import { Promotions } from './pages/Promotions.js';
 import { Audit, Reports, Verifications } from './pages/Queues.js';
 import { SignIn } from './pages/SignIn.js';
 import { Users } from './pages/Users.js';
@@ -111,6 +112,7 @@ export function App() {
               <Route element={<Layout />}>
                 <Route path="/" element={<Dashboard />} />
                 <Route path="/listings" element={<Listings />} />
+                <Route path="/promotions" element={<Promotions />} />
                 <Route path="/users" element={<Users />} />
                 <Route path="/reports" element={<Reports />} />
                 <Route path="/verifications" element={<Verifications />} />

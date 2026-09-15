@@ -1,5 +1,11 @@
 package com.example.ui.screens
 
+import android.content.Intent
+import android.net.Uri
+import androidx.compose.ui.platform.LocalContext
+import com.example.ui.components.HomeCarousel
+import com.example.ui.components.welcomeAd
+import com.example.ui.navigation.Screen
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -87,6 +93,7 @@ fun HomeScreen(
     viewModel: MarketplaceViewModel,
     onProductClick: (Product) -> Unit,
     onCategoryClick: (CategoryItem) -> Unit,
+    onNavigate: (String) -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     val language by viewModel.selectedLanguage.collectAsState()
@@ -96,6 +103,8 @@ fun HomeScreen(
     val filter by viewModel.filter.collectAsState()
     val products by viewModel.products.collectAsState()
     val featuredProducts by viewModel.featuredProducts.collectAsState()
+    val homeAds by viewModel.homeAds.collectAsState()
+    val context = LocalContext.current
 
     var showFilterSheet by remember { mutableStateOf(false) }
     var showLocationDialog by remember { mutableStateOf(false) }
@@ -313,51 +322,26 @@ fun HomeScreen(
         ) {
             // Hero Banner
             item(span = { GridItemSpan(2) }) {
-                Card(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(130.dp)
-                        .clip(RoundedCornerShape(16.dp))
-                        .testTag("promo_hero_banner"),
-                    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
-                ) {
-                    Box(modifier = Modifier.fillMaxSize()) {
-                        Image(
-                            painter = painterResource(id = R.drawable.img_hero_banner),
-                            contentDescription = "Hero banner",
-                            contentScale = ContentScale.Crop,
-                            modifier = Modifier.fillMaxSize()
-                        )
-                        Box(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .background(
-                                    Brush.horizontalGradient(
-                                        listOf(BrandNavy.copy(alpha = 0.85f), Color.Transparent)
-                                    )
-                                )
-                        )
-                        Column(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .padding(14.dp),
-                            verticalArrangement = Arrangement.Center
-                        ) {
-                            Text(
-                                text = "Buy & Sell Across East Africa",
-                                color = Color.White,
-                                fontWeight = FontWeight.Black,
-                                fontSize = 16.sp
-                            )
-                            Spacer(modifier = Modifier.height(3.dp))
-                            Text(
-                                text = "Verified sellers • Direct WhatsApp & Phone • Multi-Currency",
-                                color = Color.White.copy(alpha = 0.85f),
-                                fontSize = 11.sp
-                            )
+                // Same promotions as the web hero, managed in the admin dashboard.
+                HomeCarousel(
+                    ads = homeAds.ifEmpty { listOf(welcomeAd()) },
+                    onAdClick = { ad ->
+                        viewModel.onAdClicked(ad)
+                        when (ad.targetType) {
+                            "category" -> ad.categoryId?.let { viewModel.filterByCategory(it.toString()) }
+                            "search" -> viewModel.updateSearchQuery(ad.targetValue.orEmpty())
+                            "url" -> {
+                                val target = ad.targetValue.orEmpty()
+                                when {
+                                    target == "/sell" -> onNavigate(Screen.Sell.route)
+                                    target.startsWith("https://") -> runCatching {
+                                        context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(target)))
+                                    }
+                                }
+                            }
                         }
                     }
-                }
+                )
             }
 
             // Categories horizontal bar
@@ -404,7 +388,7 @@ fun HomeScreen(
                                 label = { Text(category.name, fontSize = 12.sp) },
                                 leadingIcon = {
                                     Icon(
-                                        painter = painterResource(id = categoryIconRes(category.id)),
+                                        painter = painterResource(id = categoryIconRes(category)),
                                         contentDescription = null,
                                         modifier = Modifier.size(16.dp)
                                     )
@@ -585,12 +569,17 @@ fun LocationPickerDialog(
     )
 }
 
-/** The same category glyphs as the web app (web/src/components/ui/Icon.tsx). */
-private fun categoryIconRes(categoryId: String): Int = when (categoryId) {
-    "electronics" -> R.drawable.ic_cat_electronics
-    "houses" -> R.drawable.ic_cat_house
-    "cars" -> R.drawable.ic_cat_car
-    "land" -> R.drawable.ic_cat_land
-    "livestock" -> R.drawable.ic_cat_livestock
+/**
+ * The same category glyphs as the web app (web/src/components/ui/Icon.tsx).
+ * Categories come from the backend with numeric ids, so this keys on the icon
+ * name the API sends (or the slug the offline fallback uses).
+ */
+private fun categoryIconRes(category: CategoryItem): Int = when (category.iconName.lowercase()) {
+    "electronics", "cpu", "devices" -> R.drawable.ic_cat_electronics
+    "house", "home", "houses" -> R.drawable.ic_cat_house
+    "car", "cars", "directionscar" -> R.drawable.ic_cat_car
+    "land", "map", "landscape" -> R.drawable.ic_cat_land
+    "livestock", "cow", "pets" -> R.drawable.ic_cat_livestock
+    "goods", "home-office-goods", "chair" -> R.drawable.ic_cat_goods
     else -> R.drawable.ic_cat_electronics
 }

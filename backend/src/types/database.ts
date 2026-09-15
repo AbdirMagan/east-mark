@@ -67,6 +67,10 @@ export type Database = {
       }
       advertisements: {
         Row: {
+          badge: string | null
+          cta_label: string | null
+          icon: string | null
+          theme: string
           advertiser_id: string | null
           business_id: string | null
           category_ids: number[]
@@ -93,6 +97,10 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          badge?: string | null
+          cta_label?: string | null
+          icon?: string | null
+          theme?: string
           advertiser_id?: string | null
           business_id?: string | null
           category_ids?: number[]
@@ -119,6 +127,10 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          badge?: string | null
+          cta_label?: string | null
+          icon?: string | null
+          theme?: string
           advertiser_id?: string | null
           business_id?: string | null
           category_ids?: number[]

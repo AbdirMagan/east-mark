@@ -314,6 +314,22 @@ export interface ChatMessage {
   status?: 'sending' | 'failed';
 }
 
+/** A home-carousel promotion. Same shape the Android app renders. */
+export interface HomeAd {
+  id: string;
+  title: string;
+  subtitle: string | null;
+  badge: string | null;
+  ctaLabel: string | null;
+  theme: 'night' | 'acacia' | 'clay' | 'sun' | 'navy';
+  icon: string | null;
+  imageUrl: string | null;
+  targetType: string;
+  targetValue: string | null;
+  link: string | null;
+  categoryId: number | null;
+}
+
 export interface AppConfig {
   settings: Record<string, Record<string, unknown>>;
   languages: Array<{ code: string; name: string; nativeName: string; rtl: boolean }>;
@@ -477,6 +493,13 @@ export const endpoints = {
 
   updateContact: (input: { phone?: string | null; whatsapp?: string | null }) =>
     api<Me['contact']>('/users/me/contact', { method: 'PATCH', body: input }),
+
+  /* --- promotions --- */
+
+  ads: (placement: string, lang: string, countryId?: number) =>
+    api<HomeAd[]>('/ads', { query: { placement, lang, countryId }, auth: false }),
+
+  adClick: (id: string) => api<null>(`/ads/${id}/click`, { method: 'POST', auth: false }),
 
   /* --- messaging --- */
 

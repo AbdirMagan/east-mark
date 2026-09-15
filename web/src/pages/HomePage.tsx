@@ -1,7 +1,6 @@
-import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
-import { HORN_COUNTRIES, HornMap, ParticleField, type HornCountryCode } from '../components/brand/HornMap.js';
+import { HeroCarousel } from '../components/home/HeroCarousel.js';
 import { CulturalPattern } from '../components/brand/CulturalPattern.js';
 import { ProductRail } from '../components/product/ProductCard.js';
 import { Button, SectionHeading, Skeleton } from '../components/ui/index.js';
@@ -9,10 +8,12 @@ import { Icon, categoryIcon, type IconName } from '../components/ui/Icon.js';
 import {
   useCategories,
   useCountries,
+  useHomeAds,
   useProductSearch,
   useToggleFavorite,
 } from '../hooks/useMarketData.js';
 import { useSeo } from '../hooks/useSeo.js';
+import type { HomeAd } from '../lib/api.js';
 import { useT } from '../i18n/index.js';
 import { useAuth } from '../store/auth.js';
 import { usePreferences } from '../store/preferences.js';
@@ -26,6 +27,10 @@ export function HomePage() {
 
   const { data: categories, isLoading: categoriesLoading } = useCategories();
   const { data: countries } = useCountries();
+  const { data: ads, isLoading: adsLoading, isError: adsError } = useHomeAds();
+  // While promotions load the carousel shows a skeleton; with none running
+  // (or the API unreachable) it still has the welcome slide.
+  const heroSlides: HomeAd[] = ads?.length ? ads : adsLoading && !adsError ? [] : [welcomeSlide(t)];
 
   const scope = {
     countryId: preferences.countryId ?? undefined,
@@ -39,7 +44,7 @@ export function HomePage() {
   useSeo({
     title: 'East-Market',
     description:
-      'Buy and sell across Somaliland, Somalia, Ethiopia, Kenya and Djibouti. Electronics, houses, cars, land and livestock — from people near you.',
+      'Buy and sell across Somaliland, Somalia, Ethiopia, Kenya and Djibouti. Electronics, houses, cars and motorcycles, land, livestock, and home and office goods — to buy or rent, from people near you.',
     path: '/',
   });
 
@@ -49,7 +54,7 @@ export function HomePage() {
 
   return (
     <>
-      <Hero />
+      <HeroCarousel slides={heroSlides} loading={adsLoading} />
 
       <div className="mx-auto max-w-[90rem] space-y-12 px-4 py-10 lg:px-6">
         {/* Categories ------------------------------------------------------ */}
@@ -156,104 +161,25 @@ export function HomePage() {
 
 /* -------------------------------------------------------------------------- */
 
-function Hero() {
-  const t = useT();
-  const navigate = useNavigate();
-  const session = useAuth((state) => state.session);
-  const { data: countries } = useCountries();
-  const setCountry = usePreferences((state) => state.setCountry);
-  const [selected, setSelected] = useState<HornCountryCode | null>(null);
-
-  // Country names come from the API in the visitor's language.
-  const names = Object.fromEntries((countries ?? []).map((country) => [country.code, country.name])) as Partial<
-    Record<HornCountryCode, string>
-  >;
-  const chosen = HORN_COUNTRIES.find((country) => country.code === selected);
-  const chosenRow = countries?.find((country) => country.code === selected);
-
-  const browseCountry = () => {
-    if (!chosenRow) return;
-    setCountry({ id: chosenRow.id, code: chosenRow.code, name: chosenRow.name });
-    navigate('/browse');
+/**
+ * The slide shown when no promotions are running or the API cannot be
+ * reached, so the top of the home page is never empty.
+ */
+function welcomeSlide(t: ReturnType<typeof useT>): HomeAd {
+  return {
+    id: 'fallback-welcome',
+    title: t('home.heroTitle'),
+    subtitle: t('home.heroSubtitle'),
+    badge: null,
+    ctaLabel: t('home.browseCategories'),
+    theme: 'night',
+    icon: 'map',
+    imageUrl: null,
+    targetType: 'search',
+    targetValue: '',
+    link: '/browse',
+    categoryId: null,
   };
-
-  return (
-    <section className="horn-neon relative isolate overflow-hidden border-b border-white/10 bg-[#040914] text-slate-100">
-      {/* Dot grid and drifting particles, from the brand background design. */}
-      <div
-        aria-hidden="true"
-        className="absolute inset-0 -z-10 opacity-25"
-        style={{ backgroundImage: 'radial-gradient(rgb(255 255 255 / 0.16) 1px, transparent 1px)', backgroundSize: '36px 36px' }}
-      />
-      <ParticleField className="absolute inset-0 -z-10" />
-
-      <div className="relative mx-auto grid max-w-[90rem] items-center gap-4 px-4 pb-8 pt-10 sm:pb-12 sm:pt-14 lg:grid-cols-[1fr_1.1fr] lg:gap-10 lg:px-6 lg:py-14">
-        <div className="text-center lg:text-left">
-          <span className="inline-flex items-center gap-1.5 rounded-[--radius-pill] bg-white/5 px-3 py-1 text-xs font-semibold text-cyan-200 ring-1 ring-inset ring-white/15">
-            <Icon name="map-pin" size={13} />
-            {t('footer.countries')}
-          </span>
-
-          <h1 className="mt-5 font-display text-4xl font-extrabold leading-[1.08] tracking-tight text-white sm:text-5xl lg:text-6xl">
-            {t('home.heroTitle')}
-          </h1>
-
-          <p className="mx-auto mt-4 max-w-xl text-base leading-relaxed text-slate-300 sm:text-lg lg:mx-0">
-            {t('home.heroSubtitle')}
-          </p>
-
-          <div className="mt-7 flex flex-wrap justify-center gap-3 lg:justify-start">
-            <Button size="lg" variant="accent" icon="search" onClick={() => navigate('/browse')}>
-              {t('home.browseCategories')}
-            </Button>
-            <Button
-              size="lg"
-              variant="secondary"
-              icon="plus"
-              className="border-white/20 bg-white/5 text-white hover:bg-white/15"
-              onClick={() => navigate(session ? '/sell' : '/signin?next=/sell')}
-            >
-              {t('home.startSelling')}
-            </Button>
-          </div>
-        </div>
-
-        <div className="mx-auto w-full max-w-md sm:max-w-lg lg:max-w-none">
-          <HornMap
-            variant="hero"
-            className="aspect-[960/870] w-full"
-            names={names}
-            selected={selected}
-            onSelect={(code) => setSelected((current) => (current === code ? null : code))}
-            label={t('home.mapLabel')}
-          />
-
-          {/* The tap target on phones: hover cards do not exist on touch. */}
-          <div aria-live="polite" className="mt-3 flex min-h-[4.25rem] items-center justify-center">
-            {chosen ? (
-              <div className="flex w-full max-w-sm items-center gap-3 rounded-xl border border-white/15 bg-white/5 px-4 py-3 backdrop-blur-md">
-                <span
-                  className="h-10 w-2.5 shrink-0 rounded-full"
-                  style={{ backgroundColor: chosen.color, boxShadow: `0 0 12px ${chosen.color}` }}
-                />
-                <div className="min-w-0 flex-1">
-                  <p className="truncate text-sm font-bold uppercase tracking-wider text-white">
-                    {names[chosen.code] ?? chosen.name}
-                  </p>
-                  <p className="font-mono text-xs text-slate-300">{t('home.capital', { city: chosen.capital })}</p>
-                </div>
-                <Button size="sm" variant="accent" icon="arrow-right" onClick={browseCountry} disabled={!chosenRow}>
-                  {t('home.browseCountry', { country: names[chosen.code] ?? chosen.name })}
-                </Button>
-              </div>
-            ) : (
-              <p className="text-center text-xs text-slate-400">{t('home.mapHint')}</p>
-            )}
-          </div>
-        </div>
-      </div>
-    </section>
-  );
 }
 
 function CategoryTile({

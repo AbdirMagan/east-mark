@@ -4,6 +4,9 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import coil.Coil
+import coil.ImageLoader
+import coil.decode.SvgDecoder
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
@@ -29,11 +32,13 @@ import com.example.ui.screens.CategoriesScreen
 import com.example.ui.screens.ChatDetailScreen
 import com.example.ui.screens.FavoritesScreen
 import com.example.ui.screens.HomeScreen
+import com.example.ui.screens.LoginScreen
 import com.example.ui.screens.MessagingScreen
 import com.example.ui.screens.ProductDetailScreen
 import com.example.ui.screens.SellProductScreen
 import com.example.ui.screens.SellerProfileScreen
 import com.example.ui.screens.SettingsScreen
+import com.example.ui.screens.SignUpScreen
 import com.example.ui.theme.MyApplicationTheme
 import com.example.ui.viewmodel.MarketplaceViewModel
 import kotlinx.coroutines.flow.collectLatest
@@ -42,6 +47,13 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+        // Listing thumbnails from the seed data are inline SVG data: URIs;
+        // SvgDecoder is what lets Coil render those instead of erroring out.
+        Coil.setImageLoader(
+            ImageLoader.Builder(applicationContext)
+                .components { add(SvgDecoder.Factory()) }
+                .build()
+        )
         setContent {
             MyApplicationTheme {
                 EastMarketApp()
@@ -118,7 +130,8 @@ fun EastMarketApp() {
                     },
                     onCategoryClick = { category ->
                         viewModel.filterByCategory(category.id)
-                    }
+                    },
+                    onNavigate = { route -> navController.navigate(route) }
                 )
             }
 
@@ -151,6 +164,7 @@ fun EastMarketApp() {
             composable(Screen.Messages.route) {
                 MessagingScreen(
                     viewModel = viewModel,
+                    onSignIn = { navController.navigate(Screen.Login.route) },
                     onOpenConversation = { convId ->
                         activeConvId = convId
                         navController.navigate(Screen.ChatDetail.route)
@@ -164,6 +178,12 @@ fun EastMarketApp() {
                     viewModel = viewModel,
                     onNavigateToFavorites = {
                         navController.navigate(Screen.Favorites.route)
+                    },
+                    onNavigateToLogin = {
+                        navController.navigate(Screen.Login.route)
+                    },
+                    onNavigateToSignUp = {
+                        navController.navigate(Screen.SignUp.route)
                     }
                 )
             }
@@ -218,6 +238,33 @@ fun EastMarketApp() {
                         navController.popBackStack()
                     }
                 }
+            }
+
+            // Login
+            composable(Screen.Login.route) {
+                LoginScreen(
+                    viewModel = viewModel,
+                    onSignedIn = { navController.popBackStack() },
+                    onNavigateToSignUp = {
+                        navController.navigate(Screen.SignUp.route) {
+                            popUpTo(Screen.Login.route) { inclusive = true }
+                        }
+                    },
+                    onBack = { navController.popBackStack() }
+                )
+            }
+
+            // Sign up
+            composable(Screen.SignUp.route) {
+                SignUpScreen(
+                    viewModel = viewModel,
+                    onSignedUp = { navController.popBackStack() },
+                    onNavigateToLogin = {
+                        navController.navigate(Screen.Login.route) {
+                            popUpTo(Screen.SignUp.route) { inclusive = true }
+                        }
+                    }
+                )
             }
 
             // 9. Seller Profile

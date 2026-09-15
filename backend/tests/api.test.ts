@@ -230,3 +230,23 @@ describe('messages', () => {
       .expect(401);
   });
 });
+
+
+describe('ads', () => {
+  it('serves the home carousel publicly, with safe links', async () => {
+    const res = await request(app).get('/api/v1/ads?placement=home_hero&lang=en').expect(200);
+    expect(Array.isArray(res.body.data)).toBe(true);
+    for (const slide of res.body.data) {
+      expect(['night', 'acacia', 'clay', 'sun', 'navy']).toContain(slide.theme);
+      if (slide.link !== null) expect(slide.link).toMatch(/^(\/(?!\/)|https:\/\/)/);
+    }
+  });
+
+  it('rejects an unknown placement', async () => {
+    await request(app).get('/api/v1/ads?placement=popup').expect(422);
+  });
+
+  it('keeps promotion editing staff-only', async () => {
+    await request(app).post('/api/v1/admin/ads').send({ title: 'x' }).expect(401);
+  });
+});

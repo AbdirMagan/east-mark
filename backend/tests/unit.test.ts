@@ -184,3 +184,18 @@ describe('reference-data cache', () => {
     expect(calls).toBe(3);
   });
 });
+
+
+describe('promotion links', () => {
+  it('builds internal routes and refuses anything that could leave the site unsafely', async () => {
+    const { linkFor } = await import('../src/services/ads.service.js');
+    expect(linkFor('category', 'electronics')).toBe('/browse?category=electronics');
+    expect(linkFor('search', '')).toBe('/browse');
+    expect(linkFor('product', '100013')).toBe('/product/100013');
+    expect(linkFor('url', '/sell')).toBe('/sell');
+    expect(linkFor('url', 'https://example.com/deal')).toBe('https://example.com/deal');
+    expect(linkFor('url', '//evil.example')).toBeNull();
+    expect(linkFor('url', 'javascript:alert(1)')).toBeNull();
+    expect(linkFor('product', 'abc')).toBeNull();
+  });
+});
