@@ -1,5 +1,6 @@
 package com.example.data.repository
 
+import kotlinx.coroutines.coroutineScope
 import com.example.data.model.ChatMessage
 import com.example.data.model.Conversation
 import com.example.data.model.HomeAd
@@ -248,6 +249,24 @@ class MarketplaceRepository(
 
     private suspend fun refreshProfile() {
         runCatching { backendApi.getMe() }.onSuccess { envelope -> _profile.value = envelope.data }
+    }
+
+    /**
+     * Everything the home screen shows, reloaded in one pass: categories,
+     * locations, featured listings, the promotions carousel and -- when signed
+     * in -- favourites, the profile and the inbox. Run in parallel, because on
+     * a slow connection doing these one after another is a visible wait.
+     */
+    suspend fun refreshAll() = coroutineScope {
+        launch { loadCategories() }
+        launch { loadCountries() }
+        launch { refreshFeatured() }
+        launch { refreshHomeAds() }
+        if (authRepository.authState.value is AuthState.SignedIn) {
+            launch { refreshFavorites() }
+            launch { refreshProfile() }
+            launch { refreshConversations() }
+        }
     }
 
     /* Messages ------------------------------------------------------------- */

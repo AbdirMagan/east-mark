@@ -1,5 +1,6 @@
 package com.example.ui.viewmodel
 
+import kotlinx.coroutines.flow.combine
 import com.example.data.model.ChatMessage
 import com.example.data.model.Conversation
 import com.example.data.model.HomeAd
@@ -71,7 +72,14 @@ class MarketplaceViewModel(application: Application) : AndroidViewModel(applicat
     private val _filter = MutableStateFlow(FilterCriteria())
     val filter: StateFlow<FilterCriteria> = _filter.asStateFlow()
 
-    val products: StateFlow<List<Product>> = _filter
+    // The tick lets a refresh re-run the same query: the filter has not
+    // changed, so flatMapLatest alone would not fetch again.
+    private val _refreshTick = MutableStateFlow(0)
+
+    private val _isRefreshing = MutableStateFlow(false)
+    val isRefreshing: StateFlow<Boolean> = _isRefreshing.asStateFlow()
+
+    val products: StateFlow<List<Product>> = combine(_filter, _refreshTick) { criteria, _ -> criteria }
         .flatMapLatest { criteria -> repository.getProducts(criteria) }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
@@ -247,6 +255,17 @@ class MarketplaceViewModel(application: Application) : AndroidViewModel(applicat
         messagePolling?.cancel()
         messagePolling = null
         viewModelScope.launch { repository.refreshConversations() }
+    }
+
+    /** Pull to refresh, and the toolbar refresh button. */
+    fun refreshAll() {
+        if (_isRefreshing.value) return
+        viewModelScope.launch {
+            _isRefreshing.value = true
+            runCatching { repository.refreshAll() }
+            _refreshTick.value += 1
+            _isRefreshing.value = false
+        }
     }
 
     fun refreshConversations() {

@@ -1,5 +1,7 @@
 package com.example.ui.screens
 
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
+import androidx.compose.material.icons.filled.Refresh
 import android.content.Intent
 import android.net.Uri
 import androidx.compose.ui.platform.LocalContext
@@ -104,6 +106,7 @@ fun HomeScreen(
     val products by viewModel.products.collectAsState()
     val featuredProducts by viewModel.featuredProducts.collectAsState()
     val homeAds by viewModel.homeAds.collectAsState()
+    val isRefreshing by viewModel.isRefreshing.collectAsState()
     val context = LocalContext.current
 
     var showFilterSheet by remember { mutableStateOf(false) }
@@ -292,6 +295,23 @@ fun HomeScreen(
                     Spacer(modifier = Modifier.width(8.dp))
 
                     IconButton(
+                        onClick = { viewModel.refreshAll() },
+                        modifier = Modifier
+                            .size(50.dp)
+                            .clip(RoundedCornerShape(12.dp))
+                            .background(Color.White.copy(alpha = 0.14f))
+                            .testTag("refresh_btn")
+                    ) {
+                        Icon(
+                            imageVector = Icons.Filled.Refresh,
+                            contentDescription = "Refresh",
+                            tint = Color.White
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.width(8.dp))
+
+                    IconButton(
                         onClick = { showFilterSheet = true },
                         modifier = Modifier
                             .size(50.dp)
@@ -310,6 +330,13 @@ fun HomeScreen(
         }
 
         // --- BODY: PRODUCTS & CONTENT GRID ---
+        // Pull down to reload listings, categories, locations, promotions and
+        // the inbox -- the same refresh the toolbar button runs.
+        PullToRefreshBox(
+            isRefreshing = isRefreshing,
+            onRefresh = { viewModel.refreshAll() },
+            modifier = Modifier.fillMaxSize()
+        ) {
         LazyVerticalGrid(
             columns = GridCells.Fixed(2),
             modifier = Modifier
@@ -452,6 +479,7 @@ fun HomeScreen(
                     )
                 }
             }
+        }
         }
     }
 
