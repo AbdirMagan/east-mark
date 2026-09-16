@@ -1,0 +1,6 @@
+# Shell scripts must keep LF: a CRLF script fails on macOS and Linux with
+# "bad interpreter". Swift, Kotlin and SQL are normalised for the same reason.
+*.sh text eol=lf
+*.swift text eol=lf
+*.kt text eol=lf
+*.sql text eol=lf
