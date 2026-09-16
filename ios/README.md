@@ -1,59 +1,58 @@
 # East-Market — iOS
 
 SwiftUI, iOS 16+. The same backend as the web app and the Android app: listings,
-search, promotions, messaging and posting a listing all go through
-`/api/v1`, so a chat started on the web continues here.
+search, promotions, messaging and posting a listing all go through `/api/v1`, so
+a conversation started on the web continues here.
 
 > **Never compiled.** This app was written on a Windows machine, where Xcode does
-> not exist. Everything here is unbuilt: expect a handful of compile errors on
-> the first build and fix them in Xcode. Nothing in it has been run or tested.
+> not exist — no part of it has been built or run. Expect a few compile errors on
+> the first build. The common ones, and their fixes, are at the bottom of this
+> file.
 
 ---
 
 ## Build it
 
-1. **Generate the project** (the repo keeps `project.yml` rather than a
-   `.xcodeproj`, so the app is reviewable in git):
+```bash
+cd ios
+./setup.sh                                       # simulator
+API_BASE_URL=http://<your-Mac-IP>:4000/api/v1 ./setup.sh   # a real iPhone
+```
 
-   ```bash
-   brew install xcodegen
-   cd ios
-   xcodegen generate
-   open EastMarket.xcodeproj
-   ```
+`setup.sh` installs XcodeGen if needed, generates `EastMarket.xcodeproj` from
+`project.yml`, and opens Xcode. Then set your team under **Signing &
+Capabilities** and press Run.
 
-   No XcodeGen? Create a new iOS App in Xcode (SwiftUI, iOS 16), delete its
-   `ContentView.swift` and `...App.swift`, then drag the `EastMarket` folder in
-   with *Create groups* ticked, and copy the Info.plist keys listed below.
+To include sign-in, pass the anon key as well:
 
-2. **Set the Supabase anon key.** `project.yml` reads it from a build setting so
-   the key is not committed twice. Either export it before generating:
+```bash
+SUPABASE_ANON_KEY=your-anon-key ./setup.sh
+```
 
-   ```bash
-   SUPABASE_ANON_KEY=your-anon-key xcodegen generate
-   ```
+It is the **anon** key — publishable, the same one the web and Android apps
+ship. The service-role key must never go in an app.
 
-   or paste it straight into `project.yml` under `SUPABASE_ANON_KEY`. It is the
-   **anon** key — publishable, the same one the web and Android apps ship. The
-   service-role key must never appear in an app.
+### Without XcodeGen
 
-3. **Point it at the backend.** `API_BASE_URL` in `project.yml`:
+Create a new iOS App in Xcode (SwiftUI, iOS 16), delete its `ContentView.swift`
+and `…App.swift`, drag the `EastMarket` folder in with *Create groups* ticked,
+and add these Info.plist keys: `API_BASE_URL`, `SUPABASE_URL`,
+`SUPABASE_ANON_KEY`, `NSPhotoLibraryUsageDescription`, `NSCameraUsageDescription`,
+and `NSAppTransportSecurity → NSAllowsLocalNetworking = YES`.
 
-   | Running on | Value |
-   | --- | --- |
-   | Simulator, backend on the same Mac | `http://localhost:4000/api/v1` |
-   | A real iPhone | `http://<your-Mac-Wi-Fi-IP>:4000/api/v1` |
+### Where the backend is
 
-   An iPhone reaches the backend over Wi-Fi even when plugged in by USB, so
-   `localhost` there means the phone itself. Find the Mac's address with
-   `ipconfig getifaddr en0`, keep both on the same network, and allow port 4000
-   through the Mac's firewall.
+| Running on | `API_BASE_URL` |
+| --- | --- |
+| Simulator, backend on the same Mac | `http://localhost:4000/api/v1` |
+| A real iPhone | `http://<your-Mac-Wi-Fi-IP>:4000/api/v1` |
 
-   Plain HTTP is allowed in this project only through `NSAllowsLocalNetworking`.
-   A release build should point at an `https://` API and that exception should
-   go.
-
-4. **Signing.** Set your team in *Signing & Capabilities*, then run.
+An iPhone reaches the backend over Wi-Fi even when plugged in by USB, so
+`localhost` there means the phone itself. Find the address with
+`ipconfig getifaddr en0`, keep both on the same network, and allow port 4000
+through the Mac's firewall. Plain HTTP is permitted only through
+`NSAllowsLocalNetworking`; a release build should use an `https://` API and drop
+that exception.
 
 ---
 
@@ -61,33 +60,54 @@ search, promotions, messaging and posting a listing all go through
 
 | Screen | What it does |
 | --- | --- |
-| **Home** | The promotions carousel (the same slides staff post in the admin dashboard), category chips, featured and recent listings. Pull to refresh, and a refresh button. |
-| **Browse** | Search, category filter, sort, results grid. |
-| **Listing** | Photo gallery, price, condition, description, seller, and Call / WhatsApp / Message buttons. |
-| **Messages** | The inbox and one conversation, refreshed every four seconds, with read receipts and a sending state. |
-| **Sell** | Post a listing: details, a photo resized on the phone, then submitted for moderation. |
-| **Account** | Sign in and sign up through Supabase, the person's name, saved listings, language. |
+| **Home** | Promotions carousel (the slides staff post in the admin dashboard), category chips, featured and recent listings, pull to refresh and a refresh button |
+| **Browse** | Search, category filter, sorting, results grid |
+| **Listing** | Photo gallery, price, condition, description, seller, Call / WhatsApp / Message |
+| **Messages** | The shared inbox and one conversation, refreshed every four seconds, with read receipts and a sending state |
+| **Sell** | Post a listing: details, a photo resized on the phone, then submitted for moderation |
+| **Account** | Supabase sign-in and sign-up, the person's name, saved listings, language |
 
-The design tokens, the promotion themes and the button shapes match
-`web/src/index.css` and the Android theme, so the three apps look like one
-product. Four languages, with English as the fallback for a missing string;
-listing and promotion text is translated by the backend.
+Colours, promotion themes and button shapes match `web/src/index.css` and the
+Android theme, so the three apps read as one product. Four languages, English as
+the per-key fallback; listing and promotion text is translated by the backend.
 
 ## What is not in it
 
-- **Photos are JPEG**, not the WebP the web app uploads. iOS has no WebP encoder
-  in the SDK; the backend accepts JPEG.
+- **Photos upload as JPEG**, not the WebP the web app produces — iOS has no WebP
+  encoder in the SDK. The backend accepts JPEG.
 - **The session lives in `UserDefaults`.** Before the App Store it belongs in the
   Keychain, which is not restored onto another device from a backup.
-- No push notifications, no offline cache, no favourites toggle on the card, and
-  no real-time socket — messaging polls, as the Android app does.
-- Not localized for right-to-left, and the App Store metadata is not written.
+- **Saved listings may come back empty.** `/users/me/favorites` returns raw
+  product rows rather than the card shape this app decodes; the screen fails
+  soft rather than crashing.
+- No push notifications, no offline cache, no favourite toggle on the card, and
+  no realtime socket — messaging polls, as Android does.
+- No right-to-left layout, and no App Store metadata.
+
+---
+
+## If the first build fails
+
+These are the likely ones, all quick:
+
+| Xcode says | Fix |
+| --- | --- |
+| `Cannot find 'X' in scope` | A file is not in the target. In the Project navigator select it, and tick *EastMarket* under Target Membership. |
+| `Value of optional type must be unwrapped` in a `Picker` | The optional `.tag(...)` needs the exact type, e.g. `.tag(Category?.some(item))`. |
+| `Main actor-isolated property ... in a nonisolated context` | Add `await`, or mark the enclosing function `@MainActor`. |
+| `'onChange(of:perform:)' was deprecated` | A warning only on iOS 17; it still works. To silence it, use the two-parameter closure. |
+| `No such module 'PhotosUI'` | Set the deployment target to iOS 16 or later. |
+| Sign-in says the key is not set | Pass `SUPABASE_ANON_KEY` to `setup.sh`, or paste it into `project.yml`. |
+| Listings do not load on a device | `API_BASE_URL` still points at `localhost`. Use the Mac's Wi-Fi address and check the firewall. |
+
+Paste any error you cannot place and I will fix it in the source.
 
 ## Layout
 
 ```
 ios/
-├── project.yml                XcodeGen spec (the project file)
+├── project.yml                XcodeGen spec (the project file, reviewable in git)
+├── setup.sh                   generate the project and open Xcode
 └── EastMarket/
     ├── App/                   entry point, tab shell, stored preferences
     ├── Auth/                  Supabase sign-in, sign-up, token refresh
@@ -95,5 +115,5 @@ ios/
     ├── Design/                colours, button styles, price formatting
     ├── Localization/          en / so / am / sw strings
     ├── Features/              Home, Browse, Product, Messages, Sell, Account
-    └── Resources/             Info.plist, app icon
+    └── Resources/             Info.plist, app icon, launch colour
 ```

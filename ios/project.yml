@@ -35,10 +35,11 @@ targets:
         # exception can then be deleted.
         NSAppTransportSecurity:
           NSAllowsLocalNetworking: true
-        # Change API_BASE_URL to your Mac's LAN IP to run on a real iPhone.
-        API_BASE_URL: http://localhost:4000/api/v1
+        # setup.sh passes these in; you can also paste literals here.
+        # A real iPhone needs the Mac's Wi-Fi IP, not localhost.
+        API_BASE_URL: ${API_BASE_URL}
         SUPABASE_URL: https://ikfozizfgiemwuokoczf.supabase.co
-        SUPABASE_ANON_KEY: $(SUPABASE_ANON_KEY)
+        SUPABASE_ANON_KEY: ${SUPABASE_ANON_KEY}
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.eastmarket.app

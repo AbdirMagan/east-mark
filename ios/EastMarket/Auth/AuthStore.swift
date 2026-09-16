@@ -124,8 +124,14 @@ final class AuthStore: ObservableObject {
     }
 
     private func callAuth(path: String, body: [String: Any]) async -> [String: Any]? {
-        guard let url = URL(string: supabaseURL + "/auth/v1/" + path) else {
-            lastError = "The app is not configured with a Supabase address."
+        // A missing key is the most likely first-run mistake, and Supabase
+        // answers it with a bare 401. Say what is actually wrong instead.
+        if anonKey.isEmpty || anonKey.hasPrefix("$(") {
+            lastError = "SUPABASE_ANON_KEY is not set. Put your project's anon key in ios/project.yml and generate the project again."
+            return nil
+        }
+        guard !supabaseURL.isEmpty, let url = URL(string: supabaseURL + "/auth/v1/" + path) else {
+            lastError = "SUPABASE_URL is not set in ios/project.yml."
             return nil
         }
         var request = URLRequest(url: url)
