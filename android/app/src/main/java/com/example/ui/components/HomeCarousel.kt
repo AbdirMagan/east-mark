@@ -40,6 +40,7 @@ import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.contentDescription
@@ -73,6 +74,13 @@ fun HomeCarousel(
     val animationsOff = remember {
         Settings.Global.getFloat(context.contentResolver, Settings.Global.ANIMATOR_DURATION_SCALE, 1f) == 0f
     }
+    // A phone set to bigger system text needs a taller slide, or the button at
+    // the bottom gets clipped. Follow the font scale rather than guess.
+    val fontScale = LocalDensity.current.fontScale.coerceIn(1f, 1.4f)
+    // 176dp still clipped the button on a real phone: Samsung's system font has
+    // taller line metrics than the measurements suggest. Give it real headroom
+    // rather than a tight fit, and scale with the font setting on top of that.
+    val slideHeight = (200 * fontScale).dp
     val pagerState = rememberPagerState(pageCount = { ads.size })
     val isDragged by pagerState.interactionSource.collectIsDraggedAsState()
 
@@ -90,7 +98,7 @@ fun HomeCarousel(
             pageSpacing = 12.dp,
             modifier = Modifier
                 .fillMaxWidth()
-                .height(176.dp)
+                .height(slideHeight)
                 .testTag("home_carousel")
         ) { page ->
             val ad = ads[page]
