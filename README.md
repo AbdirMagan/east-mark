@@ -19,7 +19,7 @@ This repository is being built in dependency order. Only what is listed as
 | `web/` — React + TypeScript marketplace | **Done** for home, browse/search/filter, product detail, categories, auth and posting a listing. Messaging, seller profiles and my-listings are not started. |
 | `admin/` — React + TypeScript dashboard | Not started |
 | `android/` — Kotlin + Compose | Prototype only (Room-backed, not wired to Supabase) |
-| `ios/` — Swift + SwiftUI | Not started |
+| `ios/` — Swift + SwiftUI | Written, never compiled — needs a Mac (see ios/README.md) |
 | `packages/shared` — design tokens, i18n | Not started. The design system currently lives in `web/src/index.css`. |
 
 The `android/` directory currently holds an AI Studio prototype with a local

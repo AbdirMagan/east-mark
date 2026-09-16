@@ -1,0 +1,47 @@
+# XcodeGen spec: `brew install xcodegen && xcodegen generate` in this folder
+# produces EastMarket.xcodeproj. Keeping the project as a text file means the
+# app is reviewable in git, unlike a checked-in .pbxproj.
+name: EastMarket
+options:
+  bundleIdPrefix: com.eastmarket
+  deploymentTarget:
+    iOS: "16.0"
+  createIntermediateGroups: true
+settings:
+  base:
+    SWIFT_VERSION: "5.9"
+    DEVELOPMENT_TEAM: ""        # set yours in Xcode > Signing & Capabilities
+    CODE_SIGN_STYLE: Automatic
+targets:
+  EastMarket:
+    type: application
+    platform: iOS
+    sources:
+      - path: EastMarket
+    info:
+      path: EastMarket/Resources/Info.plist
+      properties:
+        CFBundleDisplayName: East Market
+        CFBundleShortVersionString: "1.0"
+        CFBundleVersion: "1"
+        UILaunchScreen:
+          UIColorName: LaunchBackground
+        UISupportedInterfaceOrientations:
+          - UIInterfaceOrientationPortrait
+        NSPhotoLibraryUsageDescription: East Market needs your photos so you can add pictures to a listing.
+        NSCameraUsageDescription: East Market uses the camera so you can photograph what you are selling.
+        # The backend runs over plain HTTP on your own network during
+        # development. Release builds should point at an https:// API and this
+        # exception can then be deleted.
+        NSAppTransportSecurity:
+          NSAllowsLocalNetworking: true
+        # Change API_BASE_URL to your Mac's LAN IP to run on a real iPhone.
+        API_BASE_URL: http://localhost:4000/api/v1
+        SUPABASE_URL: https://ikfozizfgiemwuokoczf.supabase.co
+        SUPABASE_ANON_KEY: $(SUPABASE_ANON_KEY)
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.eastmarket.app
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
+        TARGETED_DEVICE_FAMILY: "1"
