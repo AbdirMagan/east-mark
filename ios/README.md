@@ -23,8 +23,8 @@ Two optional repository secrets (Settings -> Secrets and variables -> Actions):
 
 | Secret | What it does |
 | --- | --- |
-| `API_BASE_URL` | The API the app calls, e.g. `https://<your-ngrok>.ngrok-free.dev/api/v1`. Without it the app builds and launches but loads nothing, because a runner cannot reach your localhost. |
-| `SUPABASE_ANON_KEY` | Enables sign-in. The **anon** key only — the service-role key would be baked into the app binary. |
+| `API_BASE_URL` | The API the app calls. Defaults to the hosted API, `https://east-market-api-two.vercel.app/api/v1`. |
+| `SUPABASE_ANON_KEY` | The key used for sign-in. Defaults to the project's publishable (`sb_publishable_…`) key. Never the secret or service-role key — it would be baked into the app binary. |
 
 Running it costs macOS minutes: free on a public repository, and on a private
 one each macOS minute counts as ten against the free monthly allowance, so a
@@ -42,14 +42,10 @@ API_BASE_URL=http://<your-Mac-IP>:4000/api/v1 ./setup.sh   # a real iPhone
 `project.yml`, and opens Xcode. Then set your team under **Signing &
 Capabilities** and press Run.
 
-To include sign-in, pass the anon key as well:
-
-```bash
-SUPABASE_ANON_KEY=your-anon-key ./setup.sh
-```
-
-It is the **anon** key — publishable, the same one the web and Android apps
-ship. The service-role key must never go in an app.
+Sign-in works out of the box: `setup.sh` uses the project's publishable
+(`sb_publishable_…`) key, the same one the web and Android apps ship. Pass
+`SUPABASE_ANON_KEY=...` only to point at a different Supabase project. The
+secret / service-role key must never go in an app.
 
 ### Without XcodeGen
 
@@ -120,7 +116,7 @@ These are the likely ones, all quick:
 | `Main actor-isolated property ... in a nonisolated context` | Add `await`, or mark the enclosing function `@MainActor`. |
 | `'onChange(of:perform:)' was deprecated` | A warning only on iOS 17; it still works. To silence it, use the two-parameter closure. |
 | `No such module 'PhotosUI'` | Set the deployment target to iOS 16 or later. |
-| Sign-in says the key is not set | Pass `SUPABASE_ANON_KEY` to `setup.sh`, or paste it into `project.yml`. |
+| Sign-in says the key is not set | The project was generated without `setup.sh`. Run `./setup.sh`, or paste the publishable key into `project.yml`. |
 | Listings do not load on a device | `API_BASE_URL` still points at `localhost`. Use the Mac's Wi-Fi address and check the firewall. |
 
 Paste any error you cannot place and I will fix it in the source.

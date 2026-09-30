@@ -5,6 +5,13 @@ import { chromium } from 'playwright';
 const WEB = process.env.WEB_URL ?? 'http://localhost:5173';
 const OUT = process.env.OUT_DIR ?? '.';
 const LISTING_REF = process.env.LISTING_REF ?? '100013';
+// The staff account's credentials never live in the repository.
+const ADMIN_EMAIL = process.env.ADMIN_EMAIL;
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
+if (!ADMIN_EMAIL || !ADMIN_PASSWORD) {
+  console.error('Set ADMIN_EMAIL and ADMIN_PASSWORD (a staff account) to run the messaging test (it signs in as the seller).');
+  process.exit(2);
+}
 
 const results = [];
 const errors = [];
@@ -44,7 +51,7 @@ const seller = await open(browser, { width: 1280, height: 900 }, 'seller');
 
 try {
   await signIn(buyer, 'demo-amina@eastmarket.test', 'DemoPassw0rd!');
-  await signIn(seller, 'abadirhassan10@gmail.com', 'EastMarket!Admin2026');
+  await signIn(seller, ADMIN_EMAIL, ADMIN_PASSWORD);
   check('both accounts signed in', true);
 
   // The seller sees a notice instead of messaging themselves.

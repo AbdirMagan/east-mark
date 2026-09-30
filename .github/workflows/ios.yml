@@ -10,10 +10,10 @@ name: iOS
 # and line, which is all that is needed to fix it from Windows.
 #
 # Secrets (Settings -> Secrets and variables -> Actions), both optional:
-#   API_BASE_URL       the marketplace API the app should call, e.g. an ngrok
-#                      https URL. Defaults to localhost, which a runner cannot
-#                      reach -- the app will build and launch, but show no data.
-#   SUPABASE_ANON_KEY  the publishable anon key, for sign-in. NEVER the
+#   API_BASE_URL       the marketplace API the app should call. Defaults to the
+#                      hosted API on Vercel.
+#   SUPABASE_ANON_KEY  the publishable key, for sign-in. Defaults to the
+#                      project's sb_publishable_ key. NEVER the secret or
 #                      service-role key: it would end up inside the app binary.
 
 on:
@@ -47,11 +47,10 @@ jobs:
       - name: Generate the Xcode project
         working-directory: ios
         env:
-          # A runner has no access to your machine, so localhost is a
-          # placeholder; set the API_BASE_URL secret to an ngrok https URL to
-          # have the app load real listings in the simulator.
-          API_BASE_URL: ${{ secrets.API_BASE_URL || 'http://localhost:4000/api/v1' }}
-          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+          # The hosted API and the publishable key are both public, so they
+          # are the defaults; either secret overrides them.
+          API_BASE_URL: ${{ secrets.API_BASE_URL || 'https://east-market-api-two.vercel.app/api/v1' }}
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY || 'sb_publishable_3Ztr2sVd65gK5Y430CVUMw_Zw5dcXSx' }}
         run: xcodegen generate
 
       - name: Build for the simulator

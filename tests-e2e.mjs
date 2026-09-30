@@ -6,6 +6,15 @@ const OUT = process.env.OUT_DIR ?? '.';
 // The dev server proxies /api to the backend; a deployed site calls the API on
 // its own domain, so point this at it (e.g. https://api.example.com/api/v1).
 const API = process.env.API_URL ?? '/api/v1';
+// Approving a listing changes real data, so it only runs when asked for.
+const ALLOW_WRITES = process.env.E2E_ALLOW_WRITES === '1';
+// The staff account's credentials never live in the repository.
+const ADMIN_EMAIL = process.env.ADMIN_EMAIL;
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
+if (!ADMIN_EMAIL || !ADMIN_PASSWORD) {
+  console.error('Set ADMIN_EMAIL and ADMIN_PASSWORD (a staff account) to run these checks.');
+  process.exit(2);
+}
 
 const results = [];
 const consoleErrors = [];
@@ -137,8 +146,8 @@ const refused = await page.locator('[role=alert]').innerText().catch(() => '');
 check('non-staff account refused', /staff access/i.test(refused), refused.trim());
 
 // Now the real admin.
-await page.fill('#email', 'abadirhassan10@gmail.com');
-await page.fill('#password', 'EastMarket!Admin2026');
+await page.fill('#email', ADMIN_EMAIL);
+await page.fill('#password', ADMIN_PASSWORD);
 await page.click('button[type=submit]');
 await page.waitForTimeout(6000);
 
@@ -168,18 +177,22 @@ const userRows = await page.locator('tbody tr').count();
 check('users screen lists accounts', userRows > 0, `${userRows} account(s)`);
 await page.screenshot({ path: `${OUT}/10-admin-users.png` });
 
-// The write path should fail with the service-role message, not a crash.
-await page.click('a[href="/listings"]');
-await page.waitForTimeout(2500);
-const approve = page.getByRole('button', { name: /approve/i }).first();
-if (await approve.count()) {
-  await approve.click();
-  await page.waitForTimeout(3500);
-  check('approve attempted (expect service-role failure)', true, 'clicked');
-} else {
-  check('nothing pending to approve', true, 'queue is clear');
+// Approving publishes a real listing. Against a shared or production
+// database that is not a test, so it is opt-in: E2E_ALLOW_WRITES=1.
+if (ALLOW_WRITES) {
+  await page.click('a[href="/listings"]');
+  await page.waitForTimeout(2500);
+  const approve = page.getByRole('button', { name: /approve/i }).first();
+  if (await approve.count()) {
+    await approve.click();
+    await page.waitForTimeout(3500);
+    const failed = await page.locator('[role=alert]').count();
+    check('approve succeeds', failed === 0);
+  } else {
+    check('nothing pending to approve', true, 'queue is clear');
+  }
+  await page.screenshot({ path: `${OUT}/11-admin-approve.png` });
 }
-await page.screenshot({ path: `${OUT}/11-admin-approve.png` });
 
 /* ------------------------------------------------------------------ */
 

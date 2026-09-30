@@ -40,16 +40,12 @@ if [[ "$API_BASE_URL" == *localhost* && -n "$LAN_IP" ]]; then
   echo "For a real iPhone, run: API_BASE_URL=http://$LAN_IP:4000/api/v1 ./setup.sh"
 fi
 
-if [[ -z "${SUPABASE_ANON_KEY:-}" ]]; then
-  echo
-  echo "SUPABASE_ANON_KEY is not set, so sign-in will not work."
-  echo "Find it in Supabase > Project Settings > API Keys (the anon / publishable key), then:"
-  echo "  SUPABASE_ANON_KEY=your-anon-key ./setup.sh"
-  echo "Browsing listings works without it."
-  echo
-fi
+# The project's publishable key. It is public by design -- the web and Android
+# apps ship it too -- and row level security is what protects the data.
+# Override it to point at a different Supabase project.
+SUPABASE_ANON_KEY="${SUPABASE_ANON_KEY:-sb_publishable_3Ztr2sVd65gK5Y430CVUMw_Zw5dcXSx}"
 
-API_BASE_URL="$API_BASE_URL" SUPABASE_ANON_KEY="${SUPABASE_ANON_KEY:-}" xcodegen generate
+API_BASE_URL="$API_BASE_URL" SUPABASE_ANON_KEY="$SUPABASE_ANON_KEY" xcodegen generate
 
 echo "Opening EastMarket.xcodeproj — set your signing team, then press Run."
 open EastMarket.xcodeproj
