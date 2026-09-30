@@ -31,6 +31,7 @@ const CategoriesPage = lazy(() =>
 const SavedPage = lazy(() => import('./pages/MiscPages.js').then((m) => ({ default: m.SavedPage })));
 const SellPage = lazy(() => import('./pages/SellPage.js').then((m) => ({ default: m.SellPage })));
 const PrivacyPage = lazy(() => import('./pages/LegalPages.js').then((m) => ({ default: m.PrivacyPage })));
+const TermsPage = lazy(() => import('./pages/LegalPages.js').then((m) => ({ default: m.TermsPage })));
 const MessagesPage = lazy(() =>
   import('./pages/MessagesPage.js').then((m) => ({ default: m.MessagesPage })),
 );
@@ -107,8 +108,10 @@ function Shell() {
             <Route path="/messages" element={<MessagesPage />} />
             <Route path="/messages/:conversationId" element={<MessagesPage />} />
             <Route path="/legal/privacy" element={<PrivacyPage />} />
-            {/* The short address to give app stores and to paste into listings. */}
+            <Route path="/legal/terms" element={<TermsPage />} />
+            {/* The short addresses to give app stores and to paste into listings. */}
             <Route path="/privacy" element={<Navigate to="/legal/privacy" replace />} />
+            <Route path="/terms" element={<Navigate to="/legal/terms" replace />} />
             <Route path="*" element={<NotFoundPage />} />
           </Routes>
         </Suspense>
