@@ -28,6 +28,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.ui.components.EastMarketBottomBar
 import com.example.ui.navigation.Screen
+import com.example.ui.components.EastMarketHeader
 import com.example.ui.screens.CategoriesScreen
 import com.example.ui.screens.ChatDetailScreen
 import com.example.ui.screens.FavoritesScreen
@@ -38,6 +39,7 @@ import com.example.ui.screens.ProductDetailScreen
 import com.example.ui.screens.SellProductScreen
 import com.example.ui.screens.SellerProfileScreen
 import com.example.ui.screens.SettingsScreen
+import com.example.ui.screens.VideoFeedScreen
 import com.example.ui.screens.SignUpScreen
 import com.example.ui.theme.MyApplicationTheme
 import com.example.ui.viewmodel.MarketplaceViewModel
@@ -84,31 +86,55 @@ fun EastMarketApp() {
     var viewingSellerId by remember { mutableStateOf<String?>(null) }
     var activeConvId by remember { mutableStateOf<String?>(null) }
 
-    val bottomBarRoutes = listOf(
+    // Every screen carries the app's own header and its navigation buttons: a
+    // marketplace where the logo, the city, the search box and the tabs vanish
+    // when you open a listing feels like two different apps.
+    val rootRoutes = listOf(
         Screen.Home.route,
         Screen.Categories.route,
         Screen.Sell.route,
         Screen.Messages.route,
         Screen.Profile.route
     )
-    val shouldShowBottomBar = currentRoute in bottomBarRoutes
+    // The feed is reached from the home screen, so it keeps a back arrow even
+    // though the tabs stay visible underneath it.
+    val isRoot = currentRoute in rootRoutes
+    // The conversation screen is the one exception to the search box: a query
+    // typed there would have nowhere to go.
+    val showSearch = currentRoute != Screen.ChatDetail.route
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         snackbarHost = { SnackbarHost(snackbarHostState) },
+        topBar = {
+            EastMarketHeader(
+                viewModel = viewModel,
+                showSearch = showSearch,
+                onBack = if (isRoot) null else ({ navController.popBackStack(); Unit })
+            )
+        },
         bottomBar = {
-            if (shouldShowBottomBar) {
+            run {
                 EastMarketBottomBar(
                     currentRoute = currentRoute,
                     language = language,
                     unreadMessagesCount = unreadCount,
                     onNavigate = { route ->
                         navController.navigate(route) {
+                            // Clear everything above the start destination, and
+                            // for Home the start destination itself, so the tab
+                            // always lands on that screen.
+                            //
+                            // saveState/restoreState used to be set here, which
+                            // is the pattern for tabs with their own nested
+                            // graphs. With one flat graph it restored whatever
+                            // had been on top last time -- tapping Home from a
+                            // listing or the video feed put you straight back
+                            // on the screen you were trying to leave.
                             popUpTo(navController.graph.findStartDestination().id) {
-                                saveState = true
+                                inclusive = route == Screen.Home.route
                             }
                             launchSingleTop = true
-                            restoreState = true
                         }
                     }
                 )
@@ -191,6 +217,18 @@ fun EastMarketApp() {
             // 6. Favorites
             composable(Screen.Favorites.route) {
                 FavoritesScreen(
+                    viewModel = viewModel,
+                    onProductClick = { product ->
+                        viewModel.selectProduct(product)
+                        navController.navigate(Screen.ProductDetail.route)
+                    },
+                    onBack = { navController.popBackStack() }
+                )
+            }
+
+            // 6b. Video feed -- listings that were filmed, full screen
+            composable(Screen.VideoFeed.route) {
+                VideoFeedScreen(
                     viewModel = viewModel,
                     onProductClick = { product ->
                         viewModel.selectProduct(product)

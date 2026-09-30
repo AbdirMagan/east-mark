@@ -180,6 +180,7 @@ class MarketplaceRepository(
         filter.condition?.let { params["conditions"] = it.key }
         if (filter.verifiedOnly) params["verifiedOnly"] = "true"
         if (filter.deliveryOnly) params["deliveryOnly"] = "true"
+        filter.media?.let { params["media"] = it }
         params["sort"] = when (filter.sortBy) {
             SortOption.NEWEST -> "newest"
             SortOption.PRICE_LOW_HIGH -> "price_asc"
@@ -195,6 +196,19 @@ class MarketplaceRepository(
             .getOrNull()?.data.orEmpty()
             .map { it.toDomain() }
         emit(result)
+    }
+
+    /**
+     * Listings that carry a video, newest first, for the full-screen feed.
+     *
+     * The search endpoint returns the video URL with the row, so the feed can
+     * start playing without a second request per listing.
+     */
+    suspend fun getVideoProducts(categoryId: String? = null): List<Product> {
+        val params = mutableMapOf("media" to "video", "sort" to "newest", "limit" to "30")
+        categoryId?.toIntOrNull()?.let { params["categoryId"] = it.toString() }
+        return runCatching { backendApi.searchProducts(params) }
+            .getOrNull()?.data.orEmpty().map { it.toDomain() }
     }
 
     fun getFeaturedProducts(): Flow<List<Product>> = _featuredProducts.asStateFlow()

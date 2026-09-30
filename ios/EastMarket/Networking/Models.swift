@@ -58,8 +58,14 @@ struct SellerRef: Decodable, Hashable {
 struct ProductImage: Decodable, Identifiable, Hashable {
     let id: String
     let url: String
+    /// For a video this is the poster frame, which is all the gallery loads
+    /// until the buyer presses play.
     let thumbnailUrl: String?
     let isPrimary: Bool
+    let mediaType: String?
+    let durationSeconds: Int?
+
+    var isVideo: Bool { mediaType == "video" }
 }
 
 struct ProductCard: Decodable, Identifiable, Hashable {
@@ -73,6 +79,12 @@ struct ProductCard: Decodable, Identifiable, Hashable {
     let city: String?
     let thumbnailUrl: String?
     let imageUrl: String?
+    /// The card shows a small badge; the video is only fetched on the listing.
+    let hasVideo: Bool?
+    /// Present on search results, so the feed plays without a second call.
+    let videoUrl: String?
+    let videoPosterUrl: String?
+    let videoDurationSeconds: Int?
     let featured: Bool
     let publishedAt: String?
     let seller: SellerRef

@@ -15,11 +15,22 @@ import { buildPageMeta } from '../utils/response.js';
 import type { CreateProductInput, ProductSearchQuery, UpdateProductInput } from '../validators/products.schema.js';
 
 const PRODUCT_BUCKET = 'product-images';
+// Video lives in its own bucket so the photo bucket's tight 5MB cap can stay
+// tight while video gets 20MB (see 0020_product_video.sql).
+const VIDEO_BUCKET = 'product-videos';
+const VIDEO_TYPES = new Set(['video/mp4', 'video/quicktime', 'video/webm']);
+const MAX_VIDEO_BYTES = 20 * 1024 * 1024;
 
 type ProductUpdate = Database['public']['Tables']['products']['Update'];
 
 export interface ProductCardDto {
   id: string;
+  /** True when the listing has a video; the card shows a play badge. */
+  hasVideo?: boolean;
+  /** Set on search results, so the video feed can play without a second call. */
+  videoUrl?: string | null;
+  videoPosterUrl?: string | null;
+  videoDurationSeconds?: number | null;
   ref: number;
   slug: string;
   title: string;
@@ -79,11 +90,14 @@ export interface ProductDetailDto extends ProductCardDto {
 export interface ProductImageDto {
   id: string;
   url: string;
+  /** For a video, the poster frame shown until someone taps play. */
   thumbnailUrl: string | null;
   width: number | null;
   height: number | null;
   position: number;
   isPrimary: boolean;
+  mediaType: 'image' | 'video';
+  durationSeconds: number | null;
 }
 
 /* -------------------------------------------------------------------------- */
@@ -133,6 +147,7 @@ export async function searchProducts(
     p_sort: query.sort,
     p_limit: query.limit,
     p_offset: offset,
+    p_media: query.media ?? undefined,
     // search_products is STABLE, so PostgREST accepts it over GET. That makes
     // the hottest read path in the product retryable by resilientFetch.
   }, { get: true });
@@ -238,7 +253,7 @@ async function assembleDetail(
   const [images, seller, business, contact, favorited, city, country] = await Promise.all([
     db
       .from('product_images')
-      .select('id, url, thumbnail_url, width, height, position, is_primary')
+      .select('id, url, thumbnail_url, width, height, position, is_primary, media_type, duration_seconds')
       .eq('product_id', row.id)
       .order('is_primary', { ascending: false })
       .order('position'),
@@ -318,9 +333,19 @@ async function assembleDetail(
     expiresAt: (row.expires_at as string | null) ?? null,
     soldAt: (row.sold_at as string | null) ?? null,
     createdAt: String(row.created_at ?? ''),
-    imageCount: images.data?.length ?? 0,
-    imageUrl: images.data?.[0]?.url ?? null,
-    thumbnailUrl: images.data?.[0]?.thumbnail_url ?? null,
+    // Counts and the card image are photos only: a listing with one photo and
+    // one video is still "1 photo", and a card never points at a video file.
+    imageCount: (images.data ?? []).filter((image) => image.media_type !== 'video').length,
+    // With no photos at all, the video's poster frame is the listing's face.
+    imageUrl:
+      (images.data ?? []).find((image) => image.media_type !== 'video')?.url ??
+      (images.data ?? []).find((image) => image.media_type === 'video')?.thumbnail_url ??
+      null,
+    thumbnailUrl:
+      (images.data ?? []).find((image) => image.media_type !== 'video')?.thumbnail_url ??
+      (images.data ?? []).find((image) => image.media_type === 'video')?.thumbnail_url ??
+      null,
+    hasVideo: (images.data ?? []).some((image) => image.media_type === 'video'),
     images: (images.data ?? []).map((image) => ({
       id: image.id,
       url: image.url,
@@ -329,6 +354,8 @@ async function assembleDetail(
       height: image.height,
       position: image.position,
       isPrimary: image.is_primary,
+      mediaType: image.media_type === 'video' ? ('video' as const) : ('image' as const),
+      durationSeconds: image.duration_seconds,
     })),
     seller: {
       id: row.seller_id,
@@ -543,7 +570,10 @@ export async function listMyProducts(
   let builder = auth.db
     .from('products')
     .select(
-      'id, ref, slug, title, price, currency_code, status, condition, view_count, favorite_count, message_count, is_featured, published_at, expires_at, created_at, city_id',
+      `id, ref, slug, title, description, price, currency_code, status, condition,
+       view_count, favorite_count, message_count, is_featured, published_at, expires_at,
+       created_at, city_id, category_id, is_negotiable, quantity, delivery_available,
+       rejection_reason`,
       { count: 'exact' },
     )
     .eq('seller_id', auth.userId)
@@ -556,8 +586,69 @@ export async function listMyProducts(
   const { data, error, count } = await builder;
   if (error) throw fromPostgrest(error, 'Listings');
 
+  const rows = data ?? [];
+
+  // A seller scanning their own listings needs to recognise each one at a
+  // glance, so the thumbnail comes along -- one batched query for the page,
+  // never one per row.
+  const media = rows.length
+    ? await auth.db
+        .from('product_images')
+        .select('product_id, url, thumbnail_url, is_primary, position, media_type')
+        .in(
+          'product_id',
+          rows.map((row) => row.id),
+        )
+        .order('is_primary', { ascending: false })
+        .order('position')
+    : { data: [], error: null };
+
+  const photoByProduct = new Map<string, string>();
+  const photoCount = new Map<string, number>();
+  const posterByProduct = new Map<string, string | null>();
+  for (const image of media.data ?? []) {
+    if (image.media_type === 'video') {
+      posterByProduct.set(image.product_id, image.thumbnail_url);
+      continue;
+    }
+    photoCount.set(image.product_id, (photoCount.get(image.product_id) ?? 0) + 1);
+    if (!photoByProduct.has(image.product_id)) {
+      photoByProduct.set(image.product_id, image.thumbnail_url ?? image.url);
+    }
+  }
+
+  const items = rows.map((row) => ({
+    id: row.id,
+    ref: row.ref,
+    slug: row.slug,
+    title: row.title,
+    description: row.description,
+    price: Number(row.price),
+    currency: row.currency_code,
+    status: row.status,
+    condition: row.condition,
+    categoryId: row.category_id,
+    cityId: row.city_id,
+    negotiable: row.is_negotiable,
+    quantity: row.quantity,
+    deliveryAvailable: row.delivery_available,
+    viewCount: row.view_count,
+    favoriteCount: row.favorite_count,
+    messageCount: row.message_count,
+    featured: row.is_featured,
+    publishedAt: row.published_at,
+    expiresAt: row.expires_at,
+    createdAt: row.created_at,
+    // Without this a rejected listing is a dead end: the seller is told no and
+    // never told why.
+    rejectionReason: row.rejection_reason,
+    thumbnailUrl: photoByProduct.get(row.id) ?? posterByProduct.get(row.id) ?? null,
+    imageCount: photoCount.get(row.id) ?? 0,
+    hasVideo: posterByProduct.has(row.id),
+  }));
+
   return {
-    items: data ?? [],
+    items,
     meta: buildPageMeta(count ?? 0, options.page, options.limit),
   };
 }
@@ -593,15 +684,21 @@ export async function createImageUploadUrl(
   await assertOwnsProduct(auth, productId);
 
   const extension = extensionFor(contentType);
+  const isVideo = VIDEO_TYPES.has(contentType);
   const base = `${auth.userId}/${productId}/${randomUUID()}`;
+  // A video still gets a poster image: browsing costs a small WebP, and the
+  // video itself is only fetched when a buyer taps play.
+  const posterPath = isVideo ? `${base}-poster.webp` : `${base}-thumb.${extension}`;
 
   // Both slots are issued together. Each photo needs two objects uploaded (the
   // resized original and its thumbnail), and asking for them separately would
   // be four round trips per photo. On a connection with 300ms of latency, a
   // five-photo listing would spend six seconds just negotiating URLs.
   const [full, thumbnail] = await Promise.all([
-    auth.db.storage.from(PRODUCT_BUCKET).createSignedUploadUrl(`${base}.${extension}`),
-    auth.db.storage.from(PRODUCT_BUCKET).createSignedUploadUrl(`${base}-thumb.${extension}`),
+    auth.db.storage
+      .from(isVideo ? VIDEO_BUCKET : PRODUCT_BUCKET)
+      .createSignedUploadUrl(`${base}.${extension}`),
+    auth.db.storage.from(PRODUCT_BUCKET).createSignedUploadUrl(posterPath),
   ]);
 
   if (full.error || thumbnail.error) {
@@ -630,8 +727,14 @@ export async function registerImage(
     height?: number;
     bytes?: number;
     isPrimary?: boolean;
+    mediaType?: 'image' | 'video';
+    durationSeconds?: number;
   },
 ): Promise<ProductImageDto> {
+  const isVideo = input.mediaType === 'video';
+  if (isVideo && input.bytes && input.bytes > MAX_VIDEO_BYTES) {
+    throw new BadRequestError('A video must be 20MB or smaller.');
+  }
   await assertOwnsProduct(auth, productId);
 
   // The path must sit inside this user's folder for this listing. Storage RLS
@@ -652,14 +755,17 @@ export async function registerImage(
   if (existing.error) throw fromPostgrest(existing.error, 'Images');
 
   const nextPosition = (existing.data?.[0]?.position ?? -1) + 1;
-  const isPrimary = input.isPrimary ?? nextPosition === 0;
+  // The card thumbnail is always a photo, so a video is never primary.
+  const isPrimary = isVideo ? false : (input.isPrimary ?? nextPosition === 0);
 
   if (isPrimary) {
     // Only one primary per product (enforced by a partial unique index).
     await auth.db.from('product_images').update({ is_primary: false }).eq('product_id', productId);
   }
 
-  const publicUrl = auth.db.storage.from(PRODUCT_BUCKET).getPublicUrl(input.path).data.publicUrl;
+  const publicUrl = auth.db.storage
+    .from(isVideo ? VIDEO_BUCKET : PRODUCT_BUCKET)
+    .getPublicUrl(input.path).data.publicUrl;
   const thumbnailUrl = input.thumbnailPath
     ? auth.db.storage.from(PRODUCT_BUCKET).getPublicUrl(input.thumbnailPath).data.publicUrl
     : null;
@@ -676,11 +782,19 @@ export async function registerImage(
       bytes: input.bytes ?? null,
       position: nextPosition,
       is_primary: isPrimary,
+      media_type: isVideo ? 'video' : 'image',
+      duration_seconds: isVideo ? (input.durationSeconds ?? null) : null,
     })
-    .select('id, url, thumbnail_url, width, height, position, is_primary')
+    .select('id, url, thumbnail_url, width, height, position, is_primary, media_type, duration_seconds')
     .single();
 
-  if (error) throw fromPostgrest(error, 'Image');
+  if (error) {
+    // The partial unique index in 0020 is what stops a second video.
+    if (error.code === '23505') {
+      throw new BadRequestError('A listing can have one video. Remove the existing one first.');
+    }
+    throw fromPostgrest(error, 'Image');
+  }
 
   return {
     id: data.id,
@@ -690,6 +804,8 @@ export async function registerImage(
     height: data.height,
     position: data.position,
     isPrimary: data.is_primary,
+    mediaType: data.media_type === 'video' ? 'video' : 'image',
+    durationSeconds: data.duration_seconds,
   };
 }
 
@@ -702,7 +818,7 @@ export async function deleteImage(
 
   const { data, error } = await auth.db
     .from('product_images')
-    .select('id, storage_path, is_primary')
+    .select('id, storage_path, is_primary, media_type')
     .eq('id', imageId)
     .eq('product_id', productId)
     .maybeSingle();
@@ -714,13 +830,17 @@ export async function deleteImage(
   if (removed.error) throw fromPostgrest(removed.error, 'Image');
 
   // Best effort: a leftover object costs storage, a failed request costs a user.
-  await auth.db.storage.from(PRODUCT_BUCKET).remove([data.storage_path]);
+  await auth.db.storage
+    .from(data.media_type === 'video' ? VIDEO_BUCKET : PRODUCT_BUCKET)
+    .remove([data.storage_path]);
 
   if (data.is_primary) {
+    // The replacement has to be a photo: a video may not be primary.
     const next = await auth.db
       .from('product_images')
       .select('id')
       .eq('product_id', productId)
+      .neq('media_type', 'video')
       .order('position')
       .limit(1)
       .maybeSingle();
@@ -829,7 +949,7 @@ async function hydrateCards(db: Db, rows: Array<Record<string, unknown>>): Promi
   const [images, profiles, sellers, cities] = await Promise.all([
     db
       .from('product_images')
-      .select('product_id, url, thumbnail_url, is_primary, position')
+      .select('product_id, url, thumbnail_url, is_primary, position, media_type')
       .in('product_id', productIds)
       .order('is_primary', { ascending: false })
       .order('position'),
@@ -842,7 +962,18 @@ async function hydrateCards(db: Db, rows: Array<Record<string, unknown>>): Promi
 
   const imageByProduct = new Map<string, { url: string; thumbnail_url: string | null }>();
   const countByProduct = new Map<string, number>();
+  const withVideo = new Set<string>();
+  const posterByProduct = new Map<string, string | null>();
+  const videoUrlByProduct = new Map<string, string>();
   for (const image of images.data ?? []) {
+    // A video never becomes the card image, and does not count as a photo --
+    // but its poster frame stands in for a listing that has no photos.
+    if (image.media_type === 'video') {
+      withVideo.add(image.product_id);
+      posterByProduct.set(image.product_id, image.thumbnail_url);
+      videoUrlByProduct.set(image.product_id, image.url);
+      continue;
+    }
     countByProduct.set(image.product_id, (countByProduct.get(image.product_id) ?? 0) + 1);
     if (!imageByProduct.has(image.product_id)) {
       imageByProduct.set(image.product_id, { url: image.url, thumbnail_url: image.thumbnail_url });
@@ -855,9 +986,13 @@ async function hydrateCards(db: Db, rows: Array<Record<string, unknown>>): Promi
 
   for (const card of cards) {
     const image = imageByProduct.get(card.id);
-    card.imageUrl = image?.url ?? null;
-    card.thumbnailUrl = image?.thumbnail_url ?? null;
+    const poster = posterByProduct.get(card.id) ?? null;
+    card.videoPosterUrl = poster;
+    card.videoUrl = videoUrlByProduct.get(card.id) ?? null;
+    card.imageUrl = image?.url ?? poster;
+    card.thumbnailUrl = image?.thumbnail_url ?? poster;
     card.imageCount = countByProduct.get(card.id) ?? 0;
+    card.hasVideo = withVideo.has(card.id);
 
     const profile = profileById.get(card.seller.id);
     const seller = sellerByUser.get(card.seller.id);
@@ -910,8 +1045,14 @@ function extensionFor(contentType: string): string {
       return 'png';
     case 'image/jpeg':
       return 'jpg';
+    case 'video/mp4':
+      return 'mp4';
+    case 'video/quicktime':
+      return 'mov';
+    case 'video/webm':
+      return 'webm';
     default:
-      throw new BadRequestError('Images must be WebP, JPEG or PNG');
+      throw new BadRequestError('Photos must be WebP, JPEG or PNG, and video MP4, MOV or WebM');
   }
 }
 
@@ -931,6 +1072,10 @@ type SearchRow = {
   thumbnail_url: string | null;
   image_url: string | null;
   image_count: number;
+  has_video: boolean | null;
+  video_url: string | null;
+  video_poster_url: string | null;
+  video_duration_seconds: number | null;
   view_count: number;
   favorite_count: number;
   is_featured: boolean;
@@ -961,6 +1106,10 @@ function toCard(row: SearchRow): ProductCardDto {
     thumbnailUrl: row.thumbnail_url,
     imageUrl: row.image_url,
     imageCount: Number(row.image_count ?? 0),
+    hasVideo: row.has_video ?? false,
+    videoUrl: row.video_url,
+    videoPosterUrl: row.video_poster_url,
+    videoDurationSeconds: row.video_duration_seconds,
     viewCount: Number(row.view_count ?? 0),
     favoriteCount: Number(row.favorite_count ?? 0),
     featured: row.is_featured,

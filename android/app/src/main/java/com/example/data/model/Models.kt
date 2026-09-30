@@ -73,6 +73,11 @@ data class Product(
     val isVerifiedSeller: Boolean = false,
     val isBusinessSeller: Boolean = false,
     val imageUrls: List<String> = emptyList(),
+    /** One optional video per listing, played only when the buyer asks for it. */
+    val videoUrl: String? = null,
+    val videoPosterUrl: String? = null,
+    val videoDurationSeconds: Int? = null,
+    val hasVideo: Boolean = false,
     val views: Int = 1,
     val isFeatured: Boolean = false,
     val isFavorite: Boolean = false,
@@ -149,6 +154,8 @@ data class FilterCriteria(
     val condition: ProductCondition? = null,
     val verifiedOnly: Boolean = false,
     val deliveryOnly: Boolean = false,
+    /** "photo" hides listings that have a video, "video" keeps only those. */
+    val media: String? = null,
     val sortBy: SortOption = SortOption.NEWEST
 )
 

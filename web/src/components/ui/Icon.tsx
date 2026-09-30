@@ -38,6 +38,11 @@ export type IconName =
   | 'grid'
   | 'coins'
   | 'cart'
+  | 'play'
+  | 'volume'
+  | 'volume-off'
+  | 'expand'
+  | 'refresh'
   // Categories. Top level first, then the subcategory glyphs the database names.
   | 'electronics'
   | 'house'
@@ -97,6 +102,12 @@ const PATHS: Record<IconName, string> = {
   package: 'M21 8v8l-9 5-9-5V8l9-5 9 5ZM3.3 7.3 12 12l8.7-4.7M12 12v9',
   grid: 'M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM13 13h7v7h-7z',
   cart: 'M3 4h2l2.3 11.1a2 2 0 0 0 2 1.6h8.1a2 2 0 0 0 2-1.6L21 7.5H6M10 20.5a1.2 1.2 0 1 0 0-2.4 1.2 1.2 0 0 0 0 2.4ZM17.5 20.5a1.2 1.2 0 1 0 0-2.4 1.2 1.2 0 0 0 0 2.4Z',
+  // A filled triangle: the one glyph every buyer already knows means video.
+  play: 'm8 5 11 7-11 7V5Z',
+  volume: 'M11 5 6 9H2v6h4l5 4V5ZM15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13',
+  refresh: 'M21 12a9 9 0 1 1-2.6-6.4M21 3v6h-6',
+  expand: 'M8 3H5a2 2 0 0 0-2 2v3M16 3h3a2 2 0 0 1 2 2v3M8 21H5a2 2 0 0 1-2-2v-3M16 21h3a2 2 0 0 0 2-2v-3',
+  'volume-off': 'M11 5 6 9H2v6h4l5 4V5ZM22 9l-6 6M16 9l6 6',
   coins: 'M9 14a6 6 0 1 0 0-12 6 6 0 0 0 0 12ZM15 22a6 6 0 1 0 0-12 6 6 0 0 0 0 12ZM9 8h.01M15 16h.01',
 
   // A laptop with a phone in front of it: reads as "devices", not one product.

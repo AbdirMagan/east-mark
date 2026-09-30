@@ -96,7 +96,7 @@ describe('locations', () => {
 });
 
 describe('categories', () => {
-  it('returns the five top-level categories with children nested', async () => {
+  it('returns the six top-level categories with children nested', async () => {
     const res = await request(app).get('/api/v1/categories').expect(200);
     expect(res.body.data.map((c: { slug: string }) => c.slug)).toEqual([
       'electronics',
@@ -104,6 +104,7 @@ describe('categories', () => {
       'cars',
       'land',
       'livestock',
+      'home-office-goods',
     ]);
     const cars = res.body.data.find((c: { slug: string }) => c.slug === 'cars');
     expect(cars.children.map((c: { slug: string }) => c.slug)).toContain('cars-sale');

@@ -20,6 +20,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.LocationOn
+import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material3.Card
@@ -80,22 +81,64 @@ fun ProductCard(
                     .background(MaterialTheme.colorScheme.surfaceVariant)
             ) {
                 val firstImage = product.imageUrls.firstOrNull()
-                val fallbackRes = when (firstImage) {
+                // The bundled photos belong to the offline sample data only.
+                // A real listing is loaded from its own URL; while that is in
+                // flight, or if it fails, the tile shows a neutral glyph --
+                // never another seller's product photo.
+                val bundledRes = when (firstImage) {
                     "img_vehicle" -> R.drawable.img_vehicle
                     "img_hero_banner" -> R.drawable.img_hero_banner
                     "img_app_icon" -> R.drawable.img_app_icon
-                    else -> R.drawable.img_electronics
+                    "img_electronics" -> R.drawable.img_electronics
+                    else -> null
                 }
 
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_image_placeholder),
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
+                    modifier = Modifier.align(Alignment.Center).size(32.dp)
+                )
+
                 AsyncImage(
-                    model = firstImage.toCoilModel(),
+                    model = if (bundledRes != null) bundledRes else firstImage.toCoilModel(),
                     contentDescription = product.title,
                     contentScale = ContentScale.Crop,
-                    placeholder = painterResource(id = fallbackRes),
-                    error = painterResource(id = fallbackRes),
-                    fallback = painterResource(id = fallbackRes),
                     modifier = Modifier.fillMaxSize()
                 )
+
+                // A badge, never an inline player: a scrolling grid of videos
+                // would spend a buyer's data bundle before they tapped anything.
+                if (product.hasVideo) {
+                    Surface(
+                        // Bottom left: the top corners already belong to the
+                        // condition badge and the favourite heart.
+                        modifier = Modifier
+                            .padding(8.dp)
+                            .align(Alignment.BottomStart),
+                        color = BrandNavy.copy(alpha = 0.85f),
+                        shape = RoundedCornerShape(6.dp)
+                    ) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.padding(horizontal = 6.dp, vertical = 3.dp)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Filled.PlayArrow,
+                                contentDescription = null,
+                                tint = Color.White,
+                                modifier = Modifier.size(12.dp)
+                            )
+                            Spacer(modifier = Modifier.width(2.dp))
+                            Text(
+                                text = LocalizationManager.getString("video", language),
+                                color = Color.White,
+                                fontSize = 10.sp,
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
+                    }
+                }
 
                 // Condition badge (top left)
                 Surface(

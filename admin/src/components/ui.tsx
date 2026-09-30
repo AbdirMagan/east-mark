@@ -8,11 +8,12 @@ export type IconName =
   | 'dashboard' | 'listings' | 'users' | 'reports' | 'verified' | 'audit'
   | 'check' | 'close' | 'ban' | 'search' | 'chevron-left' | 'chevron-right'
   | 'sun' | 'moon' | 'logout' | 'alert' | 'external' | 'clock'
-  | 'megaphone' | 'plus' | 'edit' | 'trash';
+  | 'megaphone' | 'plus' | 'edit' | 'trash' | 'play';
 
 const PATHS: Record<IconName, string> = {
   dashboard: 'M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM13 13h7v7h-7z',
   listings: 'M21 8v8l-9 5-9-5V8l9-5 9 5ZM3.3 7.3 12 12l8.7-4.7M12 12v9',
+  play: 'm8 5 11 7-11 7V5Z',
   users: 'M17 20v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M9.5 10a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7ZM22 20v-2a4 4 0 0 0-3-3.9M16 3.1a4 4 0 0 1 0 7.8',
   reports: 'M12 8v5M12 17h.01M12 3 2 20h20L12 3Z',
   verified: 'm9 12 2 2 4-4M12 2 4 5v6c0 5 3.4 9.7 8 11 4.6-1.3 8-6 8-11V5l-8-3Z',

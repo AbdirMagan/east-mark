@@ -69,7 +69,10 @@ data class ProductImageDto(
     val width: Int? = null,
     val height: Int? = null,
     val position: Int = 0,
-    val isPrimary: Boolean = false
+    val isPrimary: Boolean = false,
+    /** "image" or "video". A listing may carry one video alongside its photos. */
+    val mediaType: String = "image",
+    val durationSeconds: Int? = null
 )
 
 @JsonClass(generateAdapter = true)
@@ -89,6 +92,11 @@ data class ProductCardDto(
     val thumbnailUrl: String? = null,
     val imageUrl: String? = null,
     val imageCount: Int = 0,
+    /** The card shows a badge; the video itself is only fetched on the listing. */
+    val hasVideo: Boolean = false,
+    val videoUrl: String? = null,
+    val videoPosterUrl: String? = null,
+    val videoDurationSeconds: Int? = null,
     val viewCount: Int = 0,
     val favoriteCount: Int = 0,
     val featured: Boolean = false,
@@ -116,6 +124,7 @@ data class ProductDetailDto(
     val thumbnailUrl: String? = null,
     val imageUrl: String? = null,
     val imageCount: Int = 0,
+    val hasVideo: Boolean = false,
     val viewCount: Int = 0,
     val favoriteCount: Int = 0,
     val featured: Boolean = false,

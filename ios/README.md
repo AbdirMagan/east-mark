@@ -11,7 +11,26 @@ a conversation started on the web continues here.
 
 ---
 
-## Build it
+## Build it without a Mac
+
+`.github/workflows/ios.yml` builds this app on a GitHub-hosted macOS runner:
+push the branch, and the run generates the Xcode project, compiles for the
+simulator, boots an iPhone, installs the app, launches it and uploads a
+screenshot. A compile error appears in the log with its file and line, which is
+all you need to fix it from Windows.
+
+Two optional repository secrets (Settings -> Secrets and variables -> Actions):
+
+| Secret | What it does |
+| --- | --- |
+| `API_BASE_URL` | The API the app calls, e.g. `https://<your-ngrok>.ngrok-free.dev/api/v1`. Without it the app builds and launches but loads nothing, because a runner cannot reach your localhost. |
+| `SUPABASE_ANON_KEY` | Enables sign-in. The **anon** key only — the service-role key would be baked into the app binary. |
+
+Running it costs macOS minutes: free on a public repository, and on a private
+one each macOS minute counts as ten against the free monthly allowance, so a
+five-minute build is fifty minutes of quota.
+
+## Build it on a Mac
 
 ```bash
 cd ios
@@ -61,10 +80,11 @@ that exception.
 | Screen | What it does |
 | --- | --- |
 | **Home** | Promotions carousel (the slides staff post in the admin dashboard), category chips, featured and recent listings, pull to refresh and a refresh button |
-| **Browse** | Search, category filter, sorting, results grid |
-| **Listing** | Photo gallery, price, condition, description, seller, Call / WhatsApp / Message |
+| **Browse** | Search, category filter, sorting, results grid; the home screen's *Photo listings* button opens it filtered to listings without a video |
+| **Video feed** | Listings that were filmed, one per screen, swiped vertically, with the app's own bar, a category strip and the tab bar in place |
+| **Listing** | Photo and video gallery (the video loads only when tapped), price, condition, description, seller, Call / WhatsApp / Message |
 | **Messages** | The shared inbox and one conversation, refreshed every four seconds, with read receipts and a sending state |
-| **Sell** | Post a listing: details, a photo resized on the phone, then submitted for moderation |
+| **Sell** | Post a listing: details, a photo resized on the phone, an optional video of up to 60 seconds, then submitted for moderation |
 | **Account** | Supabase sign-in and sign-up, the person's name, saved listings, language |
 
 Colours, promotion themes and button shapes match `web/src/index.css` and the
@@ -73,6 +93,9 @@ the per-key fallback; listing and promotion text is translated by the backend.
 
 ## What is not in it
 
+- **Video is uploaded as recorded**, with only a length and size check. iOS
+  cannot re-encode it cheaply, so a 20MB ceiling is enforced instead. The poster
+  frame is extracted on the phone with AVAssetImageGenerator.
 - **Photos upload as JPEG**, not the WebP the web app produces — iOS has no WebP
   encoder in the SDK. The backend accepts JPEG.
 - **The session lives in `UserDefaults`.** Before the App Store it belongs in the

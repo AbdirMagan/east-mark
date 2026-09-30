@@ -108,6 +108,7 @@ keys off.
 |---|---|---|---|
 | `avatars` | yes | 2 MB | `<user_id>/avatar.webp` |
 | `product-images` | yes | 5 MB | `<user_id>/<product_id>/<uuid>.webp` |
+| `product-videos` | yes | 20 MB | `<user_id>/<product_id>/<uuid>.mp4` |
 | `business-assets` | yes | 5 MB | `<business_id>/logo.webp` |
 | `ad-creatives` | yes | 5 MB | `<ad_id>/<uuid>.webp` |
 | `verification-docs` | **no** | 10 MB | `<user_id>/<uuid>.<ext>` |
@@ -115,6 +116,15 @@ keys off.
 
 Limits are tight on purpose: clients upload a compressed WebP plus a thumbnail,
 not the original camera file.
+
+Video is the exception, and has its own bucket so the photo cap can stay at
+5 MB. A listing may carry **one** video of at most 60 seconds and 20 MB, and
+`product_images.media_type` says which rows are video; a partial unique index
+(`uq_product_single_video`) enforces the one-per-listing rule and a check
+constraint stops a video from ever being the primary image. The poster frame,
+extracted on the client, is stored beside the photos as `<uuid>-poster.webp`,
+so browsing costs kilobytes and the video itself is fetched only when a buyer
+presses play.
 
 A malformed path must deny access rather than raise — casting an arbitrary
 folder name straight to `uuid` inside a policy would abort the whole query — so

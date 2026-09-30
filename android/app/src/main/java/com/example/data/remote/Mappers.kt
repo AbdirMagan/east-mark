@@ -73,6 +73,10 @@ fun ProductCardDto.toDomain(): Product = Product(
     isVerifiedSeller = seller.verified,
     isBusinessSeller = business != null,
     imageUrls = listOfNotNull(thumbnailUrl ?: imageUrl),
+    videoUrl = videoUrl,
+    videoPosterUrl = videoPosterUrl,
+    videoDurationSeconds = videoDurationSeconds,
+    hasVideo = hasVideo,
     views = viewCount,
     isFeatured = featured,
     isFavorite = isFavorited ?: false,
@@ -100,8 +104,17 @@ fun ProductDetailDto.toDomain(): Product = Product(
     sellerAvatar = seller.avatarUrl ?: "",
     isVerifiedSeller = seller.verified,
     isBusinessSeller = business != null,
-    imageUrls = images?.sortedBy { it.position }?.map { it.url }
+    // Photos only: the gallery pager would otherwise try to render a video
+    // file as an image and show a broken tile.
+    // Photos only. A listing that was filmed rather than photographed has an
+    // empty list here, and the screen shows the video itself instead of
+    // dressing its poster up as a photo.
+    imageUrls = images?.filter { it.mediaType != "video" }?.sortedBy { it.position }?.map { it.url }
         ?: listOfNotNull(thumbnailUrl ?: imageUrl),
+    videoUrl = images?.firstOrNull { it.mediaType == "video" }?.url,
+    videoPosterUrl = images?.firstOrNull { it.mediaType == "video" }?.thumbnailUrl,
+    videoDurationSeconds = images?.firstOrNull { it.mediaType == "video" }?.durationSeconds,
+    hasVideo = hasVideo || images?.any { it.mediaType == "video" } == true,
     views = viewCount,
     isFeatured = featured,
     isFavorite = isFavorited ?: false,

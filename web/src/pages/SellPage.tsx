@@ -8,6 +8,7 @@ import {
   type AttributeValues,
 } from '../components/sell/CategoryStep.js';
 import { ImageUploader } from '../components/sell/ImageUploader.js';
+import { VideoUploader } from '../components/sell/VideoUploader.js';
 import { Button, Checkbox, SelectField, Skeleton, TextField } from '../components/ui/index.js';
 import { Icon } from '../components/ui/Icon.js';
 import { useCategories, useConfig, useCountries, useMe } from '../hooks/useMarketData.js';
@@ -16,6 +17,7 @@ import { useSeo } from '../hooks/useSeo.js';
 import { useI18n, useT, type TranslationKey } from '../i18n/index.js';
 import { endpoints, type Category, type CategoryTree, type Place } from '../lib/api.js';
 import { targetsFromConfig, type ProcessedImage } from '../lib/image.js';
+import type { SelectedVideo } from '../lib/video.js';
 import { useAuth } from '../store/auth.js';
 import { usePreferences } from '../store/preferences.js';
 
@@ -101,6 +103,7 @@ export function SellPage() {
 
   const [step, setStep] = useState(0);
   const [images, setImages] = useState<ProcessedImage[]>([]);
+  const [video, setVideo] = useState<SelectedVideo | null>(null);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [restored, setRestored] = useState(false);
   const [result, setResult] = useState<{ ref: number; draft: boolean } | null>(null);
@@ -269,7 +272,7 @@ export function SellPage() {
         attributes: Object.keys(draft.attributes).length ? draft.attributes : undefined,
       },
       images,
-      { asDraft },
+      { asDraft, video },
     );
 
     if (created) {
@@ -291,6 +294,7 @@ export function SellPage() {
         onPostAnother={() => {
           setDraft(emptyDraft(preferences.currency));
           setImages([]);
+          setVideo(null);
           setResult(null);
           setStep(0);
           reset();
@@ -554,6 +558,16 @@ export function SellPage() {
                 maxImages={maxImages}
               />
             </section>
+
+            <section className="space-y-3 rounded-(--radius-card) border border-border-subtle bg-surface-raised p-5">
+              <h2 className="font-display text-base font-bold text-text-primary">
+                {t('sell.videoTitle')}{' '}
+                <span className="font-sans text-xs font-normal text-text-muted">
+                  {t('sell.optional')}
+                </span>
+              </h2>
+              <VideoUploader video={video} onChange={setVideo} />
+            </section>
           </>
         ) : null}
 
@@ -723,7 +737,9 @@ export function SellPage() {
               done: progress.uploadedImages + 1,
               total: progress.totalImages,
             })
-          : t('sell.publishing');
+          : progress.stage === 'uploading-video'
+            ? t('sell.uploadingVideo')
+            : t('sell.publishing');
 
     return (
       <div className="fixed inset-0 z-50 flex items-center justify-center bg-ink-950/60 p-4 backdrop-blur-sm">

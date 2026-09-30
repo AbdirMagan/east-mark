@@ -116,7 +116,7 @@ export function Spinner({ size = 16, className = '' }: { size?: number; classNam
 /* Badge                                                                      */
 /* -------------------------------------------------------------------------- */
 
-type BadgeTone = 'neutral' | 'brand' | 'accent' | 'sun' | 'success' | 'info';
+type BadgeTone = 'neutral' | 'brand' | 'accent' | 'sun' | 'success' | 'info' | 'danger';
 
 const BADGE_TONES: Record<BadgeTone, string> = {
   neutral: 'bg-surface-sunken text-text-secondary',
@@ -125,6 +125,7 @@ const BADGE_TONES: Record<BadgeTone, string> = {
   sun: 'bg-sun-100 text-sun-800 dark:bg-sun-900/40 dark:text-sun-200',
   success: 'bg-acacia-100 text-acacia-800 dark:bg-acacia-900/40 dark:text-acacia-200',
   info: 'bg-indigo-100 text-indigo-800 dark:bg-indigo-900/40 dark:text-indigo-200',
+  danger: 'bg-(--color-danger)/12 text-(--color-danger)',
 };
 
 export function Badge({

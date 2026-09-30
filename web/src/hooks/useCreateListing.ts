@@ -9,8 +9,16 @@ import {
   type CreatedListing,
 } from '../lib/api.js';
 import type { ProcessedImage } from '../lib/image.js';
+import type { SelectedVideo } from '../lib/video.js';
 
-export type PublishStage = 'idle' | 'creating' | 'uploading' | 'publishing' | 'done' | 'error';
+export type PublishStage =
+  | 'idle'
+  | 'creating'
+  | 'uploading'
+  | 'uploading-video'
+  | 'publishing'
+  | 'done'
+  | 'error';
 
 export interface PublishProgress {
   stage: PublishStage;
@@ -21,6 +29,8 @@ export interface PublishProgress {
   error: string | null;
   /** Images that failed after retries. The listing still publishes without them. */
   failedImages: number;
+  /** True when the video could not be uploaded; the listing publishes anyway. */
+  videoFailed: boolean;
 }
 
 const INITIAL: PublishProgress = {
@@ -30,6 +40,7 @@ const INITIAL: PublishProgress = {
   totalImages: 0,
   error: null,
   failedImages: 0,
+  videoFailed: false,
 };
 
 /**
@@ -58,7 +69,7 @@ export function useCreateListing() {
     async (
       input: CreateListingInput,
       images: ProcessedImage[],
-      options: { asDraft?: boolean } = {},
+      options: { asDraft?: boolean; video?: SelectedVideo | null } = {},
     ): Promise<CreatedListing | null> => {
       const total = images.length;
       setProgress({ ...INITIAL, stage: 'creating', totalImages: total });
@@ -99,11 +110,31 @@ export function useCreateListing() {
         }
       }
 
+      // The video goes last. It is the biggest upload by an order of
+      // magnitude, so a seller who gives up during it still has a listing with
+      // all of its photos.
+      let videoFailed = false;
+      if (options.video) {
+        setProgress((previous) => ({
+          ...previous,
+          stage: 'uploading-video',
+          uploadedImages: uploaded,
+          failedImages: failed,
+          fraction: 0.85,
+        }));
+        try {
+          await uploadVideo(listing.id, options.video);
+        } catch {
+          videoFailed = true;
+        }
+      }
+
       setProgress((previous) => ({
         ...previous,
         stage: 'publishing',
         uploadedImages: uploaded,
         failedImages: failed,
+        videoFailed,
         fraction: 0.9,
       }));
 
@@ -120,6 +151,7 @@ export function useCreateListing() {
           uploadedImages: uploaded,
           totalImages: total,
           failedImages: failed,
+          videoFailed,
           error: describe(error),
         });
         return listing;
@@ -134,6 +166,7 @@ export function useCreateListing() {
         uploadedImages: uploaded,
         totalImages: total,
         failedImages: failed,
+        videoFailed,
         error: null,
       });
 
@@ -166,6 +199,31 @@ async function uploadOne(
     height: image.height,
     bytes: image.full.size,
     isPrimary,
+  });
+}
+
+/**
+ * The video is uploaded exactly like a photo: a signed URL for the file itself,
+ * a second one for the poster frame, then one row registering both. The poster
+ * is what the gallery renders, so the video is only fetched if someone presses
+ * play.
+ */
+async function uploadVideo(productId: string, video: SelectedVideo): Promise<void> {
+  const slots = await endpoints.imageUploadSlots(productId, video.file.type);
+
+  await uploadToSignedUrl(slots.full, video.file);
+  if (video.poster) {
+    await uploadToSignedUrl(slots.thumbnail, video.poster);
+  }
+
+  await endpoints.registerImage(productId, {
+    path: slots.full.path,
+    thumbnailPath: video.poster ? slots.thumbnail.path : undefined,
+    width: video.width || undefined,
+    height: video.height || undefined,
+    bytes: video.bytes,
+    mediaType: 'video',
+    durationSeconds: video.durationSeconds,
   });
 }
 

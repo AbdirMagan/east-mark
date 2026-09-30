@@ -36,11 +36,13 @@ enum API {
 
     // MARK: Listings
 
+    /// `media` is "photo" (listings without a video) or "video" (only those).
     static func products(
         search: String? = nil,
         categoryId: Int? = nil,
         countryId: Int? = nil,
         featuredOnly: Bool = false,
+        media: String? = nil,
         sort: String = "newest",
         limit: Int = 30
     ) async throws -> [ProductCard] {
@@ -49,6 +51,7 @@ enum API {
             "categoryId": categoryId.map(String.init),
             "countryId": countryId.map(String.init),
             "featuredOnly": featuredOnly ? "true" : nil,
+            "media": media,
             "sort": sort,
             "limit": String(limit)
         ], authorized: true)
@@ -145,6 +148,23 @@ enum API {
             "products/" + productId + "/images",
             json: ["path": path, "thumbnailPath": thumbnailPath, "isPrimary": true]
         )
+    }
+
+    /// A video is registered exactly like a photo, with two extra fields. The
+    /// backend refuses a second one: a listing carries at most one video.
+    static func registerVideo(
+        productId: String,
+        path: String,
+        posterPath: String?,
+        durationSeconds: Int
+    ) async throws -> ProductImage {
+        var body: [String: Any] = [
+            "path": path,
+            "mediaType": "video",
+            "durationSeconds": durationSeconds
+        ]
+        if let posterPath { body["thumbnailPath"] = posterPath }
+        return try await client.post("products/" + productId + "/images", json: body)
     }
 
     static func submitForReview(productId: String) async throws {

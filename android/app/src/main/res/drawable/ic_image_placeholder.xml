@@ -1,0 +1,18 @@
+<!-- A neutral "no photo" glyph. Deliberately not a stock product photo: a
+     listing whose image fails to load must not show someone else's goods. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="48dp"
+    android:height="48dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24"
+    android:tint="#94A3B8">
+    <path
+        android:fillColor="#FF000000"
+        android:pathData="M21,5H3C2.45,5 2,5.45 2,6v12c0,0.55 0.45,1 1,1h18c0.55,0 1,-0.45 1,-1V6C22,5.45 21.55,5 21,5zM20,17H4V7h16V17z" />
+    <path
+        android:fillColor="#FF000000"
+        android:pathData="M8.5,12.5a1.5,1.5 0 1,0 0,-3a1.5,1.5 0 0,0 0,3z" />
+    <path
+        android:fillColor="#FF000000"
+        android:pathData="M6,16h12l-3.5,-4.5l-2.5,3L10,13L6,16z" />
+</vector>

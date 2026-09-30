@@ -87,15 +87,11 @@ fun SellerProfileScreen(
         topBar = {
             TopAppBar(
                 title = { Text(seller.name, fontSize = 16.sp, fontWeight = FontWeight.Bold) },
-                navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
-                    }
-                },
+                // A page title under the app header, not a second header: the
+                // navy belongs to the one bar at the top of every screen.
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = BrandNavy,
-                    titleContentColor = Color.White,
-                    navigationIconContentColor = Color.White
+                    containerColor = MaterialTheme.colorScheme.surface,
+                    titleContentColor = MaterialTheme.colorScheme.onSurface,
                 )
             )
         }

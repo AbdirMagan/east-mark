@@ -17,6 +17,12 @@ import { HomePage } from './pages/HomePage.js';
 // connection where the first paint is the expensive part.
 const BrowsePage = lazy(() => import('./pages/BrowsePage.js').then((m) => ({ default: m.BrowsePage })));
 const ProductPage = lazy(() => import('./pages/ProductPage.js').then((m) => ({ default: m.ProductPage })));
+const MyListingsPage = lazy(() =>
+  import('./pages/MyListingsPage.js').then((m) => ({ default: m.MyListingsPage })),
+);
+const VideoFeedPage = lazy(() =>
+  import('./pages/VideoFeedPage.js').then((m) => ({ default: m.VideoFeedPage })),
+);
 const SignInPage = lazy(() => import('./pages/AuthPages.js').then((m) => ({ default: m.SignInPage })));
 const RegisterPage = lazy(() => import('./pages/AuthPages.js').then((m) => ({ default: m.RegisterPage })));
 const CategoriesPage = lazy(() =>
@@ -29,9 +35,6 @@ const MessagesPage = lazy(() =>
 );
 const NotFoundPage = lazy(() =>
   import('./pages/MiscPages.js').then((m) => ({ default: m.NotFoundPage })),
-);
-const ComingSoonPage = lazy(() =>
-  import('./pages/MiscPages.js').then((m) => ({ default: m.ComingSoonPage })),
 );
 
 const queryClient = new QueryClient({
@@ -92,13 +95,14 @@ function Shell() {
           <Routes>
             <Route path="/" element={<HomePage />} />
             <Route path="/browse" element={<BrowsePage />} />
+            <Route path="/videos" element={<VideoFeedPage />} />
             <Route path="/categories" element={<CategoriesPage />} />
             <Route path="/product/:ref" element={<ProductPage />} />
             <Route path="/saved" element={<SavedPage />} />
             <Route path="/signin" element={<SignInPage />} />
             <Route path="/register" element={<RegisterPage />} />
             <Route path="/sell" element={<SellPage />} />
-            <Route path="/my-listings" element={<ComingSoonPage titleKey="nav.myListings" />} />
+            <Route path="/my-listings" element={<MyListingsPage />} />
             <Route path="/messages" element={<MessagesPage />} />
             <Route path="/messages/:conversationId" element={<MessagesPage />} />
             <Route path="*" element={<NotFoundPage />} />

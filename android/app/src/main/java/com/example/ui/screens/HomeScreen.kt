@@ -34,7 +34,9 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Clear
@@ -109,226 +111,12 @@ fun HomeScreen(
     val isRefreshing by viewModel.isRefreshing.collectAsState()
     val context = LocalContext.current
 
-    var showFilterSheet by remember { mutableStateOf(false) }
-    var showLocationDialog by remember { mutableStateOf(false) }
-    var showCurrencyDropdown by remember { mutableStateOf(false) }
 
     Column(
         modifier = modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
     ) {
-        // --- HEADER BAR ---
-        Surface(
-            color = BrandNavy,
-            shadowElevation = 4.dp
-        ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 12.dp)
-            ) {
-                // Top Row: Logo, Location Badge, Currency Switcher, Notification
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    // Logo and title
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.clickable { viewModel.resetFilters() }
-                    ) {
-                        // The East Market emblem, cut from the same artwork as the web
-                        // header logo and the launcher icon (drawable-nodpi/ic_logo_mark.png).
-                        Image(
-                            painter = painterResource(id = R.drawable.ic_logo_mark),
-                            contentDescription = "East-Market",
-                            modifier = Modifier.size(34.dp)
-                        )
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Column {
-                            Text(
-                                text = "East-Market",
-                                color = Color.White,
-                                fontWeight = FontWeight.Black,
-                                fontSize = 18.sp,
-                                letterSpacing = 0.5.sp
-                            )
-                            Text(
-                                text = LocalizationManager.getString("app_tagline", language),
-                                color = BrandTeal.copy(alpha = 0.9f),
-                                fontSize = 10.sp,
-                                fontWeight = FontWeight.Medium
-                            )
-                        }
-                    }
-
-                    // Location & Currency buttons
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        // Location chip
-                        Surface(
-                            modifier = Modifier
-                                .clip(RoundedCornerShape(20.dp))
-                                .clickable { showLocationDialog = true }
-                                .testTag("header_location_chip"),
-                            color = Color.White.copy(alpha = 0.15f)
-                        ) {
-                            Row(
-                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 5.dp),
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Text(
-                                    text = selectedCountry.flag,
-                                    fontSize = 12.sp
-                                )
-                                Spacer(modifier = Modifier.width(4.dp))
-                                Text(
-                                    text = selectedCity,
-                                    color = Color.White,
-                                    fontSize = 12.sp,
-                                    fontWeight = FontWeight.SemiBold
-                                )
-                                Icon(
-                                    imageVector = Icons.Filled.ArrowDropDown,
-                                    contentDescription = null,
-                                    tint = Color.White,
-                                    modifier = Modifier.size(16.dp)
-                                )
-                            }
-                        }
-
-                        Spacer(modifier = Modifier.width(6.dp))
-
-                        // Currency switcher button
-                        Box {
-                            Surface(
-                                modifier = Modifier
-                                    .clip(RoundedCornerShape(20.dp))
-                                    .clickable { showCurrencyDropdown = true }
-                                    .testTag("currency_switcher_btn"),
-                                color = BrandGold.copy(alpha = 0.25f)
-                            ) {
-                                Text(
-                                    text = displayCurrency.code,
-                                    color = BrandGold,
-                                    fontSize = 11.sp,
-                                    fontWeight = FontWeight.Bold,
-                                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 5.dp)
-                                )
-                            }
-
-                            DropdownMenu(
-                                expanded = showCurrencyDropdown,
-                                onDismissRequest = { showCurrencyDropdown = false }
-                            ) {
-                                Currency.entries.forEach { curr ->
-                                    DropdownMenuItem(
-                                        text = {
-                                            Row(verticalAlignment = Alignment.CenterVertically) {
-                                                Text("${curr.code} (${curr.symbol}) - ${curr.label}", fontSize = 13.sp)
-                                                if (curr == displayCurrency) {
-                                                    Spacer(modifier = Modifier.width(8.dp))
-                                                    Icon(Icons.Filled.Check, contentDescription = null, tint = BrandTeal, modifier = Modifier.size(16.dp))
-                                                }
-                                            }
-                                        },
-                                        onClick = {
-                                            viewModel.setCurrency(curr)
-                                            showCurrencyDropdown = false
-                                        }
-                                    )
-                                }
-                            }
-                        }
-                    }
-                }
-
-                Spacer(modifier = Modifier.height(10.dp))
-
-                // Search Bar + Filter Button
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    OutlinedTextField(
-                        value = filter.query,
-                        onValueChange = { viewModel.updateSearchQuery(it) },
-                        placeholder = {
-                            Text(
-                                text = LocalizationManager.getString("search_placeholder", language),
-                                fontSize = 13.sp,
-                                color = Color.White.copy(alpha = 0.6f)
-                            )
-                        },
-                        leadingIcon = {
-                            Icon(
-                                imageVector = Icons.Filled.Search,
-                                contentDescription = "Search",
-                                tint = Color.White.copy(alpha = 0.8f)
-                            )
-                        },
-                        trailingIcon = {
-                            if (filter.query.isNotEmpty()) {
-                                IconButton(onClick = { viewModel.updateSearchQuery("") }) {
-                                    Icon(Icons.Filled.Clear, contentDescription = "Clear", tint = Color.White)
-                                }
-                            }
-                        },
-                        modifier = Modifier
-                            .weight(1f)
-                            .height(50.dp)
-                            .testTag("search_input"),
-                        shape = RoundedCornerShape(12.dp),
-                        singleLine = true,
-                        colors = OutlinedTextFieldDefaults.colors(
-                            focusedContainerColor = Color.White.copy(alpha = 0.15f),
-                            unfocusedContainerColor = Color.White.copy(alpha = 0.12f),
-                            focusedTextColor = Color.White,
-                            unfocusedTextColor = Color.White,
-                            cursorColor = BrandTeal,
-                            focusedBorderColor = BrandTeal,
-                            unfocusedBorderColor = Color.Transparent
-                        )
-                    )
-
-                    Spacer(modifier = Modifier.width(8.dp))
-
-                    IconButton(
-                        onClick = { viewModel.refreshAll() },
-                        modifier = Modifier
-                            .size(50.dp)
-                            .clip(RoundedCornerShape(12.dp))
-                            .background(Color.White.copy(alpha = 0.14f))
-                            .testTag("refresh_btn")
-                    ) {
-                        Icon(
-                            imageVector = Icons.Filled.Refresh,
-                            contentDescription = "Refresh",
-                            tint = Color.White
-                        )
-                    }
-
-                    Spacer(modifier = Modifier.width(8.dp))
-
-                    IconButton(
-                        onClick = { showFilterSheet = true },
-                        modifier = Modifier
-                            .size(50.dp)
-                            .clip(RoundedCornerShape(12.dp))
-                            .background(BrandTeal)
-                            .testTag("filter_icon_btn")
-                    ) {
-                        Icon(
-                            imageVector = Icons.Filled.FilterList,
-                            contentDescription = "Filters",
-                            tint = Color.White
-                        )
-                    }
-                }
-            }
-        }
-
         // --- BODY: PRODUCTS & CONTENT GRID ---
         // Pull down to reload listings, categories, locations, promotions and
         // the inbox -- the same refresh the toolbar button runs.
@@ -430,6 +218,33 @@ fun HomeScreen(
                 }
             }
 
+            // The two ways to browse. Photos stay in this grid; video gets its
+            // own full-screen feed, because a grid of muted thumbnails is the
+            // worst way to show something that was filmed.
+            item(span = { GridItemSpan(2) }) {
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(10.dp),
+                    modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)
+                ) {
+                    BrowseModeButton(
+                        title = LocalizationManager.getString("photo_listings", language),
+                        subtitle = LocalizationManager.getString("photo_listings_hint", language),
+                        iconRes = R.drawable.ic_cat_electronics,
+                        selected = filter.media == "photo",
+                        onClick = { viewModel.showPhotoListingsOnly(filter.media != "photo") },
+                        modifier = Modifier.weight(1f)
+                    )
+                    BrowseModeButton(
+                        title = LocalizationManager.getString("video_listings", language),
+                        subtitle = LocalizationManager.getString("video_listings_hint", language),
+                        icon = Icons.Filled.PlayArrow,
+                        selected = false,
+                        onClick = { onNavigate(Screen.VideoFeed.route) },
+                        modifier = Modifier.weight(1f)
+                    )
+                }
+            }
+
             // Section Header
             item(span = { GridItemSpan(2) }) {
                 val headerTitle = when {
@@ -481,38 +296,6 @@ fun HomeScreen(
             }
         }
         }
-    }
-
-    // Filter Bottom Sheet
-    if (showFilterSheet) {
-        FilterBottomSheet(
-            initialFilter = filter,
-            language = language,
-            onApply = { min, max, cond, verified, delivery, sort ->
-                viewModel.applyFilters(min, max, cond, verified, delivery, sort)
-                showFilterSheet = false
-            },
-            onReset = {
-                viewModel.resetFilters()
-                showFilterSheet = false
-            },
-            onDismiss = { showFilterSheet = false }
-        )
-    }
-
-    // Country & City Picker Dialog
-    if (showLocationDialog) {
-        LocationPickerDialog(
-            countries = viewModel.getCountries(),
-            selectedCountry = selectedCountry,
-            selectedCity = selectedCity,
-            onLocationSelected = { country, city ->
-                viewModel.setCountry(country)
-                viewModel.setCity(city)
-                showLocationDialog = false
-            },
-            onDismiss = { showLocationDialog = false }
-        )
     }
 }
 
@@ -610,4 +393,77 @@ private fun categoryIconRes(category: CategoryItem): Int = when (category.iconNa
     "livestock", "cow", "pets" -> R.drawable.ic_cat_livestock
     "goods", "home-office-goods", "chair" -> R.drawable.ic_cat_goods
     else -> R.drawable.ic_cat_electronics
+}
+
+/**
+ * One of the two browse buttons under the categories: a title, a line of
+ * explanation, and an icon. Photos toggle the grid's filter in place; video
+ * opens its own screen.
+ */
+@Composable
+private fun BrowseModeButton(
+    title: String,
+    subtitle: String,
+    selected: Boolean,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    iconRes: Int? = null,
+    icon: androidx.compose.ui.graphics.vector.ImageVector? = null
+) {
+    Surface(
+        onClick = onClick,
+        shape = RoundedCornerShape(14.dp),
+        color = if (selected) BrandNavy else MaterialTheme.colorScheme.surface,
+        border = BorderStroke(
+            1.dp,
+            if (selected) BrandNavy else MaterialTheme.colorScheme.outlineVariant
+        ),
+        modifier = modifier
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.padding(10.dp)
+        ) {
+            Box(
+                contentAlignment = Alignment.Center,
+                modifier = Modifier
+                    .size(34.dp)
+                    .clip(CircleShape)
+                    .background(if (selected) Color.White.copy(alpha = 0.18f) else BrandTeal.copy(alpha = 0.12f))
+            ) {
+                when {
+                    icon != null -> Icon(
+                        imageVector = icon,
+                        contentDescription = null,
+                        tint = if (selected) Color.White else BrandTeal,
+                        modifier = Modifier.size(18.dp)
+                    )
+                    iconRes != null -> Icon(
+                        painter = painterResource(id = iconRes),
+                        contentDescription = null,
+                        tint = if (selected) Color.White else BrandTeal,
+                        modifier = Modifier.size(18.dp)
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.width(8.dp))
+
+            Column {
+                Text(
+                    text = title,
+                    fontSize = 13.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = if (selected) Color.White else MaterialTheme.colorScheme.onSurface
+                )
+                Text(
+                    text = subtitle,
+                    fontSize = 10.sp,
+                    maxLines = 2,
+                    color = if (selected) Color.White.copy(alpha = 0.8f)
+                            else MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+        }
+    }
 }

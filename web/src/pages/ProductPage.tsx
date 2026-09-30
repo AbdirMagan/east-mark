@@ -9,6 +9,7 @@ import { productStructuredData, useSeo } from '../hooks/useSeo.js';
 import { useI18n, useT, type TranslationKey } from '../i18n/index.js';
 import { endpoints, type ProductDetail } from '../lib/api.js';
 import { formatDate, formatNumber, formatPrice, formatRelativeTime, telLink, whatsappLink } from '../lib/format.js';
+import { formatDuration } from '../lib/video.js';
 import { useAuth } from '../store/auth.js';
 
 export function ProductPage() {
@@ -35,7 +36,7 @@ export function ProductPage() {
     description:
       product?.description?.slice(0, 200) ??
       (product ? `${formatPrice(product.price, product.currency)} · ${product.city ?? ''}` : undefined),
-    image: product?.images[0]?.url ?? null,
+    image: product?.images.find((media) => media.mediaType !== 'video')?.url ?? null,
     path: `/product/${ref}`,
     type: 'product',
     structuredData: product ? productStructuredData(product) : null,
@@ -242,19 +243,39 @@ function Gallery({ product }: { product: ProductDetail }) {
 
   return (
     <div>
-      <div className="relative aspect-[4/3] overflow-hidden rounded-(--radius-card) border border-border-subtle bg-surface-sunken">
-        <img
-          src={active?.url}
-          alt={`${product.title} — ${index + 1}`}
-          width={active?.width ?? 1200}
-          height={active?.height ?? 900}
-          // The first image is the largest thing on the page and the reason the
-          // visitor is here, so it loads eagerly at high priority.
-          loading="eager"
-          {...({ fetchpriority: 'high' } as React.ImgHTMLAttributes<HTMLImageElement>)}
-          decoding="async"
-          className="size-full object-contain"
-        />
+      <div className="relative flex aspect-[4/3] items-center justify-center overflow-hidden rounded-(--radius-card) border border-border-subtle bg-surface-sunken">
+        {active?.mediaType === 'video' ? (
+          // preload="none" matters more here than anywhere else on the site: a
+          // buyer who never presses play must not pay for the megabytes. The
+          // poster is a small WebP the seller's browser extracted on upload.
+          <video
+            key={active.id}
+            src={active.url}
+            poster={active.thumbnailUrl ?? undefined}
+            controls
+            playsInline
+            preload="none"
+            // Sized to the frame rather than stretched to the box: Chromium
+            // paints a video element's own letterbox black whatever the CSS
+            // says, so the bars have to be the container showing through.
+            className="mx-auto max-h-full max-w-full"
+          >
+            {t('product.videoUnsupported')}
+          </video>
+        ) : (
+          <img
+            src={active?.url}
+            alt={`${product.title} — ${index + 1}`}
+            width={active?.width ?? 1200}
+            height={active?.height ?? 900}
+            // The first image is the largest thing on the page and the reason the
+            // visitor is here, so it loads eagerly at high priority.
+            loading="eager"
+            {...({ fetchpriority: 'high' } as React.ImgHTMLAttributes<HTMLImageElement>)}
+            decoding="async"
+            className="size-full object-contain"
+          />
+        )}
 
         {images.length > 1 ? (
           <>
@@ -288,15 +309,39 @@ function Gallery({ product }: { product: ProductDetail }) {
                 i === index ? 'border-brand' : 'border-transparent opacity-70 hover:opacity-100'
               }`}
             >
-              <img
-                src={image.thumbnailUrl ?? image.url}
-                alt=""
-                width={64}
-                height={64}
-                loading="lazy"
-                decoding="async"
-                className="size-full object-cover"
-              />
+              {image.mediaType === 'video' ? (
+                <span className="relative flex size-full items-center justify-center bg-ink-900 text-white">
+                  {image.thumbnailUrl ? (
+                    <img
+                      src={image.thumbnailUrl}
+                      alt=""
+                      width={64}
+                      height={64}
+                      loading="lazy"
+                      decoding="async"
+                      className="size-full object-cover opacity-70"
+                    />
+                  ) : null}
+                  <span className="absolute inset-0 flex items-center justify-center">
+                    <Icon name="play" size={18} />
+                  </span>
+                  {image.durationSeconds ? (
+                    <span className="absolute inset-x-0 bottom-0 bg-ink-950/70 text-center text-[0.625rem] font-semibold">
+                      {formatDuration(image.durationSeconds)}
+                    </span>
+                  ) : null}
+                </span>
+              ) : (
+                <img
+                  src={image.thumbnailUrl ?? image.url}
+                  alt=""
+                  width={64}
+                  height={64}
+                  loading="lazy"
+                  decoding="async"
+                  className="size-full object-cover"
+                />
+              )}
             </button>
           ))}
         </div>

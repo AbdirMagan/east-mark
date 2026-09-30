@@ -53,6 +53,9 @@ export const productSearchQuery = z
     lng: longitude.optional(),
     radiusKm: z.coerce.number().min(1).max(500).optional(),
 
+    /** The home page splits browsing in two: photo listings, and the video feed. */
+    media: z.enum(['photo', 'video']).optional(),
+
     sort: sortOption.default('newest'),
     page: z.coerce.number().int().min(1).default(1),
     limit: z.coerce.number().int().min(1).max(100).default(20),
@@ -184,16 +187,25 @@ export const productStatusSchema = z.object({
 /* -------------------------------------------------------------------------- */
 
 export const uploadUrlSchema = z.object({
-  contentType: z.enum(['image/webp', 'image/jpeg', 'image/png']),
+  // The video types are the ones phones actually record: MP4 on Android, MOV
+  // on iPhones, WebM from a desktop browser.
+  contentType: z.enum([
+    'image/webp', 'image/jpeg', 'image/png',
+    'video/mp4', 'video/quicktime', 'video/webm',
+  ]),
 });
 
 export const registerImageSchema = z.object({
   path: z.string().trim().min(1).max(400),
+  /** For a video this is the poster frame, which is what the gallery shows. */
   thumbnailPath: z.string().trim().min(1).max(400).optional(),
   width: z.coerce.number().int().positive().max(20_000).optional(),
   height: z.coerce.number().int().positive().max(20_000).optional(),
-  bytes: z.coerce.number().int().positive().max(10 * 1024 * 1024).optional(),
+  bytes: z.coerce.number().int().positive().max(20 * 1024 * 1024).optional(),
   isPrimary: z.boolean().optional(),
+  mediaType: z.enum(['image', 'video']).default('image'),
+  /** Videos only, and never longer than a minute. */
+  durationSeconds: z.coerce.number().int().positive().max(60).optional(),
 });
 
 export const reorderImagesSchema = z.object({

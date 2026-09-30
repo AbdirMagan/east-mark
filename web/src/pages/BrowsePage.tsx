@@ -82,6 +82,8 @@ export function BrowsePage() {
       negotiableOnly: params.get('negotiableOnly') === 'true' || undefined,
       featuredOnly: params.get('featuredOnly') === 'true' || undefined,
       postedWithinDays: params.get('postedWithin') ? Number(params.get('postedWithin')) : undefined,
+      // Set by the "Photo listings" button on the home page.
+      media: params.get('media') === 'photo' ? ('photo' as const) : undefined,
       sort: params.get('sort') ?? (params.get('q') ? 'relevance' : 'newest'),
       page: Number(params.get('page') ?? 1),
       limit: 24,
@@ -95,7 +97,9 @@ export function BrowsePage() {
   const searchTerm = params.get('q');
   const heading = searchTerm
     ? t('browse.searchedFor', { query: searchTerm })
-    : (category?.name ?? t('browse.title'));
+    : params.get('media') === 'photo'
+      ? t('home.photoListings')
+      : (category?.name ?? t('browse.title'));
 
   useSeo({
     title: heading,

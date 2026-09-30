@@ -1,6 +1,16 @@
+import AVFoundation
 import PhotosUI
 import SwiftUI
 import UIKit
+
+/// A video the seller picked, already checked against the marketplace's limits.
+struct PickedVideo {
+    let data: Data
+    let contentType: String
+    let durationSeconds: Int
+    /// One frame, uploaded as the poster so browsing costs kilobytes.
+    let poster: Data?
+}
 
 /// Posting a listing, in the order the backend needs it: create the listing as
 /// a draft, upload the photo straight to storage with the signed URL, register
@@ -41,7 +51,8 @@ final class SellViewModel: ObservableObject {
         cityId: Int?,
         description: String,
         phone: String,
-        photo: Data?
+        photo: Data?,
+        video: PickedVideo?
     ) async {
         isPosting = true
         message = nil
@@ -77,6 +88,35 @@ final class SellViewModel: ObservableObject {
                 )
             }
 
+            // The video goes after the photo: it is by far the larger upload, so
+            // an interrupted one still leaves a listing with its photo.
+            if let video {
+                let slots = try await API.uploadSlots(
+                    productId: listing.id,
+                    contentType: video.contentType
+                )
+                try await APIClient.shared.upload(
+                    to: slots.full.uploadUrl,
+                    data: video.data,
+                    contentType: video.contentType
+                )
+                var posterPath: String?
+                if let poster = video.poster {
+                    try await APIClient.shared.upload(
+                        to: slots.thumbnail.uploadUrl,
+                        data: poster,
+                        contentType: "image/jpeg"
+                    )
+                    posterPath = slots.thumbnail.path
+                }
+                _ = try await API.registerVideo(
+                    productId: listing.id,
+                    path: slots.full.path,
+                    posterPath: posterPath,
+                    durationSeconds: video.durationSeconds
+                )
+            }
+
             try await API.submitForReview(productId: listing.id)
             message = "Sent for review. It appears once a moderator approves it."
             didPost = true
@@ -85,6 +125,55 @@ final class SellViewModel: ObservableObject {
         }
 
         isPosting = false
+    }
+
+    /// Reads the duration and a poster frame, and enforces the marketplace's
+    /// limits before anything is uploaded. Returns nil with a message set when
+    /// the video is too long or too large.
+    func prepareVideo(_ data: Data, fileExtension: String) async -> PickedVideo? {
+        let maxBytes = 20 * 1024 * 1024
+        if data.count > maxBytes {
+            message = "That video is too large (20 MB maximum)."
+            return nil
+        }
+
+        let url = FileManager.default.temporaryDirectory
+            .appendingPathComponent(UUID().uuidString)
+            .appendingPathExtension(fileExtension)
+
+        do {
+            try data.write(to: url)
+        } catch {
+            message = "That video could not be read."
+            return nil
+        }
+        defer { try? FileManager.default.removeItem(at: url) }
+
+        let asset = AVURLAsset(url: url)
+        let seconds = CMTimeGetSeconds(asset.duration)
+        guard seconds.isFinite, seconds > 0 else {
+            message = "That video could not be read."
+            return nil
+        }
+        if seconds > 60.5 {
+            message = "A video can be at most 60 seconds."
+            return nil
+        }
+
+        let generator = AVAssetImageGenerator(asset: asset)
+        generator.appliesPreferredTrackTransform = true
+        generator.maximumSize = CGSize(width: 640, height: 640)
+        let poster = (try? generator.copyCGImage(
+            at: CMTime(seconds: min(0.5, seconds / 2), preferredTimescale: 600),
+            actualTime: nil
+        )).flatMap { UIImage(cgImage: $0).jpegData(compressionQuality: 0.75) }
+
+        return PickedVideo(
+            data: data,
+            contentType: fileExtension == "mov" ? "video/quicktime" : "video/mp4",
+            durationSeconds: max(1, Int(seconds.rounded())),
+            poster: poster
+        )
     }
 
     /// A phone camera produces several megabytes; uploading that over a 3G
@@ -120,6 +209,9 @@ struct SellView: View {
     @State private var phone = ""
     @State private var photoItem: PhotosPickerItem?
     @State private var photoData: Data?
+    @State private var videoItem: PhotosPickerItem?
+    @State private var video: PickedVideo?
+    @State private var readingVideo = false
 
     private let conditions = ["new", "like_new", "used", "refurbished"]
 
@@ -234,6 +326,50 @@ struct SellView: View {
                 }
             }
 
+            Section(state.t("video")) {
+                PhotosPicker(selection: $videoItem, matching: .videos) {
+                    Label(
+                        video == nil ? state.t("addVideo") : state.t("replaceVideo"),
+                        systemImage: "play.rectangle"
+                    )
+                }
+                .onChange(of: videoItem) { item in
+                    Task {
+                        guard let item else { return }
+                        readingVideo = true
+                        defer { readingVideo = false }
+                        guard let data = try? await item.loadTransferable(type: Data.self) else {
+                            return
+                        }
+                        // PhotosUI hands back whatever the phone recorded; iPhones
+                        // record QuickTime, everything else MP4.
+                        video = await model.prepareVideo(data, fileExtension: "mov")
+                    }
+                }
+
+                if readingVideo {
+                    ProgressView()
+                } else if let video {
+                    HStack {
+                        Image(systemName: "play.circle.fill").foregroundColor(Brand.acacia)
+                        Text(String(
+                            format: "%d:%02d",
+                            video.durationSeconds / 60,
+                            video.durationSeconds % 60
+                        ))
+                        .font(.footnote)
+                        Spacer()
+                        Button(state.t("removeVideo")) { self.video = nil; videoItem = nil }
+                            .font(.footnote)
+                            .foregroundColor(Brand.clayDark)
+                    }
+                } else {
+                    Text(state.t("videoHint"))
+                        .font(.footnote)
+                        .foregroundColor(Brand.muted)
+                }
+            }
+
             if let message = model.message {
                 Section {
                     Text(message)
@@ -281,7 +417,8 @@ struct SellView: View {
             cityId: city?.id,
             description: description,
             phone: phone,
-            photo: photoData
+            photo: photoData,
+            video: video
         )
 
         if model.didPost {
@@ -290,6 +427,8 @@ struct SellView: View {
             description = ""
             photoData = nil
             photoItem = nil
+            video = nil
+            videoItem = nil
         }
     }
 }

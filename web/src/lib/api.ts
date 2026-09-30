@@ -197,6 +197,12 @@ export interface ProductCard {
   thumbnailUrl: string | null;
   imageUrl: string | null;
   imageCount: number;
+  /** The card shows a play badge; the video itself only loads on the listing. */
+  hasVideo?: boolean;
+  /** Present on search results, so the video feed plays without a second call. */
+  videoUrl?: string | null;
+  videoPosterUrl?: string | null;
+  videoDurationSeconds?: number | null;
   viewCount: number;
   favoriteCount: number;
   featured: boolean;
@@ -210,11 +216,14 @@ export interface ProductCard {
 export interface ProductImage {
   id: string;
   url: string;
+  /** For a video, the poster frame shown until the buyer presses play. */
   thumbnailUrl: string | null;
   width: number | null;
   height: number | null;
   position: number;
   isPrimary: boolean;
+  mediaType: 'image' | 'video';
+  durationSeconds: number | null;
 }
 
 export interface ProductDetail extends ProductCard {
@@ -237,6 +246,49 @@ export interface ProductDetail extends ProductCard {
   images: ProductImage[];
   contact: { phone: string | null; whatsapp: string | null };
   shareUrl: string;
+}
+
+/** A row on the seller's own listings page. */
+export interface MyListing {
+  id: string;
+  ref: number;
+  slug: string;
+  title: string;
+  description: string | null;
+  price: number;
+  currency: string;
+  status: string;
+  condition: string;
+  categoryId: number;
+  cityId: number | null;
+  negotiable: boolean;
+  quantity: number;
+  deliveryAvailable: boolean;
+  viewCount: number;
+  favoriteCount: number;
+  messageCount: number;
+  featured: boolean;
+  publishedAt: string | null;
+  expiresAt: string | null;
+  createdAt: string;
+  /** Why a moderator turned it down. Null unless the status is rejected. */
+  rejectionReason: string | null;
+  thumbnailUrl: string | null;
+  imageCount: number;
+  hasVideo: boolean;
+}
+
+export interface UpdateListingInput {
+  title?: string;
+  description?: string | null;
+  price?: number;
+  currency?: string;
+  negotiable?: boolean;
+  condition?: string;
+  quantity?: number;
+  deliveryAvailable?: boolean;
+  phone?: string | null;
+  whatsapp?: string | null;
 }
 
 export interface CreateListingInput {
@@ -396,6 +448,8 @@ export interface ProductSearchParams {
   lng?: number;
   radiusKm?: number;
   sort?: string;
+  /** 'photo' hides listings that have a video; 'video' keeps only those. */
+  media?: 'photo' | 'video';
   page?: number;
   limit?: number;
 }
@@ -471,6 +525,8 @@ export const endpoints = {
       height?: number;
       bytes?: number;
       isPrimary?: boolean;
+      mediaType?: 'image' | 'video';
+      durationSeconds?: number;
     },
   ) => api<ProductImage>(`/products/${productId}/images`, { method: 'POST', body: input }),
 
@@ -483,7 +539,10 @@ export const endpoints = {
   deleteListing: (productId: string) => api<null>(`/products/${productId}`, { method: 'DELETE' }),
 
   myListings: (params: { status?: string; page?: number; limit?: number } = {}) =>
-    apiRequest<Array<Record<string, unknown>>>('/products/mine', { query: params }),
+    apiRequest<MyListing[]>('/products/mine', { query: params }),
+
+  updateListing: (productId: string, input: UpdateListingInput) =>
+    api<{ id: string }>(`/products/${productId}`, { method: 'PATCH', body: input }),
 
   regions: (countryId: number, lang: string) =>
     api<Place[]>(`/locations/countries/${countryId}/regions`, { query: { lang }, auth: false }),

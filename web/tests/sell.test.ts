@@ -1,6 +1,12 @@
 import { describe, expect, it } from 'vitest';
 
 import { DEFAULT_TARGETS, formatBytes, targetsFromConfig } from '../src/lib/image.js';
+import {
+  ACCEPTED_VIDEO_TYPES,
+  MAX_VIDEO_BYTES,
+  MAX_VIDEO_SECONDS,
+  formatDuration,
+} from '../src/lib/video.js';
 import { en } from '../src/i18n/locales/en.js';
 import { so } from '../src/i18n/locales/so.js';
 import { am } from '../src/i18n/locales/am.js';
@@ -79,5 +85,23 @@ describe('sell form translations', () => {
       const actual = [...translated.matchAll(/\{(\w+)\}/g)].map((match) => match[1]).sort();
       expect(actual, `placeholders in "${key}"`).toEqual(expected);
     }
+  });
+});
+
+describe('listing video limits', () => {
+  it('matches what the database and the buckets enforce', () => {
+    // These three numbers are repeated in 0020_product_video.sql, in the
+    // backend validator and in the two mobile apps. If one of them drifts a
+    // seller is told a video is fine and then watches the upload fail.
+    expect(MAX_VIDEO_BYTES).toBe(20 * 1024 * 1024);
+    expect(MAX_VIDEO_SECONDS).toBe(60);
+    expect(ACCEPTED_VIDEO_TYPES).toEqual(['video/mp4', 'video/quicktime', 'video/webm']);
+  });
+
+  it('formats a duration the way a video player does', () => {
+    expect(formatDuration(0)).toBe('0:00');
+    expect(formatDuration(7)).toBe('0:07');
+    expect(formatDuration(42.4)).toBe('0:42');
+    expect(formatDuration(60)).toBe('1:00');
   });
 });

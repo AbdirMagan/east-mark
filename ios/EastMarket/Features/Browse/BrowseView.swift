@@ -13,7 +13,13 @@ final class BrowseViewModel: ObservableObject {
         }
     }
 
-    func search(text: String, category: Category?, countryId: Int?, sort: String) async {
+    func search(
+        text: String,
+        category: Category?,
+        countryId: Int?,
+        sort: String,
+        media: String? = nil
+    ) async {
         isLoading = true
         errorMessage = nil
         do {
@@ -21,6 +27,7 @@ final class BrowseViewModel: ObservableObject {
                 search: text.isEmpty ? nil : text,
                 categoryId: category?.id,
                 countryId: countryId,
+                media: media,
                 sort: sort,
                 limit: 40
             )
@@ -34,6 +41,9 @@ final class BrowseViewModel: ObservableObject {
 
 struct BrowseView: View {
     var initialCategory: Category?
+    /// "photo" keeps the grid to listings that were photographed; the video
+    /// half of the marketplace has its own feed.
+    var media: String?
 
     @EnvironmentObject private var state: AppState
     @StateObject private var model = BrowseViewModel()
@@ -117,6 +127,12 @@ struct BrowseView: View {
     }
 
     private func runSearch() async {
-        await model.search(text: query, category: category, countryId: state.countryId, sort: sort)
+        await model.search(
+            text: query,
+            category: category,
+            countryId: state.countryId,
+            sort: sort,
+            media: media
+        )
     }
 }

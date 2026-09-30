@@ -1,0 +1,106 @@
+name: iOS
+
+# Builds and runs the iOS app on GitHub's macOS runners.
+#
+# This exists because the app is developed on Windows, where Xcode does not
+# exist. Instead of hunting for a Mac to find out whether the thing compiles,
+# push a branch and read the log: the runner generates the Xcode project,
+# compiles for the simulator, boots an iPhone, installs the app, launches it
+# and uploads a screenshot. A first build failure shows up here with the file
+# and line, which is all that is needed to fix it from Windows.
+#
+# Secrets (Settings -> Secrets and variables -> Actions), both optional:
+#   API_BASE_URL       the marketplace API the app should call, e.g. an ngrok
+#                      https URL. Defaults to localhost, which a runner cannot
+#                      reach -- the app will build and launch, but show no data.
+#   SUPABASE_ANON_KEY  the publishable anon key, for sign-in. NEVER the
+#                      service-role key: it would end up inside the app binary.
+
+on:
+  push:
+    paths:
+      - 'ios/**'
+      - '.github/workflows/ios.yml'
+  pull_request:
+    paths:
+      - 'ios/**'
+  workflow_dispatch:
+
+jobs:
+  build:
+    # macos-14 is Apple silicon with Xcode 15; pin it rather than using
+    # macos-latest so a runner image update cannot change the toolchain under us.
+    runs-on: macos-14
+    timeout-minutes: 30
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Show the toolchain
+        run: |
+          xcodebuild -version
+          xcrun simctl list runtimes | sed -n '1,10p'
+
+      - name: Install XcodeGen
+        run: brew install xcodegen
+
+      - name: Generate the Xcode project
+        working-directory: ios
+        env:
+          # A runner has no access to your machine, so localhost is a
+          # placeholder; set the API_BASE_URL secret to an ngrok https URL to
+          # have the app load real listings in the simulator.
+          API_BASE_URL: ${{ secrets.API_BASE_URL || 'http://localhost:4000/api/v1' }}
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+        run: xcodegen generate
+
+      - name: Build for the simulator
+        working-directory: ios
+        run: |
+          set -o pipefail
+          # No signing: a simulator build needs none, and the repo carries no
+          # team id or certificates.
+          build() {
+            xcodebuild               -project EastMarket.xcodeproj               -scheme EastMarket               -configuration Debug               -sdk iphonesimulator               -destination 'platform=iOS Simulator,name=iPhone 15,OS=latest'               -derivedDataPath build               CODE_SIGNING_ALLOWED=NO               build
+          }
+          # xcbeautify ships with the runner image, but do not depend on it:
+          # the raw log is what matters when the first build fails.
+          if command -v xcbeautify >/dev/null 2>&1; then
+            build | xcbeautify
+          else
+            build
+          fi
+
+      - name: Boot a simulator, install and launch
+        working-directory: ios
+        run: |
+          set -e
+          DEVICE=$(xcrun simctl create em-test com.apple.CoreSimulator.SimDeviceType.iPhone-15)
+          xcrun simctl boot "$DEVICE"
+          xcrun simctl bootstatus "$DEVICE" -b
+          APP=$(find build/Build/Products/Debug-iphonesimulator -maxdepth 1 -name '*.app' | head -1)
+          echo "Installing $APP"
+          xcrun simctl install "$DEVICE" "$APP"
+          xcrun simctl launch --console-pty "$DEVICE" com.eastmarket.app &
+          # Give the first screen time to load before the camera clicks.
+          sleep 25
+          xcrun simctl io "$DEVICE" screenshot launch.png
+          echo "DEVICE=$DEVICE" >> "$GITHUB_ENV"
+
+      - name: Collect the crash logs, if it fell over
+        if: always()
+        run: |
+          mkdir -p ios/diagnostics
+          cp -R ~/Library/Logs/DiagnosticReports/* ios/diagnostics/ 2>/dev/null || true
+          ls -la ios/diagnostics || true
+
+      - name: Upload the screenshot and logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ios-simulator-run
+          path: |
+            ios/launch.png
+            ios/diagnostics
+          if-no-files-found: warn
+          retention-days: 7

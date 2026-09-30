@@ -252,7 +252,7 @@ export async function listProducts(
     .select(
       `id, ref, slug, title, price, currency_code, status, condition, created_at, published_at,
        view_count, rejection_reason, seller_id, category_id, city_id,
-       images:product_images(url, thumbnail_url, is_primary)`,
+       images:product_images(url, thumbnail_url, is_primary, media_type, duration_seconds)`,
       { count: 'exact' },
     )
     .order('created_at', { ascending: false })
@@ -276,13 +276,28 @@ export async function listProducts(
   const names = new Map((profiles.data ?? []).map((p) => [p.id, p.full_name ?? p.username]));
 
   const items = (data ?? []).map((row) => {
-    const images = (row.images ?? []) as Array<{ url: string; thumbnail_url: string | null; is_primary: boolean }>;
-    const primary = images.find((i) => i.is_primary) ?? images[0];
+    const media = (row.images ?? []) as Array<{
+      url: string;
+      thumbnail_url: string | null;
+      is_primary: boolean;
+      media_type: string;
+      duration_seconds: number | null;
+    }>;
+    const photos = media.filter((i) => i.media_type !== 'video');
+    const primary = photos.find((i) => i.is_primary) ?? photos[0];
+    // A video-only listing still gets a thumbnail in the queue: the poster.
+    const poster = media.find((i) => i.media_type === 'video')?.thumbnail_url ?? null;
+    // A moderator has to be able to watch the video before approving it: an
+    // unwatched video is an unmoderated listing.
+    const video = media.find((i) => i.media_type === 'video');
     return {
       ...row,
       images: undefined,
-      imageCount: images.length,
-      thumbnailUrl: primary?.thumbnail_url ?? primary?.url ?? null,
+      imageCount: photos.length,
+      thumbnailUrl: primary?.thumbnail_url ?? primary?.url ?? poster,
+      videoUrl: video?.url ?? null,
+      videoPosterUrl: video?.thumbnail_url ?? null,
+      videoDurationSeconds: video?.duration_seconds ?? null,
       sellerName: names.get(row.seller_id) ?? 'Seller',
     };
   });

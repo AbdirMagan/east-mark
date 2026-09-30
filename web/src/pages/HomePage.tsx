@@ -80,6 +80,55 @@ export function HomePage() {
               ))}
             </div>
           )}
+
+          {/* Two ways to browse. The split is worth a pair of buttons this
+              prominent: photos are what most sellers post, and video is worth
+              its own full-screen feed rather than being buried in a grid. */}
+          <div className="mt-4 grid gap-3 sm:grid-cols-2">
+            <Link
+              to="/browse?media=photo"
+              className="group flex items-center gap-3 rounded-(--radius-card) border border-border-subtle bg-surface-raised p-4 transition-[border-color,box-shadow,translate] hover:border-brand hover:shadow-(--shadow-raised) motion-safe:hover:-translate-y-0.5"
+            >
+              <span className="flex size-11 shrink-0 items-center justify-center rounded-full bg-brand-subtle text-brand">
+                <Icon name="image" size={20} />
+              </span>
+              <span className="min-w-0">
+                <span className="block font-display font-bold text-text-primary">
+                  {t('home.photoListings')}
+                </span>
+                <span className="block text-sm text-text-secondary">
+                  {t('home.photoListingsHint')}
+                </span>
+              </span>
+              <Icon
+                name="chevron-right"
+                size={18}
+                className="ml-auto shrink-0 text-text-muted transition-transform group-hover:translate-x-0.5"
+              />
+            </Link>
+
+            <Link
+              to="/videos"
+              className="group flex items-center gap-3 rounded-(--radius-card) border border-border-subtle bg-surface-raised p-4 transition-[border-color,box-shadow,translate] hover:border-brand hover:shadow-(--shadow-raised) motion-safe:hover:-translate-y-0.5"
+            >
+              <span className="flex size-11 shrink-0 items-center justify-center rounded-full bg-ink-900 text-white">
+                <Icon name="play" size={20} />
+              </span>
+              <span className="min-w-0">
+                <span className="block font-display font-bold text-text-primary">
+                  {t('home.videoListings')}
+                </span>
+                <span className="block text-sm text-text-secondary">
+                  {t('home.videoListingsHint')}
+                </span>
+              </span>
+              <Icon
+                name="chevron-right"
+                size={18}
+                className="ml-auto shrink-0 text-text-muted transition-transform group-hover:translate-x-0.5"
+              />
+            </Link>
+          </div>
         </section>
 
         {/* Featured -------------------------------------------------------- */}

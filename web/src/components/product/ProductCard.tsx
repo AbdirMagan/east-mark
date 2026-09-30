@@ -76,6 +76,17 @@ export const ProductCard = memo(function ProductCard({
                 {product.imageCount}
               </Badge>
             ) : null}
+            {product.hasVideo ? (
+              // A badge, not an inline player: a grid of autoplaying videos
+              // would cost a browsing buyer megabytes before a single tap.
+              <Badge
+                tone="neutral"
+                icon="play"
+                className="bg-ink-900/70 text-white backdrop-blur-sm"
+              >
+                {t('product.videoBadge')}
+              </Badge>
+            ) : null}
           </div>
 
           {product.distanceKm != null ? (

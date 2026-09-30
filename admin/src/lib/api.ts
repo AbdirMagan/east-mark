@@ -122,6 +122,10 @@ export interface AdminProduct {
   sellerName: string;
   thumbnailUrl: string | null;
   imageCount: number;
+  /** A listing with a video cannot be judged without watching it. */
+  videoUrl: string | null;
+  videoPosterUrl: string | null;
+  videoDurationSeconds: number | null;
 }
 
 export interface AdminUser {

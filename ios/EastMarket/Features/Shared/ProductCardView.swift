@@ -10,6 +10,23 @@ struct ProductCardView: View {
         VStack(alignment: .leading, spacing: 0) {
             ZStack(alignment: .topLeading) {
                 photo
+
+                // A badge, not a player: a scrolling grid that autoplays video
+                // would spend a buyer's data bundle before a single tap.
+                if product.hasVideo == true {
+                    HStack(spacing: 3) {
+                        Image(systemName: "play.fill").font(.system(size: 8))
+                        Text(state.t("video")).font(.system(size: 10, weight: .bold))
+                    }
+                    .foregroundColor(.white)
+                    .padding(.horizontal, 6)
+                    .padding(.vertical, 3)
+                    .background(Color.black.opacity(0.65))
+                    .clipShape(Capsule())
+                    .padding(8)
+                    .frame(maxWidth: .infinity, alignment: .trailing)
+                }
+
                 if product.featured {
                     Text("★")
                         .font(.caption2.bold())

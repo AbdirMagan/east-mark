@@ -169,6 +169,34 @@ class MarketplaceViewModel(application: Application) : AndroidViewModel(applicat
         _filter.value = _filter.value.copy(categoryId = categoryId)
     }
 
+    /**
+     * The home page's two entry points. "photo" keeps the grid to listings that
+     * were photographed; the video half of the marketplace has its own
+     * full-screen feed, so mixing the two in one grid helps nobody.
+     */
+    fun showPhotoListingsOnly(only: Boolean) {
+        _filter.value = _filter.value.copy(media = if (only) "photo" else null)
+    }
+
+    /** Listings with a video, for the full-screen feed. */
+    private val _videoProducts = MutableStateFlow<List<Product>>(emptyList())
+    val videoProducts: StateFlow<List<Product>> = _videoProducts.asStateFlow()
+
+    private val _isLoadingVideos = MutableStateFlow(false)
+    val isLoadingVideos: StateFlow<Boolean> = _isLoadingVideos.asStateFlow()
+
+    private val _videoCategoryId = MutableStateFlow<String?>(null)
+    val videoCategoryId: StateFlow<String?> = _videoCategoryId.asStateFlow()
+
+    fun loadVideoProducts(categoryId: String? = _videoCategoryId.value) {
+        _videoCategoryId.value = categoryId
+        viewModelScope.launch {
+            _isLoadingVideos.value = true
+            _videoProducts.value = repository.getVideoProducts(categoryId)
+            _isLoadingVideos.value = false
+        }
+    }
+
     fun filterByLocation(country: String?, city: String?) {
         _filter.value = _filter.value.copy(country = country, city = city)
     }

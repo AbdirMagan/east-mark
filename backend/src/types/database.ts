@@ -1478,6 +1478,8 @@ export type Database = {
       }
       product_images: {
         Row: {
+          duration_seconds: number | null
+          media_type: string
           bytes: number | null
           created_at: string
           height: number | null
@@ -1491,6 +1493,8 @@ export type Database = {
           width: number | null
         }
         Insert: {
+          duration_seconds?: number | null
+          media_type?: string
           bytes?: number | null
           created_at?: string
           height?: number | null
@@ -1504,6 +1508,8 @@ export type Database = {
           width?: number | null
         }
         Update: {
+          duration_seconds?: number | null
+          media_type?: string
           bytes?: number | null
           created_at?: string
           height?: number | null
@@ -2661,6 +2667,7 @@ export type Database = {
           p_limit?: number
           p_longitude?: number
           p_max_price?: number
+          p_media?: string
           p_min_price?: number
           p_negotiable_only?: boolean
           p_offset?: number
@@ -2686,6 +2693,7 @@ export type Database = {
           delivery_available: boolean
           distance_km: number
           favorite_count: number
+          has_video: boolean
           id: string
           image_count: number
           image_url: string
@@ -2705,6 +2713,9 @@ export type Database = {
           thumbnail_url: string
           title: string
           total_count: number
+          video_duration_seconds: number | null
+          video_poster_url: string | null
+          video_url: string | null
           view_count: number
         }[]
       }

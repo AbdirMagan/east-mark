@@ -44,10 +44,11 @@ supabase/.branches/
 supabase/.temp/
 
 # Editors
-.idea/caches/
-.idea/libraries/
-.idea/modules.xml
-.idea/workspace.xml
+# The whole folder: Android Studio rewrites these on every open, and the JDK
+# paths inside them are this machine's, not anyone else's.
+.idea/
+# Written by Gradle on first run, and it records the local JDK.
+**/gradle/gradle-daemon-jvm.properties
 .vscode/
 .DS_Store
 Thumbs.db

@@ -1,3 +1,4 @@
+import AVKit
 import SwiftUI
 
 @MainActor
@@ -130,14 +131,18 @@ struct ProductDetailView: View {
                 )
             } else {
                 ForEach(images) { image in
-                    AsyncImage(url: URL(string: image.url)) { phase in
-                        if case .success(let loaded) = phase {
-                            loaded.resizable().scaledToFill()
-                        } else {
-                            Brand.sandDeep.overlay(ProgressView())
+                    if image.isVideo {
+                        VideoSlide(image: image)
+                    } else {
+                        AsyncImage(url: URL(string: image.url)) { phase in
+                            if case .success(let loaded) = phase {
+                                loaded.resizable().scaledToFill()
+                            } else {
+                                Brand.sandDeep.overlay(ProgressView())
+                            }
                         }
+                        .clipped()
                     }
-                    .clipped()
                 }
             }
         }
@@ -219,5 +224,59 @@ struct ProductDetailView: View {
             notice = (error as? APIError)?.errorDescription ?? error.localizedDescription
         }
         model.isStartingChat = false
+    }
+}
+
+/// A video in the gallery: the poster frame until it is tapped, then the player.
+///
+/// Nothing of the video is fetched before that tap. A buyer on a metered bundle
+/// pays for every megabyte, and most of them are here for the photos.
+private struct VideoSlide: View {
+    let image: ProductImage
+    @State private var player: AVPlayer?
+
+    var body: some View {
+        ZStack {
+            if let player {
+                VideoPlayer(player: player)
+                    .onAppear { player.play() }
+                    .onDisappear { player.pause() }
+            } else {
+                AsyncImage(url: URL(string: image.thumbnailUrl ?? "")) { phase in
+                    if case .success(let loaded) = phase {
+                        loaded.resizable().scaledToFill()
+                    } else {
+                        Brand.sandDeep
+                    }
+                }
+                .clipped()
+
+                Button {
+                    if let url = URL(string: image.url) { player = AVPlayer(url: url) }
+                } label: {
+                    Image(systemName: "play.circle.fill")
+                        .font(.system(size: 56))
+                        .foregroundColor(.white)
+                        .shadow(radius: 6)
+                }
+
+                if let seconds = image.durationSeconds {
+                    VStack {
+                        Spacer()
+                        HStack {
+                            Spacer()
+                            Text(String(format: "%d:%02d", seconds / 60, seconds % 60))
+                                .font(.caption2.bold())
+                                .foregroundColor(.white)
+                                .padding(.horizontal, 6)
+                                .padding(.vertical, 2)
+                                .background(Color.black.opacity(0.6))
+                                .clipShape(RoundedRectangle(cornerRadius: 6))
+                                .padding(10)
+                        }
+                    }
+                }
+            }
+        }
     }
 }

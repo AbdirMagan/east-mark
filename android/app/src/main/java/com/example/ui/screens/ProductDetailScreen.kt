@@ -2,6 +2,8 @@ package com.example.ui.screens
 
 import android.content.Intent
 import android.net.Uri
+import android.widget.MediaController
+import android.widget.VideoView
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -29,6 +31,7 @@ import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Flag
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Phone
+import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Security
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.filled.Store
@@ -37,6 +40,7 @@ import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
@@ -51,6 +55,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -61,6 +66,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.viewinterop.AndroidView
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -68,8 +74,10 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.R
 import com.example.data.model.Product
+import com.example.data.remote.VideoCache
 import com.example.domain.CurrencyConverter
 import com.example.domain.LocalizationManager
+import com.example.data.model.AppLanguage
 import com.example.ui.components.RatingStars
 import com.example.ui.components.ReportListingDialog
 import com.example.ui.components.VerifiedBadge
@@ -102,11 +110,6 @@ fun ProductDetailScreen(
         topBar = {
             TopAppBar(
                 title = { Text(product.title, maxLines = 1, fontSize = 16.sp) },
-                navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
-                    }
-                },
                 actions = {
                     IconButton(onClick = { viewModel.toggleFavorite(product) }) {
                         Icon(
@@ -226,28 +229,51 @@ fun ProductDetailScreen(
                 .verticalScroll(rememberScrollState())
                 .background(MaterialTheme.colorScheme.background)
         ) {
+            val videoOnly = product.imageUrls.isEmpty() && product.videoUrl != null
+
+            if (videoOnly) {
+                // Filmed, not photographed: the video is the listing's face.
+                // Showing its poster above a second copy of the same video is
+                // the listing twice over.
+                ListingVideo(
+                    url = product.videoUrl,
+                    posterUrl = product.videoPosterUrl,
+                    durationSeconds = product.videoDurationSeconds,
+                    language = language
+                )
+            }
+
             // Main Product Image
-            Box(
+            if (!videoOnly) Box(
                 modifier = Modifier
                     .fillMaxWidth()
                     .aspectRatio(1.25f)
                     .background(MaterialTheme.colorScheme.surfaceVariant)
             ) {
                 val firstImage = product.imageUrls.firstOrNull()
-                val fallbackRes = when (firstImage) {
+                // The bundled photos belong to the offline sample data only.
+                // A real listing is loaded from its own URL; while that is in
+                // flight, or if it fails, the tile shows a neutral glyph --
+                // never another seller's product photo.
+                val bundledRes = when (firstImage) {
                     "img_vehicle" -> R.drawable.img_vehicle
                     "img_hero_banner" -> R.drawable.img_hero_banner
                     "img_app_icon" -> R.drawable.img_app_icon
-                    else -> R.drawable.img_electronics
+                    "img_electronics" -> R.drawable.img_electronics
+                    else -> null
                 }
 
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_image_placeholder),
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
+                    modifier = Modifier.align(Alignment.Center).size(56.dp)
+                )
+
                 AsyncImage(
-                    model = firstImage.toCoilModel(),
+                    model = if (bundledRes != null) bundledRes else firstImage.toCoilModel(),
                     contentDescription = product.title,
                     contentScale = ContentScale.Crop,
-                    placeholder = painterResource(id = fallbackRes),
-                    error = painterResource(id = fallbackRes),
-                    fallback = painterResource(id = fallbackRes),
                     modifier = Modifier.fillMaxSize()
                 )
 
@@ -330,6 +356,22 @@ fun ProductDetailScreen(
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
+                }
+
+                if (product.videoUrl != null && !videoOnly) {
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Text(
+                        text = LocalizationManager.getString("video", language),
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    ListingVideo(
+                        url = product.videoUrl,
+                        posterUrl = product.videoPosterUrl,
+                        durationSeconds = product.videoDurationSeconds,
+                        language = language
+                    )
                 }
 
                 Spacer(modifier = Modifier.height(16.dp))
@@ -541,5 +583,125 @@ fun ProductDetailScreen(
                 showReportDialog = false
             }
         )
+    }
+}
+
+/**
+ * The seller's video.
+ *
+ * Nothing is fetched until the buyer taps play. That is the whole point: on a
+ * metered bundle a 20MB video that auto-loads is real money spent on a listing
+ * the buyer may not even want. Until then this is a poster image -- a small
+ * WebP frame the seller's phone extracted on upload -- and a play button.
+ *
+ * Playback uses the platform VideoView rather than a media library, so it adds
+ * nothing to the APK and works on the older Android versions common here.
+ */
+@Composable
+private fun ListingVideo(
+    url: String,
+    posterUrl: String?,
+    durationSeconds: Int?,
+    language: AppLanguage
+) {
+    val context = LocalContext.current
+    var playing by remember(url) { mutableStateOf(false) }
+    var localPath by remember(url) { mutableStateOf<String?>(null) }
+    var preparing by remember(url) { mutableStateOf(false) }
+
+    // Fetched with OkHttp and played from disk, like the video feed: the
+    // platform MediaPlayer's own HTTP stack stalls on Supabase storage.
+    LaunchedEffect(playing, url) {
+        if (playing && localPath == null) {
+            preparing = true
+            localPath = VideoCache.localFile(context, url)?.absolutePath
+            preparing = false
+        }
+    }
+
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .aspectRatio(16f / 9f)
+            .clip(RoundedCornerShape(14.dp))
+            // The bars around a portrait video follow the theme rather than
+            // sitting as a black slab in a light screen.
+            .background(MaterialTheme.colorScheme.surfaceVariant)
+            .testTag("listing_video")
+    ) {
+        val path = localPath
+        if (playing && path != null) {
+            AndroidView(
+                factory = { viewContext ->
+                    val view = VideoView(viewContext)
+                    val controller = MediaController(viewContext)
+                    controller.setAnchorView(view)
+                    view.setMediaController(controller)
+                    view.setVideoURI(Uri.fromFile(java.io.File(path)))
+                    view.setOnPreparedListener { view.start() }
+                    view
+                },
+                modifier = Modifier.fillMaxSize()
+            )
+        } else if (playing && preparing) {
+            if (posterUrl != null) {
+                AsyncImage(
+                    model = posterUrl,
+                    contentDescription = null,
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier.fillMaxSize()
+                )
+            }
+            CircularProgressIndicator(
+                color = Color.White,
+                strokeWidth = 2.dp,
+                modifier = Modifier.align(Alignment.Center).size(32.dp)
+            )
+        } else {
+            if (posterUrl != null) {
+                AsyncImage(
+                    model = posterUrl,
+                    contentDescription = null,
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier.fillMaxSize()
+                )
+            }
+
+            Surface(
+                color = Color.Black.copy(alpha = 0.55f),
+                shape = CircleShape,
+                modifier = Modifier
+                    .align(Alignment.Center)
+                    .size(64.dp)
+                    .clickable { playing = true }
+            ) {
+                Box(contentAlignment = Alignment.Center) {
+                    Icon(
+                        imageVector = Icons.Filled.PlayArrow,
+                        contentDescription = LocalizationManager.getString("watch_video", language),
+                        tint = Color.White,
+                        modifier = Modifier.size(34.dp)
+                    )
+                }
+            }
+
+            if (durationSeconds != null) {
+                Surface(
+                    color = Color.Black.copy(alpha = 0.6f),
+                    shape = RoundedCornerShape(6.dp),
+                    modifier = Modifier
+                        .align(Alignment.BottomEnd)
+                        .padding(10.dp)
+                ) {
+                    Text(
+                        text = "${durationSeconds / 60}:${(durationSeconds % 60).toString().padStart(2, '0')}",
+                        color = Color.White,
+                        fontSize = 11.sp,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
+                    )
+                }
+            }
+        }
     }
 }

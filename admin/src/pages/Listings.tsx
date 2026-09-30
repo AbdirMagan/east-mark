@@ -23,6 +23,7 @@ export function Listings() {
   const [query, setQuery] = useState('');
   const [page, setPage] = useState(1);
   const [rejecting, setRejecting] = useState<AdminProduct | null>(null);
+  const [watching, setWatching] = useState<AdminProduct | null>(null);
 
   const listings = useQuery({
     queryKey: ['admin-products', status, query, page],
@@ -146,6 +147,22 @@ export function Listings() {
                               #{item.ref} · {item.condition.replace('_', ' ')} · {item.imageCount} photo
                               {item.imageCount === 1 ? '' : 's'}
                             </p>
+                            {item.videoUrl ? (
+                              // Approving a listing whose video nobody watched
+                              // is not moderation, so the video is one click
+                              // away from the decision itself.
+                              <button
+                                type="button"
+                                onClick={() => setWatching(item)}
+                                className="mt-1 inline-flex items-center gap-1 rounded-(--radius-pill) border border-border-subtle px-2 py-0.5 text-xs font-medium text-text-secondary transition-colors hover:border-brand hover:text-brand"
+                              >
+                                <Icon name="play" size={11} />
+                                Watch video
+                                {item.videoDurationSeconds
+                                  ? ` · ${formatDuration(item.videoDurationSeconds)}`
+                                  : ''}
+                              </button>
+                            ) : null}
                             {item.rejection_reason ? (
                               <p className="mt-0.5 text-xs text-(--color-danger)">{item.rejection_reason}</p>
                             ) : null}
@@ -203,6 +220,10 @@ export function Listings() {
           </>
         )}
       </Card>
+
+      {watching?.videoUrl ? (
+        <VideoDialog product={watching} onClose={() => setWatching(null)} />
+      ) : null}
 
       {rejecting ? (
         <ReasonDialog
@@ -295,4 +316,46 @@ function ReasonDialog({
       </Card>
     </div>
   );
+}
+
+/** The seller's video, full size, so a moderator can actually judge it. */
+function VideoDialog({ product, onClose }: { product: AdminProduct; onClose: () => void }) {
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-ink-950/60 p-4"
+      role="dialog"
+      aria-modal="true"
+      onClick={onClose}
+    >
+      {/* A plain element rather than <Card>, which does not take a click
+          handler: the backdrop closes the dialog, the panel must not. */}
+      <div
+        className="w-full max-w-2xl rounded-(--radius-card) border border-border-subtle bg-surface-raised p-4"
+        onClick={(event) => event.stopPropagation()}
+      >
+        <div className="flex items-start justify-between gap-3">
+          <div className="min-w-0">
+            <h2 className="truncate text-base font-bold text-text-primary">{product.title}</h2>
+            <p className="text-xs text-text-muted">#{product.ref} · {product.sellerName}</p>
+          </div>
+          <Button variant="ghost" size="sm" icon="close" onClick={onClose}>Close</Button>
+        </div>
+
+        <video
+          src={product.videoUrl ?? undefined}
+          poster={product.videoPosterUrl ?? undefined}
+          controls
+          autoPlay
+          playsInline
+          className="mt-3 max-h-[70vh] w-full rounded-(--radius-field) bg-ink-950"
+        />
+      </div>
+    </div>
+  );
+}
+
+/** "0:42". */
+function formatDuration(seconds: number): string {
+  const whole = Math.max(0, Math.round(seconds));
+  return `${Math.floor(whole / 60)}:${String(whole % 60).padStart(2, '0')}`;
 }

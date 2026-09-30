@@ -60,6 +60,8 @@ struct HomeView: View {
                         categoryStrip
                     }
 
+                    browseModes
+
                     if !model.featured.isEmpty {
                         section(title: state.t("featured"), products: model.featured)
                     }
@@ -90,10 +92,68 @@ struct HomeView: View {
             .navigationDestination(for: Category.self) { category in
                 BrowseView(initialCategory: category)
             }
+            .navigationDestination(for: VideoFeedRoute.self) { _ in
+                VideoFeedView()
+            }
+            .navigationDestination(for: BrowseRoute.self) { _ in
+                BrowseView(media: "photo")
+            }
             .task(id: state.language) {
                 await model.load(language: state.language, countryId: state.countryId)
             }
         }
+    }
+
+    /// The two ways to browse. Photos stay in the grid; video gets its own
+    /// feed, because a grid of muted thumbnails is the worst way to show
+    /// something that was filmed.
+    private var browseModes: some View {
+        HStack(spacing: 10) {
+            NavigationLink(value: BrowseRoute.photos) {
+                modeCard(
+                    title: state.t("photoListings"),
+                    subtitle: state.t("photoListingsHint"),
+                    systemImage: "photo.on.rectangle"
+                )
+            }
+
+            NavigationLink(value: VideoFeedRoute()) {
+                modeCard(
+                    title: state.t("videoListings"),
+                    subtitle: state.t("videoListingsHint"),
+                    systemImage: "play.rectangle.fill"
+                )
+            }
+        }
+        .padding(.horizontal, 16)
+    }
+
+    private func modeCard(title: String, subtitle: String, systemImage: String) -> some View {
+        HStack(spacing: 10) {
+            Image(systemName: systemImage)
+                .font(.system(size: 17))
+                .foregroundColor(Brand.acacia)
+                .frame(width: 34, height: 34)
+                .background(Brand.acacia.opacity(0.12))
+                .clipShape(Circle())
+
+            VStack(alignment: .leading, spacing: 2) {
+                Text(title)
+                    .font(.system(size: 13, weight: .bold))
+                    .foregroundColor(Brand.ink)
+                Text(subtitle)
+                    .font(.system(size: 10))
+                    .foregroundColor(Brand.muted)
+                    .lineLimit(2)
+            }
+
+            Spacer(minLength: 0)
+        }
+        .padding(10)
+        .frame(maxWidth: .infinity)
+        .background(Color.white)
+        .clipShape(RoundedRectangle(cornerRadius: 14))
+        .overlay(RoundedRectangle(cornerRadius: 14).strokeBorder(Brand.sandDeep, lineWidth: 1))
     }
 
     private var categoryStrip: some View {
