@@ -1,0 +1,6 @@
+# Vercel runs the build itself; the local dist would only be dead weight.
+dist
+node_modules
+.env
+.env.*
+tests

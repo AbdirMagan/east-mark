@@ -86,6 +86,12 @@ export async function apiRequest<T>(path: string, options: RequestOptions = {}):
   const headers: Record<string, string> = { Accept: 'application/json' };
   if (body !== undefined) headers['Content-Type'] = 'application/json';
 
+  // While the API is reached through an ngrok tunnel, a request that looks like
+  // it came from a browser is answered with ngrok's "you are about to visit"
+  // page instead of JSON -- including fetch() from our own site. This header
+  // opts out of that. Any other host ignores it.
+  if (BASE_URL.includes('ngrok')) headers['ngrok-skip-browser-warning'] = 'true';
+
   if (auth) {
     // getSession reads from storage and only hits the network when the token
     // is close to expiry, so this is cheap on the common path.
