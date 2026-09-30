@@ -1,6 +1,6 @@
 import { Suspense, lazy, useEffect } from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { BrowserRouter, Route, Routes, useLocation } from 'react-router-dom';
+import { BrowserRouter, Navigate, Route, Routes, useLocation } from 'react-router-dom';
 
 import { BottomNav, Header } from './components/layout/Header.js';
 import { HornBackdrop } from './components/brand/HornMap.js';
@@ -30,6 +30,7 @@ const CategoriesPage = lazy(() =>
 );
 const SavedPage = lazy(() => import('./pages/MiscPages.js').then((m) => ({ default: m.SavedPage })));
 const SellPage = lazy(() => import('./pages/SellPage.js').then((m) => ({ default: m.SellPage })));
+const PrivacyPage = lazy(() => import('./pages/LegalPages.js').then((m) => ({ default: m.PrivacyPage })));
 const MessagesPage = lazy(() =>
   import('./pages/MessagesPage.js').then((m) => ({ default: m.MessagesPage })),
 );
@@ -105,6 +106,9 @@ function Shell() {
             <Route path="/my-listings" element={<MyListingsPage />} />
             <Route path="/messages" element={<MessagesPage />} />
             <Route path="/messages/:conversationId" element={<MessagesPage />} />
+            <Route path="/legal/privacy" element={<PrivacyPage />} />
+            {/* The short address to give app stores and to paste into listings. */}
+            <Route path="/privacy" element={<Navigate to="/legal/privacy" replace />} />
             <Route path="*" element={<NotFoundPage />} />
           </Routes>
         </Suspense>
