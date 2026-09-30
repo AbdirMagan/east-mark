@@ -197,7 +197,7 @@ fun ProductDetailScreen(
                             .testTag("action_whatsapp_btn")
                     ) {
                         Text(
-                            text = LocalizationManager.getString("whatsapp", language),
+                            text = LocalizationManager.getString("whatsapp_short", language),
                             fontWeight = FontWeight.Bold,
                             color = Color.White,
                             fontSize = 13.sp

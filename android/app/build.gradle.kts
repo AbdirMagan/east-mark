@@ -1,4 +1,19 @@
 import com.google.gms.googleservices.GoogleServicesPlugin.MissingGoogleServicesStrategy
+import java.util.Properties
+
+/**
+ * The API address a debug build should call: whatever is in .env, falling back
+ * to the emulator's alias for this machine. Read here rather than through the
+ * Secrets plugin because a release build must NOT inherit it -- see the
+ * release build type below.
+ */
+val debugApiBaseUrl: String = run {
+  val env = rootProject.file(".env")
+  val fallback = "http://10.0.2.2:4000/api/v1"
+  if (!env.exists()) return@run fallback
+  val properties = Properties().apply { env.inputStream().use { load(it) } }
+  (properties.getProperty("API_BASE_URL") ?: fallback).trim()
+}
 
 plugins {
   alias(libs.plugins.android.application)
@@ -14,11 +29,14 @@ android {
   compileSdk { version = release(36) { minorApiLevel = 1 } }
 
   defaultConfig {
-    applicationId = "com.aistudio.eastmarket.emafri"
+    // The package name is permanent once the app is published: a store keys the
+    // listing, its reviews and every update to it. This matches the value the
+    // deep-link configuration and the backend already use.
+    applicationId = "app.eastmarket.android"
     minSdk = 24
     targetSdk = 36
-    versionCode = 1
-    versionName = "1.0"
+    versionCode = 2
+    versionName = "1.0.1"
 
     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
   }
@@ -45,8 +63,16 @@ android {
       isMinifyEnabled = false
       proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
       signingConfig = signingConfigs.getByName("release")
+      // .env carries the development address -- the emulator alias or a LAN IP,
+      // over plain HTTP. A published build must talk to the hosted API over
+      // HTTPS, and cleartext is debug-only, so a release built from .env alone
+      // would install fine and then load nothing.
+      buildConfigField("String", "API_BASE_URL", "\"https://east-market-api-two.vercel.app/api/v1\"")
     }
-    debug { signingConfig = signingConfigs.getByName("debugConfig") }
+    debug {
+      signingConfig = signingConfigs.getByName("debugConfig")
+      buildConfigField("String", "API_BASE_URL", "\"" + debugApiBaseUrl + "\"")
+    }
   }
   compileOptions {
     sourceCompatibility = JavaVersion.VERSION_11
@@ -69,6 +95,9 @@ secrets {
   propertiesFileName = ".env"
   defaultPropertiesFileName = ".env.example"
   ignoreList.add("FIREBASE_APPCHECK_DEBUG_TOKEN")
+  // Defined per build type instead: a published build has to reach the hosted
+  // API over HTTPS, and .env holds a developer's local address.
+  ignoreList.add("API_BASE_URL")
 }
 
 googleServices { missingGoogleServicesStrategy = MissingGoogleServicesStrategy.WARN }
