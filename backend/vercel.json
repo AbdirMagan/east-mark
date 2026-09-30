@@ -1,9 +1,17 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
+  "buildCommand": "tsc -p tsconfig.build.json && mkdir -p public && echo ok > public/.keep",
+  "outputDirectory": "public",
   "functions": {
-    "api/index.ts": { "memory": 1024, "maxDuration": 30 }
+    "api/index.ts": {
+      "memory": 1024,
+      "maxDuration": 30
+    }
   },
   "rewrites": [
-    { "source": "/(.*)", "destination": "/api/index" }
+    {
+      "source": "/(.*)",
+      "destination": "/api/index"
+    }
   ]
 }

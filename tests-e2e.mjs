@@ -3,6 +3,9 @@ import { chromium } from 'playwright';
 const WEB = process.env.WEB_URL ?? 'http://localhost:5174';
 const ADMIN = process.env.ADMIN_URL ?? 'http://localhost:5175';
 const OUT = process.env.OUT_DIR ?? '.';
+// The dev server proxies /api to the backend; a deployed site calls the API on
+// its own domain, so point this at it (e.g. https://api.example.com/api/v1).
+const API = process.env.API_URL ?? '/api/v1';
 
 const results = [];
 const consoleErrors = [];
@@ -99,25 +102,22 @@ await mobile.screenshot({ path: `${OUT}/06-mobile.png`, fullPage: false });
 await mobile.close();
 
 // Catalogue and markets come straight from the database.
-const catalogue = await page.evaluate(async () => {
-  const cats = await fetch('/api/v1/categories').then((r) => r.json());
-  const countries = await fetch('/api/v1/locations/countries').then((r) => r.json());
+const catalogue = await page.evaluate(async (api) => {
+  const cats = await fetch(`${api}/categories`).then((r) => r.json());
+  const countries = await fetch(`${api}/locations/countries`).then((r) => r.json());
   return { cats: cats.data.map((c) => c.name), countries: countries.data.map((c) => c.code) };
-});
-check('exactly five categories', catalogue.cats.length === 5, catalogue.cats.join(', '));
+}, API);
+// Five original categories plus Home & Office Goods (migration 0019).
+check('exactly six categories', catalogue.cats.length === 6, catalogue.cats.join(', '));
 check('Djibouti is a market', catalogue.countries.includes('DJ'), catalogue.countries.join(', '));
 
-// Africa map: served as a static file and applied as the page backdrop.
+// Horn of Africa map: the interactive hero, and the quiet copy fixed behind
+// every page. Both are inline SVG (components/brand/HornMap.tsx).
 await page.goto(WEB, { waitUntil: 'networkidle' });
-const mapServed = await page.evaluate(async () => (await fetch('/africa-map.svg')).ok);
-const backdrop = await page.evaluate(() =>
-  [...document.querySelectorAll('div')].some((d) => {
-    const style = getComputedStyle(d);
-    return `${style.maskImage} ${style.webkitMaskImage}`.includes('africa-map');
-  }),
-);
-check('Africa map served', mapServed);
-check('Africa map applied as page backdrop', backdrop);
+const heroMap = await page.locator('svg[role="group"]').count();
+const backdrop = await page.locator('div[aria-hidden="true"].fixed svg').count();
+check('Horn map on the home page', heroMap > 0);
+check('Horn map applied as page backdrop', backdrop > 0);
 await page.screenshot({ path: `${OUT}/05b-africa-backdrop.png` });
 
 /* ------------------------------------------------------------------ */

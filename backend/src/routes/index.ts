@@ -80,7 +80,7 @@ healthRouter.get('/', (_req, res) => {
       version: 'v1',
       status: 'running',
       // The thing most people opening this URL are actually looking for.
-      webApp: 'http://localhost:5173',
+      webApp: env.NODE_ENV === 'production' ? env.SITE_URL : 'http://localhost:5173',
       endpoints: {
         health: '/health',
         ready: '/health/ready',
@@ -91,7 +91,9 @@ healthRouter.get('/', (_req, res) => {
         ads: '/api/v1/ads?placement=home_hero',
       },
     },
-    'This is the East-Market API. The marketplace runs separately on port 5173.',
+    env.NODE_ENV === 'production'
+      ? `This is the East-Market API. The marketplace is at ${env.SITE_URL}.`
+      : 'This is the East-Market API. The marketplace runs separately on port 5173.',
   );
 });
 
