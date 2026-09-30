@@ -396,3 +396,158 @@ export function TermsPage() {
     </article>
   );
 }
+
+/**
+ * Community guidelines: the Terms of Service rules, in plain everyday terms.
+ *
+ * The "Report" section mirrors the report_reason enum (scam, fake_product,
+ * wrong_information, offensive, illegal, duplicate, spam, other) so that each
+ * guideline has a matching reason a user can pick. Keep the two in step.
+ */
+export function CommunityGuidelinesPage() {
+  useSeo({
+    title: 'Community Guidelines',
+    description:
+      'How to buy and sell well on East-Market: honest listings, respectful messages, safe deals, and what to report.',
+    path: '/legal/community-guidelines',
+  });
+
+  const termsLink = (
+    <Link to="/legal/terms" className="font-medium text-brand hover:underline">
+      Terms of Service
+    </Link>
+  );
+
+  return (
+    <article className="mx-auto max-w-3xl px-4 py-10 lg:px-6">
+      <h1 className="font-display text-3xl font-bold tracking-tight text-text-primary">
+        Community Guidelines
+      </h1>
+      <p className="mt-2 text-sm text-text-muted">Last updated {UPDATED}</p>
+
+      <p className="mt-6 text-sm leading-relaxed text-text-secondary">
+        East-Market works when buyers can trust what they see and sellers are treated fairly. These
+        guidelines explain, in everyday terms, what that looks like. They sit alongside our{' '}
+        {termsLink}, which are the binding rules.
+      </p>
+
+      <Section title="Be honest in your listings">
+        <List
+          items={[
+            'Use your own photos and videos of the actual item, not pictures copied from the internet or another listing.',
+            'Show the price you will really accept. If it is negotiable, say so — do not post a low price to attract calls and then ask for more.',
+            'Describe the condition truthfully, including any faults, damage or missing parts.',
+            'Give the real location of the item, so buyers know how far they will travel.',
+            'Post each item once, in the category that fits it best.',
+            'Mark it sold, or delete it, as soon as it is gone.',
+          ]}
+        />
+      </Section>
+
+      <Section title="Property, land, vehicles and livestock">
+        <p>These deals involve large sums, so they need extra care.</p>
+        <List
+          items={[
+            'Houses and land: only list property you own or are authorised to sell or rent, and be ready to show title or authorisation documents.',
+            'Vehicles: give the real year, mileage and condition, and have the registration papers ready for the buyer to check.',
+            'Livestock: describe the animals’ age, breed and health honestly, and let buyers see them before paying.',
+            'Rentals: state the rent, the deposit and what is included, and do not ask for money before the tenant has seen the place.',
+          ]}
+        />
+      </Section>
+
+      <Section title="Talk to each other with respect">
+        <List
+          items={[
+            'Be polite, even when you disagree on a price. A “no, thank you” is enough.',
+            'No insults, threats, harassment, or hateful comments about anyone’s clan, tribe, religion, nationality, gender or disability.',
+            'Answer messages about your listings, and tell buyers when an item has sold.',
+            'Use someone’s phone number or WhatsApp only to talk about the listing they posted.',
+          ]}
+        />
+      </Section>
+
+      <Section title="Keep deals safe">
+        <List
+          items={[
+            'Meet in a busy public place, and bring someone with you for high-value items.',
+            'See and check the item before you pay. Never send a deposit for something you have not seen.',
+            'Be wary of prices that look too good to be true, and of pressure to decide or pay quickly.',
+            'Never share your mobile money PIN or a verification code — East-Market will never ask for them.',
+            'Keep your conversation in East-Market messages where you can, so there is a record if something goes wrong.',
+          ]}
+        />
+      </Section>
+
+      <Section title="Never allowed">
+        <p>
+          Some things are never allowed, however they are described: illegal goods, stolen
+          property, weapons and ammunition, drugs, counterfeit goods, protected wildlife, adult
+          services, any trade in people, and anything that exploits children. The full list is in
+          the {termsLink}.
+        </p>
+      </Section>
+
+      <Section title="Report what looks wrong">
+        <p>
+          Use the Report button on a listing or a user’s profile. Reports are private — the person
+          you report is not told who reported them. Choose the reason that fits best:
+        </p>
+        <List
+          items={[
+            <>
+              <strong className="text-text-primary">Scam</strong> — asks for payment up front,
+              pretends to be someone else, or the item does not exist.
+            </>,
+            <>
+              <strong className="text-text-primary">Fake product</strong> — counterfeit, or the
+              photos are not of the real item.
+            </>,
+            <>
+              <strong className="text-text-primary">Wrong information</strong> — the price,
+              condition, location or category is misleading.
+            </>,
+            <>
+              <strong className="text-text-primary">Offensive</strong> — insulting, hateful or
+              abusive content or messages.
+            </>,
+            <>
+              <strong className="text-text-primary">Illegal</strong> — anything on the never-allowed
+              list above.
+            </>,
+            <>
+              <strong className="text-text-primary">Duplicate</strong> — the same item posted more
+              than once.
+            </>,
+            <>
+              <strong className="text-text-primary">Spam</strong> — repeated, irrelevant or
+              advertising messages.
+            </>,
+            <>
+              <strong className="text-text-primary">Other</strong> — anything else that breaks
+              these guidelines; add a short note so we understand.
+            </>,
+          ]}
+        />
+        <p>
+          If you are in danger or have been the victim of a crime, contact the local police first.
+        </p>
+      </Section>
+
+      <Section title="What happens when guidelines are broken">
+        <p>
+          Our moderators review reports and may ask you to correct a listing, move it to the right
+          category, remove it, or — for serious or repeated problems — suspend or close the
+          account. Scams, illegal items and threats can lead to an account being closed straight
+          away. If you think we got it wrong, email {mail} and we will look again.
+        </p>
+      </Section>
+
+      <p className="mt-10 text-sm">
+        <Link to="/" className="font-medium text-brand hover:underline">
+          ← Back to East-Market
+        </Link>
+      </p>
+    </article>
+  );
+}
