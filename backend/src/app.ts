@@ -52,6 +52,25 @@ export function createApp(): Express {
 
   app.use(compression());
 
+  /**
+   * Private by default.
+   *
+   * Vercel puts `public, max-age=0, must-revalidate` on a function response
+   * that does not say otherwise. On /users/me that is per-user data marked
+   * cacheable: the browser stores it and revalidates, and a 304 lets it reuse
+   * the headers it stored -- including the Access-Control-Allow-Origin of
+   * whichever of our sites asked first. The dashboard then gets the website's
+   * origin back and the request is blocked, which reads as a broken account
+   * rather than a cache.
+   *
+   * Routes that genuinely are public -- categories, locations, ads -- set
+   * their own Cache-Control, and this runs first so they still win.
+   */
+  app.use((_request, response, next) => {
+    response.setHeader('Cache-Control', 'no-store');
+    next();
+  });
+
   // 1 MB is generous for JSON: images go straight to storage via signed URLs
   // and never pass through here.
   app.use(express.json({ limit: '1mb' }));
