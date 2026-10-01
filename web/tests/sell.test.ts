@@ -2,6 +2,13 @@ import { describe, expect, it } from 'vitest';
 
 import { DEFAULT_TARGETS, formatBytes, targetsFromConfig } from '../src/lib/image.js';
 import {
+  attributeLabel,
+  attributeOptionLabel,
+  attributePlaceholder,
+  categoryGroup,
+  coreExample,
+} from '../src/lib/listingFields.js';
+import {
   ACCEPTED_VIDEO_TYPES,
   MAX_VIDEO_BYTES,
   MAX_VIDEO_SECONDS,
@@ -103,5 +110,75 @@ describe('listing video limits', () => {
     expect(formatDuration(7)).toBe('0:07');
     expect(formatDuration(42.4)).toBe('0:42');
     expect(formatDuration(60)).toBe('1:00');
+  });
+});
+
+describe('schema-driven field wording', () => {
+  it('spells out units and acronyms the key abbreviates', () => {
+    // These four are what a seller listing a phone actually sees. Before the
+    // lookup existed they read "Ram gb", "Storage gb" and "Dual sim".
+    expect(attributeLabel('ram_gb')).toBe('RAM (GB)');
+    expect(attributeLabel('storage_gb')).toBe('Storage (GB)');
+    expect(attributeLabel('dual_sim')).toBe('Dual SIM');
+    expect(attributeLabel('battery_health')).toBe('Battery health (%)');
+  });
+
+  it('falls back to the mechanical label for a field nobody has worded yet', () => {
+    // Adding a field to a category is an admin edit, so this path is the
+    // normal state of a new field rather than a bug.
+    expect(attributeLabel('some_new_field')).toBe('Some new field');
+  });
+
+  it('reads an option in the context of its own field', () => {
+    expect(attributeOptionLabel('steering', 'left')).toBe('Left-hand drive');
+    expect(attributeOptionLabel('drive', '4wd')).toBe('4WD');
+    expect(attributeOptionLabel('size_unit', 'acre')).toBe('Acres');
+    // Not every "left" is a steering wheel, and ordinary words stay ordinary.
+    expect(attributeOptionLabel('fuel', 'petrol')).toBe('Petrol');
+  });
+
+  it('shows the unit a number field expects', () => {
+    expect(attributePlaceholder('mileage_km')).toBe('120000');
+    expect(attributePlaceholder('area_sqm')).toBe('120');
+    expect(attributePlaceholder('nothing_here')).toBe('');
+  });
+});
+
+describe('listing examples by category', () => {
+  it('sends a leaf to its own group rather than to its parent', () => {
+    // Smartphones and generators both sit under Electronics; "Samsung /
+    // Galaxy A54" helps only one of them.
+    expect(categoryGroup('electronics', 'smartphones')).toBe('phones');
+    expect(categoryGroup('electronics', 'laptops')).toBe('computers');
+    expect(categoryGroup('electronics', 'generators')).toBe('electronics');
+    expect(categoryGroup('cars', 'cars-sale')).toBe('cars');
+    expect(categoryGroup('home-office-goods', 'furniture')).toBe('goods');
+  });
+
+  it('has an example title for every group a category can land in', () => {
+    const groups = [
+      'phones',
+      'computers',
+      'electronics',
+      'cars',
+      'houses',
+      'land',
+      'livestock',
+      'goods',
+    ] as const;
+    for (const group of groups) {
+      const key = `sell.titleExample.${group}` as keyof typeof en;
+      expect(en[key], key).toBeTruthy();
+      for (const [name, dictionary] of Object.entries({ so, am, sw })) {
+        expect((dictionary as Record<string, string>)[key], `${name}.${key}`).toBeTruthy();
+      }
+    }
+  });
+
+  it('offers a make and model a seller in that category would recognise', () => {
+    expect(coreExample(categoryGroup('cars', null), 'brand')).toBe('Toyota');
+    expect(coreExample(categoryGroup('electronics', 'smartphones'), 'brand')).toBe('Samsung');
+    // Houses have no brand in their schema, so there is nothing to suggest.
+    expect(coreExample(categoryGroup('houses', null), 'brand')).toBe('');
   });
 });

@@ -17,6 +17,7 @@ import { useSeo } from '../hooks/useSeo.js';
 import { useI18n, useT, type TranslationKey } from '../i18n/index.js';
 import { endpoints, type Category, type CategoryTree, type Place } from '../lib/api.js';
 import { targetsFromConfig, type ProcessedImage } from '../lib/image.js';
+import { categoryGroup, coreExample } from '../lib/listingFields.js';
 import type { SelectedVideo } from '../lib/video.js';
 import { useAuth } from '../store/auth.js';
 import { usePreferences } from '../store/preferences.js';
@@ -187,6 +188,13 @@ export function SellPage() {
 
   const schema = selected?.child?.fieldSchema ?? selected?.parent.fieldSchema;
   const core = schema?.core ?? [];
+  // Which set of examples the empty boxes show. A phone seller and a car
+  // seller are both told "say what it is, plainly" -- the example underneath
+  // is the part that has to differ, or it teaches the wrong thing.
+  const group = categoryGroup(selected?.parent.slug, selected?.child?.slug);
+  const titleExample = selected
+    ? t(`sell.titleExample.${group}` as TranslationKey)
+    : t('sell.titlePlaceholder');
   const targets = targetsFromConfig(config?.settings.media as Record<string, unknown> | undefined);
   const maxImages = Number((config?.settings.listings as { max_images?: number } | undefined)?.max_images ?? 10);
 
@@ -413,7 +421,7 @@ export function SellPage() {
                 maxLength={120}
                 hint={t('sell.titleHint')}
                 error={errors.title}
-                placeholder={t('sell.titlePlaceholder')}
+                placeholder={titleExample}
                 required
               />
 
@@ -480,6 +488,7 @@ export function SellPage() {
                   <TextField
                     label="Brand"
                     value={draft.brand}
+                    placeholder={coreExample(group, 'brand')}
                     onChange={(event) => update('brand', event.target.value)}
                   />
                 ) : null}
@@ -487,6 +496,7 @@ export function SellPage() {
                   <TextField
                     label="Model"
                     value={draft.model}
+                    placeholder={coreExample(group, 'model')}
                     onChange={(event) => update('model', event.target.value)}
                   />
                 ) : null}
@@ -498,6 +508,7 @@ export function SellPage() {
                     min={1900}
                     max={2100}
                     value={draft.year}
+                    placeholder={coreExample(group, 'year')}
                     onChange={(event) => update('year', event.target.value)}
                   />
                 ) : null}
@@ -505,6 +516,7 @@ export function SellPage() {
                   <TextField
                     label="Colour"
                     value={draft.color}
+                    placeholder={t('sell.colorPlaceholder')}
                     onChange={(event) => update('color', event.target.value)}
                   />
                 ) : null}
@@ -512,6 +524,7 @@ export function SellPage() {
                   <TextField
                     label="Size"
                     value={draft.size}
+                    placeholder={t('sell.sizePlaceholder')}
                     onChange={(event) => update('size', event.target.value)}
                   />
                 ) : null}
@@ -522,6 +535,7 @@ export function SellPage() {
                     inputMode="numeric"
                     min={1}
                     value={draft.quantity}
+                    placeholder={coreExample(group, 'quantity')}
                     onChange={(event) => update('quantity', event.target.value)}
                   />
                 ) : null}

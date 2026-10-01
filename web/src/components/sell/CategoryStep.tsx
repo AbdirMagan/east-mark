@@ -2,6 +2,11 @@ import { useMemo, useState } from 'react';
 
 import { useT } from '../../i18n/index.js';
 import type { Category, CategoryField, CategoryTree } from '../../lib/api.js';
+import {
+  attributeLabel,
+  attributeOptionLabel,
+  attributePlaceholder,
+} from '../../lib/listingFields.js';
 import { Icon, categoryIcon } from '../ui/Icon.js';
 import { Checkbox, SelectField, TextField } from '../ui/index.js';
 
@@ -200,7 +205,7 @@ export function AttributeFields({
   return (
     <div className="grid gap-4 sm:grid-cols-2">
       {fields.map((field) => {
-        const label = humanise(field.key);
+        const label = attributeLabel(field.key);
         const value = values[field.key];
 
         if (field.type === 'boolean') {
@@ -227,7 +232,7 @@ export function AttributeFields({
               <option value="">—</option>
               {(field.options ?? []).map((option) => (
                 <option key={option} value={option}>
-                  {humanise(option)}
+                  {attributeOptionLabel(field.key, option)}
                 </option>
               ))}
             </SelectField>
@@ -241,6 +246,7 @@ export function AttributeFields({
             label={label}
             type={field.type === 'number' ? 'number' : field.type === 'date' ? 'date' : 'text'}
             inputMode={field.type === 'number' ? 'numeric' : undefined}
+            placeholder={attributePlaceholder(field.key)}
             value={value == null ? '' : String(value)}
             onChange={(event) => {
               const raw = event.target.value;
@@ -255,9 +261,4 @@ export function AttributeFields({
       })}
     </div>
   );
-}
-
-/** mileage_km -> Mileage km, 4wd -> 4wd. Good enough for schema-driven labels. */
-function humanise(key: string): string {
-  return key.replace(/_/g, ' ').replace(/^\w/, (char) => char.toUpperCase());
 }

@@ -9,6 +9,7 @@ import { productStructuredData, useSeo } from '../hooks/useSeo.js';
 import { useI18n, useT, type TranslationKey } from '../i18n/index.js';
 import { endpoints, type ProductDetail } from '../lib/api.js';
 import { formatDate, formatNumber, formatPrice, formatRelativeTime, telLink, whatsappLink } from '../lib/format.js';
+import { attributeLabel, attributeOptionLabel } from '../lib/listingFields.js';
 import { formatDuration } from '../lib/video.js';
 import { useAuth } from '../store/auth.js';
 
@@ -404,8 +405,12 @@ function Attributes({ product }: { product: ProductDetail }) {
   for (const [key, value] of Object.entries(product.attributes)) {
     if (value === null || value === '' || typeof value === 'object') continue;
     rows.push([
-      key.replace(/_/g, ' ').replace(/\b\w/g, (char) => char.toUpperCase()),
-      typeof value === 'boolean' ? (value ? '✓' : '—') : String(value),
+      attributeLabel(key),
+      typeof value === 'boolean'
+        ? value
+          ? '✓'
+          : '—'
+        : attributeOptionLabel(key, String(value)),
     ]);
   }
 
