@@ -74,11 +74,17 @@ export function ProductPage() {
       </nav>
 
       {/* One column on phones; gallery + buy panel side by side from tablet up,
-          with the gallery taking the larger share on desktop. */}
-      <div className="grid gap-6 md:grid-cols-[minmax(0,1fr)_20rem] lg:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)] lg:gap-8">
-        <div className="min-w-0 space-y-6">
+          with the gallery taking the larger share on desktop.
+          The order matters on a phone: a buyer wants the price and a way to
+          reach the seller straight after the photos, not after scrolling the
+          whole description. Flex ordering puts the panel second on a phone and
+          leaves the grid columns alone from tablet up. */}
+      <div className="flex flex-col gap-6 md:grid md:grid-cols-[minmax(0,1fr)_20rem] lg:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)] lg:gap-8">
+        <div className="order-1 min-w-0 md:col-start-1 md:row-start-1">
           <Gallery product={product} />
+        </div>
 
+        <div className="order-3 min-w-0 space-y-6 md:col-start-1 md:row-start-2">
           {product.description ? (
             <section>
               <h2 className="mb-2 font-display text-base font-bold text-text-primary">
@@ -95,8 +101,9 @@ export function ProductPage() {
           <Attributes product={product} />
         </div>
 
-        {/* Buy panel — sticky on desktop so the contact buttons never scroll away */}
-        <aside className="min-w-0 md:sticky md:top-24 md:self-start">
+        {/* Buy panel — second on a phone, and a sticky right-hand column from
+            tablet up so the contact buttons never scroll away. */}
+        <aside className="order-2 min-w-0 md:col-start-2 md:row-span-2 md:row-start-1 md:sticky md:top-24 md:self-start">
           <div className="space-y-4 rounded-(--radius-card) border border-border-subtle bg-surface-raised p-5">
             <div>
               <div className="flex flex-wrap items-center gap-2">

@@ -2,7 +2,7 @@ import { Link, useNavigate } from 'react-router-dom';
 
 import { HeroCarousel } from '../components/home/HeroCarousel.js';
 import { CulturalPattern } from '../components/brand/CulturalPattern.js';
-import { ProductRail } from '../components/product/ProductCard.js';
+import { ProductSection } from '../components/product/ProductCard.js';
 import { Button, SectionHeading, Skeleton } from '../components/ui/index.js';
 import { Icon, categoryIcon, type IconName } from '../components/ui/Icon.js';
 import {
@@ -139,7 +139,7 @@ export function HomePage() {
               action={t('common.seeAll')}
               to="/browse?featuredOnly=true"
             />
-            <ProductRail
+            <ProductSection
               products={featured.data.data}
               onToggleFavorite={onToggleFavorite}
               showFavorite={Boolean(session)}
@@ -158,7 +158,7 @@ export function HomePage() {
             action={t('common.seeAll')}
             to="/browse"
           />
-          <ProductRail
+          <ProductSection
             products={recent.data?.data ?? []}
             loading={recent.isLoading}
             onToggleFavorite={onToggleFavorite}
@@ -174,7 +174,7 @@ export function HomePage() {
               action={t('common.seeAll')}
               to="/browse?sort=popular"
             />
-            <ProductRail
+            <ProductSection
               products={popular.data.data}
               onToggleFavorite={onToggleFavorite}
               showFavorite={Boolean(session)}

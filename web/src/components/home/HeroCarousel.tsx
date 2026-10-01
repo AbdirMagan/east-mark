@@ -150,7 +150,7 @@ export function HeroCarousel({ slides, loading = false }: { slides: HomeAd[]; lo
             <Icon name="chevron-right" size={22} />
           </button>
 
-          <div className="absolute inset-x-0 bottom-2.5 flex items-center justify-center gap-2">
+          <div className="absolute inset-x-0 bottom-0 flex items-center justify-center">
             {slides.map((slide, position) => (
               <button
                 key={slide.id}
@@ -158,8 +158,11 @@ export function HeroCarousel({ slides, loading = false }: { slides: HomeAd[]; lo
                 onClick={() => go(position)}
                 aria-label={t('home.goToSlide', { n: String(position + 1) })}
                 aria-current={position === current ? 'true' : undefined}
-                // 24px hit area around a small dot.
-                className="group flex h-6 items-center px-0.5"
+                // The dot stays small; the button around it is 44px square,
+                // the smallest target a thumb hits reliably. Without this the
+                // tap area was 12x24 and the dots beside it were easy to catch
+                // by accident.
+                className="group flex size-11 items-center justify-center"
               >
                 <span
                   className={`block h-2 rounded-full transition-all duration-300 ${
@@ -173,7 +176,7 @@ export function HeroCarousel({ slides, loading = false }: { slides: HomeAd[]; lo
                 type="button"
                 onClick={() => setUserPaused((value) => !value)}
                 aria-label={userPaused ? t('home.playSlides') : t('home.pauseSlides')}
-                className="ml-1 flex size-6 items-center justify-center rounded-full text-white/80 hover:text-white"
+                className="flex size-11 items-center justify-center rounded-full text-white/80 hover:text-white"
               >
                 {userPaused ? (
                   <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true">

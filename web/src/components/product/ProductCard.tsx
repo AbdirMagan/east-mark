@@ -221,6 +221,46 @@ export function ProductGrid({
 }
 
 /** Horizontal rail used on the home page, where a full grid would be too much. */
+/**
+ * The home page sections: one listing per row on a phone, widening by
+ * breakpoint.
+ *
+ * A phone gets a single full-width card rather than two half-width ones or a
+ * horizontal rail. At 375px a half-width card leaves the title clipped and the
+ * price smaller than the condition label, and a sideways rail hides most of
+ * what is in the section behind a gesture people miss. One card to a row costs
+ * nothing but scrolling, which is the one interaction every phone user has.
+ */
+export function ProductSection({
+  products,
+  loading,
+  skeletonCount = 4,
+  onToggleFavorite,
+  showFavorite = true,
+}: {
+  products: ProductCardData[];
+  loading?: boolean;
+  skeletonCount?: number;
+  onToggleFavorite?: (product: ProductCardData) => void;
+  showFavorite?: boolean;
+}) {
+  return (
+    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+      {loading
+        ? Array.from({ length: skeletonCount }, (_, index) => <ProductCardSkeleton key={index} />)
+        : products.map((product, index) => (
+            <ProductCard
+              key={product.id}
+              product={product}
+              onToggleFavorite={onToggleFavorite}
+              showFavorite={showFavorite}
+              priority={index < 2}
+            />
+          ))}
+    </div>
+  );
+}
+
 export function ProductRail({
   products,
   loading,
