@@ -73,7 +73,9 @@ export function ProductPage() {
         <span className="text-text-secondary">{product.title}</span>
       </nav>
 
-      <div className="grid gap-8 lg:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)]">
+      {/* One column on phones; gallery + buy panel side by side from tablet up,
+          with the gallery taking the larger share on desktop. */}
+      <div className="grid gap-6 md:grid-cols-[minmax(0,1fr)_20rem] lg:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)] lg:gap-8">
         <div className="min-w-0 space-y-6">
           <Gallery product={product} />
 
@@ -94,7 +96,7 @@ export function ProductPage() {
         </div>
 
         {/* Buy panel — sticky on desktop so the contact buttons never scroll away */}
-        <aside className="lg:sticky lg:top-24 lg:self-start">
+        <aside className="min-w-0 md:sticky md:top-24 md:self-start">
           <div className="space-y-4 rounded-(--radius-card) border border-border-subtle bg-surface-raised p-5">
             <div>
               <div className="flex flex-wrap items-center gap-2">
@@ -407,7 +409,7 @@ function Attributes({ product }: { product: ProductDetail }) {
       <h2 className="mb-2 font-display text-base font-bold text-text-primary">
         {t('product.details')}
       </h2>
-      <dl className="grid grid-cols-2 gap-x-6 gap-y-0 sm:grid-cols-3">
+      <dl className="grid grid-cols-2 gap-x-6 gap-y-0 lg:grid-cols-3">
         {rows.map(([label, value]) => (
           <div key={label} className="flex justify-between gap-3 border-b border-border-subtle py-2.5">
             <dt className="text-sm text-text-muted">{label}</dt>
@@ -499,7 +501,7 @@ function ShareButton({ product }: { product: ProductDetail }) {
 function ProductSkeleton() {
   return (
     <div className="mx-auto max-w-[80rem] px-4 py-6 lg:px-6">
-      <div className="grid gap-8 lg:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)]">
+      <div className="grid gap-6 md:grid-cols-[minmax(0,1fr)_20rem] lg:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)] lg:gap-8">
         <div className="space-y-4">
           <Skeleton className="aspect-[4/3] rounded-(--radius-card)" />
           <Skeleton className="h-4 w-3/4" />
