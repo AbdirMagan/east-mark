@@ -153,7 +153,16 @@ function SearchBar({ className = '' }: { className?: string }) {
  * role itself, and the API enforces it) but because a link that 403s is worse
  * than no link at all.
  */
-const ADMIN_URL = (import.meta.env.VITE_ADMIN_URL as string | undefined) ?? 'http://localhost:5175';
+const ADMIN_URL = (import.meta.env.VITE_ADMIN_URL as string | undefined) ?? 'https://east-market-admin.vercel.app';
+
+/**
+ * The dashboard has no session of its own to share with this app, so the link
+ * goes to its sign-in screen rather than its root. Signing in there is cheap
+ * when the browser already holds the session -- the dashboard redirects
+ * straight through to the overview -- and the alternative, landing on a page
+ * that bounces you back to sign in, reads like a broken link.
+ */
+const ADMIN_HREF = `${ADMIN_URL.replace(/\/+$/, '')}/signin`;
 
 export function Header() {
   const t = useT();
@@ -318,7 +327,7 @@ export function Header() {
                   {me?.role === 'admin' || me?.role === 'moderator' ? (
                     <>
                       <a
-                        href={ADMIN_URL}
+                        href={ADMIN_HREF}
                         target="_blank"
                         rel="noreferrer"
                         onClick={close}
