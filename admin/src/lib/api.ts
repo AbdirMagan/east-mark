@@ -45,7 +45,19 @@ export class ApiError extends Error {
   }
 }
 
-const BASE = (import.meta.env.VITE_API_BASE_URL as string | undefined) ?? '/api/v1';
+/**
+ * Where the dashboard calls the API.
+ *
+ * In development the relative path is right: Vite proxies /api to the backend
+ * on localhost:4000, so the browser never leaves the origin. A deployed build
+ * has no such proxy -- a relative /api/v1 is a 404 on the dashboard's own
+ * host, every request fails, and StaffGate reports it as an account that
+ * cannot be verified. So a production build falls back to the deployed API
+ * instead, and VITE_API_BASE_URL still overrides both.
+ */
+const BASE =
+  (import.meta.env.VITE_API_BASE_URL as string | undefined) ??
+  (import.meta.env.PROD ? 'https://east-market-api-two.vercel.app/api/v1' : '/api/v1');
 
 async function request<T>(
   path: string,
