@@ -16,8 +16,17 @@ import retrofit2.http.Query
  */
 interface SupabaseAuthApi {
 
+    /**
+     * `redirect_to` is where the link in the confirmation email lands. Leave it
+     * out and Supabase uses the project's Site URL, which is a dashboard
+     * setting -- not something a published app should depend on to let a new
+     * user activate their account.
+     */
     @POST("signup")
-    suspend fun signUp(@Body body: SignUpRequest): Response<SupabaseSessionDto>
+    suspend fun signUp(
+        @Query("redirect_to") redirectTo: String,
+        @Body body: SignUpRequest,
+    ): Response<SupabaseSessionDto>
 
     @POST("token")
     suspend fun signInWithPassword(

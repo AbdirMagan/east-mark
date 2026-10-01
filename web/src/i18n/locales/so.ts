@@ -232,6 +232,12 @@ export const so: Partial<Dictionary> = {
   'auth.forgotPassword': 'Furahaaga ma illowday?',
   'auth.passwordHint': 'Ugu yaraan 8 xaraf',
   'auth.checkEmail': 'Fiiri iimaylkaaga si aad u xaqiijiso akoonkaaga, kaddibna gal.',
+  'auth.confirmedTitle': 'Iimaylka waa la xaqiijiyay',
+  'auth.confirmedSubtitle': 'Akoonkaagu waa firfircoon yahay.',
+  'auth.confirmedSignedIn': 'Waad gashay oo diyaar baad tahay.',
+  'auth.confirmedBody': 'Mahadsanid. Cinwaankaaga iimaylka waa la xaqiijiyay.',
+  'auth.confirmedInApp': 'Ma abbaayadda ayaad ku diiwaangashatay? Fur East-Market taleefankaaga oo gal.',
+  'auth.confirmedBrowse': 'Bilow raadinta',
   'auth.signedOut': 'Waad ka baxday',
 
   'sell.title': 'Maxaad iibinaysaa?',

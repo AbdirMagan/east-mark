@@ -29,9 +29,16 @@ export const useAuth = create<AuthState>((set) => ({
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
-      // Carried into raw_user_meta_data, which the handle_new_user() trigger
-      // copies into the profile row.
-      options: { data: { full_name: fullName } },
+      options: {
+        // Carried into raw_user_meta_data, which the handle_new_user() trigger
+        // copies into the profile row.
+        data: { full_name: fullName },
+        // Where the link in the confirmation email lands. Without this
+        // Supabase falls back to the project's Site URL, which is whatever it
+        // was last set to in the dashboard -- a sign-up that works in
+        // development and sends every real user to a dead localhost address.
+        emailRedirectTo: `${window.location.origin}/auth/confirmed`,
+      },
     });
     if (error) throw error;
 

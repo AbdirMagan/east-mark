@@ -1,5 +1,6 @@
 package com.example.data.repository
 
+import com.example.BuildConfig
 import com.example.data.remote.RefreshRequest
 import com.example.data.remote.SignInRequest
 import com.example.data.remote.SignUpRequest
@@ -60,7 +61,10 @@ class AuthRepository(
     }
 
     suspend fun signUp(email: String, password: String): Result<Unit> = runCatching {
-        val response = api.signUp(SignUpRequest(email, password))
+        val response = api.signUp(
+            redirectTo = BuildConfig.WEB_BASE_URL + "/auth/confirmed",
+            body = SignUpRequest(email, password),
+        )
         if (!response.isSuccessful) throw AuthException(errorMessage(response))
         val body = response.body()
         if (body?.access_token != null) {

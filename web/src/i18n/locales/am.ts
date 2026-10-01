@@ -229,6 +229,12 @@ export const am: Partial<Dictionary> = {
   'auth.forgotPassword': 'የይለፍ ቃልዎን ረሱ?',
   'auth.passwordHint': 'ቢያንስ 8 ቁምፊዎች',
   'auth.checkEmail': 'መለያዎን ለማረጋገጥ ኢሜይልዎን ይመልከቱ፣ ከዚያ ይግቡ።',
+  'auth.confirmedTitle': 'ኢሜይል ተረጋግጧል',
+  'auth.confirmedSubtitle': 'መለያዎ ገቢር ሆኗል።',
+  'auth.confirmedSignedIn': 'ገብተዋል፤ ለመጀመር ዝግጁ ነዎት።',
+  'auth.confirmedBody': 'እናመሰግናለን። የኢሜይል አድራሻዎ ተረጋግጧል።',
+  'auth.confirmedInApp': 'በመተግበሪያው ተመዝግበዋል? East-Market በስልክዎ ከፍተው ይግቡ።',
+  'auth.confirmedBrowse': 'መቃኘት ይጀምሩ',
   'auth.signedOut': 'ወጥተዋል',
 
   'sell.title': 'ምን እየሸጡ ነው?',

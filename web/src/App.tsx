@@ -25,6 +25,7 @@ const VideoFeedPage = lazy(() =>
 );
 const SignInPage = lazy(() => import('./pages/AuthPages.js').then((m) => ({ default: m.SignInPage })));
 const RegisterPage = lazy(() => import('./pages/AuthPages.js').then((m) => ({ default: m.RegisterPage })));
+const ConfirmedPage = lazy(() => import('./pages/AuthPages.js').then((m) => ({ default: m.ConfirmedPage })));
 const CategoriesPage = lazy(() =>
   import('./pages/MiscPages.js').then((m) => ({ default: m.CategoriesPage })),
 );
@@ -106,6 +107,7 @@ function Shell() {
             <Route path="/saved" element={<SavedPage />} />
             <Route path="/signin" element={<SignInPage />} />
             <Route path="/register" element={<RegisterPage />} />
+            <Route path="/auth/confirmed" element={<ConfirmedPage />} />
             <Route path="/sell" element={<SellPage />} />
             <Route path="/my-listings" element={<MyListingsPage />} />
             <Route path="/messages" element={<MessagesPage />} />

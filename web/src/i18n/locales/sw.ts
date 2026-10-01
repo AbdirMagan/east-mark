@@ -232,6 +232,12 @@ export const sw: Partial<Dictionary> = {
   'auth.forgotPassword': 'Umesahau nenosiri lako?',
   'auth.passwordHint': 'Angalau herufi 8',
   'auth.checkEmail': 'Angalia barua pepe yako kuthibitisha akaunti, kisha uingie.',
+  'auth.confirmedTitle': 'Barua pepe imethibitishwa',
+  'auth.confirmedSubtitle': 'Akaunti yako inafanya kazi.',
+  'auth.confirmedSignedIn': 'Umeingia na uko tayari.',
+  'auth.confirmedBody': 'Asante. Anwani yako ya barua pepe imethibitishwa.',
+  'auth.confirmedInApp': 'Ulijisajili kwenye programu? Fungua East-Market kwenye simu yako na uingie.',
+  'auth.confirmedBrowse': 'Anza kuvinjari',
   'auth.signedOut': 'Umetoka',
 
   'sell.title': 'Unauza nini?',

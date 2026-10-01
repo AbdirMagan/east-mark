@@ -235,6 +235,12 @@ export const en = {
   'auth.forgotPassword': 'Forgot your password?',
   'auth.passwordHint': 'At least 8 characters',
   'auth.checkEmail': 'Check your email to confirm your account, then sign in.',
+  'auth.confirmedTitle': 'Email confirmed',
+  'auth.confirmedSubtitle': 'Your account is active.',
+  'auth.confirmedSignedIn': 'You are signed in and ready to go.',
+  'auth.confirmedBody': 'Thank you. Your email address has been confirmed.',
+  'auth.confirmedInApp': 'Signed up in the app? Open East-Market on your phone and sign in.',
+  'auth.confirmedBrowse': 'Start browsing',
   'auth.signedOut': 'You have been signed out',
 
   'sell.title': 'What are you selling?',

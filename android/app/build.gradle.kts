@@ -68,10 +68,16 @@ android {
       // HTTPS, and cleartext is debug-only, so a release built from .env alone
       // would install fine and then load nothing.
       buildConfigField("String", "API_BASE_URL", "\"https://east-market-api-two.vercel.app/api/v1\"")
+      // Where a confirmation email sends someone who signed up in the app.
+      // Supabase falls back to the project Site URL when the request does
+      // not say, and that default has no business deciding whether a real
+      // user can activate their account.
+      buildConfigField("String", "WEB_BASE_URL", "\"https://east-market-web.vercel.app\"")
     }
     debug {
       signingConfig = signingConfigs.getByName("debugConfig")
       buildConfigField("String", "API_BASE_URL", "\"" + debugApiBaseUrl + "\"")
+      buildConfigField("String", "WEB_BASE_URL", "\"https://east-market-web.vercel.app\"")
     }
   }
   compileOptions {
