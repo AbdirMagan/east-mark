@@ -86,6 +86,41 @@ jobs:
           xcrun simctl io "$DEVICE" screenshot launch.png
           echo "DEVICE=$DEVICE" >> "$GITHUB_ENV"
 
+      # App Live and the other real-device clouds install an .ipa on actual
+      # hardware, so the simulator build above is no use to them: it carries
+      # simulator slices that an iPhone cannot run. This second build targets
+      # the device.
+      #
+      # It is unsigned, because the repo holds no Apple certificate and no team
+      # id -- putting one in a public repository is how signing identities get
+      # stolen. The device clouds resign what you upload with their own profile
+      # before installing it, which is what makes an unsigned archive usable.
+      # Installing this on your own iPhone would still need signing.
+      - name: Build for a device and package an .ipa
+        working-directory: ios
+        run: |
+          set -o pipefail
+          xcodebuild             -project EastMarket.xcodeproj             -scheme EastMarket             -configuration Release             -sdk iphoneos             -derivedDataPath build-device             CODE_SIGNING_ALLOWED=NO             CODE_SIGNING_REQUIRED=NO             CODE_SIGN_IDENTITY=""             build
+          APP=$(find build-device/Build/Products/Release-iphoneos -maxdepth 1 -name '*.app' | head -1)
+          test -n "$APP" || { echo "No .app was produced"; exit 1; }
+          # An .ipa is a zip with the app inside a folder called Payload. That
+          # is the whole format; there is no tool needed for it.
+          rm -rf Payload EastMarket.ipa
+          mkdir Payload
+          cp -R "$APP" Payload/
+          zip -qry EastMarket.ipa Payload
+          rm -rf Payload
+          ls -lh EastMarket.ipa
+
+      - name: Upload the .ipa
+        uses: actions/upload-artifact@v4
+        with:
+          name: ios-ipa
+          path: ios/EastMarket.ipa
+          if-no-files-found: error
+          # Long enough to still be downloadable when someone comes back to it.
+          retention-days: 30
+
       - name: Collect the crash logs, if it fell over
         if: always()
         run: |
