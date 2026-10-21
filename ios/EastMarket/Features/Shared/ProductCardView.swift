@@ -71,26 +71,41 @@ struct ProductCardView: View {
         .cardSurface()
     }
 
+    /// A 4:3 box the width of the card, which the photo fills and is cropped to.
+    ///
+    /// The order of these modifiers is the whole point, and the obvious order is
+    /// wrong. Sizing the image first with `.frame(maxWidth: .infinity)` and then
+    /// asking for an aspect ratio lets the ratio re-propose a width from the
+    /// height it is offered -- and inside a `LazyVGrid` the offered height is
+    /// unbounded, so the card can come out wider than its column and run off the
+    /// side of the screen. `.clipped()` is no help there: by then it is clipping
+    /// to the oversized frame, not to the column.
+    ///
+    /// Sizing an empty `Color` first pins the box to the width the grid actually
+    /// gave the card. The photo is laid over a box whose size is already settled,
+    /// so there is nothing left for it to negotiate.
     private var photo: some View {
-        Group {
-            if let image = product.displayImage, let url = URL(string: image) {
-                AsyncImage(url: url) { phase in
-                    switch phase {
-                    case .success(let image):
-                        image.resizable().scaledToFill()
-                    case .failure:
+        Color.clear
+            .aspectRatio(4.0 / 3.0, contentMode: .fit)
+            .overlay(
+                Group {
+                    if let image = product.displayImage, let url = URL(string: image) {
+                        AsyncImage(url: url) { phase in
+                            switch phase {
+                            case .success(let image):
+                                image.resizable().scaledToFill()
+                            case .failure:
+                                placeholder
+                            default:
+                                placeholder.overlay(ProgressView())
+                            }
+                        }
+                    } else {
                         placeholder
-                    default:
-                        placeholder.overlay(ProgressView())
                     }
                 }
-            } else {
-                placeholder
-            }
-        }
-        .frame(maxWidth: .infinity)
-        .aspectRatio(4.0 / 3.0, contentMode: .fit)
-        .clipped()
+            )
+            .clipped()
     }
 
     private var placeholder: some View {
