@@ -4,7 +4,8 @@
     // Only the build needs an output layout; the editor and `npm run
     // typecheck` also compile tests/, which sit outside src/.
     "rootDir": "src",
-    "outDir": "dist"
+    "outDir": "dist",
+    "noEmit": false
   },
   "include": ["src/**/*.ts"],
   "exclude": ["node_modules", "dist", "tests", "src/**/*.test.ts"]

@@ -6,6 +6,12 @@
     "moduleResolution": "NodeNext",
     "sourceMap": true,
     "declaration": false,
+    // This config is for the editor and for typechecking, and it covers
+    // tests/ as well as src/. It has no output layout, so letting it emit
+    // scatters .js next to every .ts -- which `tsc -b` will do without being
+    // asked. tsconfig.build.json turns this back on, where there is an outDir
+    // for the result to land in.
+    "noEmit": true,
 
     "strict": true,
     "noUncheckedIndexedAccess": true,
