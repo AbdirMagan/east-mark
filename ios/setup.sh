@@ -45,7 +45,13 @@ fi
 # Override it to point at a different Supabase project.
 SUPABASE_ANON_KEY="${SUPABASE_ANON_KEY:-sb_publishable_3Ztr2sVd65gK5Y430CVUMw_Zw5dcXSx}"
 
-API_BASE_URL="$API_BASE_URL" SUPABASE_ANON_KEY="$SUPABASE_ANON_KEY" xcodegen generate
+# Signing is a Mac-and-Xcode concern, so leave it blank here and set the team
+# in Xcode. CI sets it from a secret when it builds for TestFlight.
+DEVELOPMENT_TEAM="${DEVELOPMENT_TEAM:-}"
+# Only TestFlight cares that this is unique; a local build never uploads.
+BUILD_NUMBER="${BUILD_NUMBER:-1}"
+
+API_BASE_URL="$API_BASE_URL" SUPABASE_ANON_KEY="$SUPABASE_ANON_KEY"   DEVELOPMENT_TEAM="$DEVELOPMENT_TEAM" BUILD_NUMBER="$BUILD_NUMBER"   xcodegen generate
 
 echo "Opening EastMarket.xcodeproj — set your signing team, then press Run."
 open EastMarket.xcodeproj

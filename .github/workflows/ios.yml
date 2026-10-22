@@ -51,6 +51,10 @@ jobs:
           # are the defaults; either secret overrides them.
           API_BASE_URL: ${{ secrets.API_BASE_URL || 'https://east-market-api-two.vercel.app/api/v1' }}
           SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY || 'sb_publishable_3Ztr2sVd65gK5Y430CVUMw_Zw5dcXSx' }}
+          # Neither matters to this job -- it signs nothing and uploads
+          # nothing -- but the spec reads both, so give them values.
+          DEVELOPMENT_TEAM: ''
+          BUILD_NUMBER: '1'
         run: xcodegen generate
 
       - name: Build for the simulator
