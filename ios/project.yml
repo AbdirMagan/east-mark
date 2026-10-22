@@ -47,6 +47,10 @@ targets:
         # setup.sh passes these in; you can also paste literals here.
         # A real iPhone needs the Mac's Wi-Fi IP, not localhost.
         API_BASE_URL: ${API_BASE_URL}
+        # Where a password-reset email should land. The phone's browser
+        # cannot hand a session back to this app, so the new password is
+        # set on the website and the person returns here to sign in.
+        WEB_BASE_URL: https://east-market-web.vercel.app
         SUPABASE_URL: https://ikfozizfgiemwuokoczf.supabase.co
         SUPABASE_ANON_KEY: ${SUPABASE_ANON_KEY}
     settings:

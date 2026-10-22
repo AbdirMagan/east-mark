@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { useState } from 'react';
 import type { ButtonHTMLAttributes, InputHTMLAttributes, ReactNode, SelectHTMLAttributes } from 'react';
 
 import { CulturalPattern } from '../brand/CulturalPattern.js';
@@ -187,6 +188,47 @@ export function TextField({ label, hint, error, className = '', id, ...rest }: T
           {hint}
         </p>
       ) : null}
+    </div>
+  );
+}
+
+interface PasswordFieldProps extends Omit<TextFieldProps, 'type'> {
+  /** Accessible name for the reveal button, e.g. "Show password". */
+  showLabel: string;
+  /** Accessible name once revealed, e.g. "Hide password". */
+  hideLabel: string;
+}
+
+/**
+ * A password box with a reveal control.
+ *
+ * Typing a password you cannot see is hard anywhere and harder on a phone
+ * keyboard, and the cost of getting it wrong is an error message that cannot
+ * tell you whether the password or the address was the problem. So the field
+ * can be unmasked, and it starts masked, because the common case is someone
+ * typing in a place where other people can see the screen.
+ *
+ * The toggle is a real button: it is reachable by keyboard, it says which
+ * state it will move to, and it is 44px wide so it can be hit with a thumb.
+ * `type="button"` matters -- inside a form, a button without it submits.
+ */
+export function PasswordField({ showLabel, hideLabel, className = '', ...rest }: PasswordFieldProps) {
+  const [visible, setVisible] = useState(false);
+  return (
+    <div className="relative">
+      <TextField {...rest} type={visible ? 'text' : 'password'} className={`pr-12 ${className}`} />
+      <button
+        type="button"
+        onClick={() => setVisible((previous) => !previous)}
+        aria-label={visible ? hideLabel : showLabel}
+        aria-pressed={visible}
+        // Pinned to the input rather than the wrapper: the wrapper is taller
+        // when there is a label above or an error below, and the button has to
+        // stay on the box itself.
+        className="absolute right-0 top-7 flex size-11 items-center justify-center rounded-(--radius-field) text-text-muted transition-colors hover:text-text-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-brand/40"
+      >
+        <Icon name={visible ? 'eye-off' : 'eye'} size={18} />
+      </button>
     </div>
   );
 }

@@ -7,6 +7,8 @@ struct AccountView: View {
 
     @State private var email = ""
     @State private var password = ""
+    @State private var passwordVisible = false
+    @State private var resetSent = false
     @State private var fullName = ""
     @State private var isRegistering = false
     @State private var favourites: [ProductCard] = []
@@ -110,8 +112,31 @@ struct AccountView: View {
                 .textInputAutocapitalization(.never)
                 .autocorrectionDisabled()
 
-            SecureField(state.t("password"), text: $password)
+            // A password box that can be unmasked. Typing one blind on a phone
+            // keyboard is hard, and a mistyped character shows up only as a
+            // sign-in that fails without saying which field was wrong.
+            HStack {
+                Group {
+                    if passwordVisible {
+                        TextField(state.t("password"), text: $password)
+                            .textInputAutocapitalization(.never)
+                            .autocorrectionDisabled()
+                    } else {
+                        SecureField(state.t("password"), text: $password)
+                    }
+                }
                 .textContentType(isRegistering ? .newPassword : .password)
+
+                Button {
+                    passwordVisible.toggle()
+                } label: {
+                    Image(systemName: passwordVisible ? "eye.slash" : "eye")
+                        .foregroundColor(Brand.muted)
+                }
+                // Without this the row's own tap target swallows the button.
+                .buttonStyle(.borderless)
+                .accessibilityLabel(passwordVisible ? state.t("hidePassword") : state.t("showPassword"))
+            }
 
             if let error = auth.lastError {
                 Text(error).font(.footnote).foregroundColor(Brand.clayDark)
@@ -138,6 +163,27 @@ struct AccountView: View {
                 isRegistering.toggle()
             }
             .font(.footnote)
+
+            // Only on sign-in: someone creating an account has no password to
+            // have forgotten. Needs the address, which they have usually just
+            // typed, so it uses the field rather than asking again.
+            if !isRegistering {
+                Button(state.t("forgotPassword")) {
+                    Task {
+                        if await auth.requestPasswordReset(email: email) {
+                            resetSent = true
+                        }
+                    }
+                }
+                .font(.footnote)
+                .disabled(email.isEmpty || auth.isWorking)
+            }
+
+            if resetSent {
+                Text(state.t("forgotSent"))
+                    .font(.footnote)
+                    .foregroundColor(Brand.muted)
+            }
         }
     }
 

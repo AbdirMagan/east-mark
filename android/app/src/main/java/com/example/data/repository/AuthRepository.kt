@@ -1,6 +1,7 @@
 package com.example.data.repository
 
 import com.example.BuildConfig
+import com.example.data.remote.RecoverRequest
 import com.example.data.remote.RefreshRequest
 import com.example.data.remote.SignInRequest
 import com.example.data.remote.SignUpRequest
@@ -72,6 +73,21 @@ class AuthRepository(
         }
         // else: email confirmation required by the project; there is no
         // session yet and that's expected, not an error.
+    }
+
+    /**
+     * Asks Supabase to email a password-reset link.
+     *
+     * Succeeds whether or not the address has an account, and the screen says
+     * the same either way: a form that reveals which addresses are registered
+     * is the first half of an attack on the people behind them.
+     */
+    suspend fun requestPasswordReset(email: String): Result<Unit> = runCatching {
+        val response = api.recover(
+            redirectTo = BuildConfig.WEB_BASE_URL + "/reset-password",
+            body = RecoverRequest(email),
+        )
+        if (!response.isSuccessful) throw AuthException(errorMessage(response))
     }
 
     suspend fun signIn(email: String, password: String): Result<Unit> = runCatching {

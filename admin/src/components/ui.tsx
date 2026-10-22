@@ -8,7 +8,8 @@ export type IconName =
   | 'dashboard' | 'listings' | 'users' | 'reports' | 'verified' | 'audit'
   | 'check' | 'close' | 'ban' | 'search' | 'chevron-left' | 'chevron-right'
   | 'sun' | 'moon' | 'logout' | 'alert' | 'external' | 'clock'
-  | 'megaphone' | 'plus' | 'edit' | 'trash' | 'play';
+  | 'megaphone' | 'plus' | 'edit' | 'trash' | 'play'
+  | 'eye' | 'eye-off';
 
 const PATHS: Record<IconName, string> = {
   dashboard: 'M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM13 13h7v7h-7z',
@@ -34,6 +35,9 @@ const PATHS: Record<IconName, string> = {
   plus: 'M12 5v14M5 12h14',
   edit: 'M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z',
   trash: 'M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6M10 11v6M14 11v6',
+  eye: 'M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7-10-7-10-7ZM12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z',
+  'eye-off':
+    'M3 3l18 18M10.6 10.6a3 3 0 0 0 4.2 4.2M9.4 5.3A9.9 9.9 0 0 1 12 5c6.4 0 10 7 10 7a17 17 0 0 1-3.2 4M6.2 6.2A17 17 0 0 0 2 12s3.6 7 10 7a9.8 9.8 0 0 0 4-.85',
 };
 
 export function Icon({ name, size = 18, className = '' }: { name: IconName; size?: number; className?: string }) {

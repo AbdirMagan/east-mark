@@ -3,7 +3,7 @@ import { Link, Navigate, useNavigate, useSearchParams } from 'react-router-dom';
 
 import { CulturalPattern } from '../components/brand/CulturalPattern.js';
 import { Logo, Tagline } from '../components/brand/Logo.js';
-import { Button, TextField } from '../components/ui/index.js';
+import { Button, PasswordField, TextField } from '../components/ui/index.js';
 import { Icon } from '../components/ui/Icon.js';
 import { useSeo } from '../hooks/useSeo.js';
 import { useT } from '../i18n/index.js';
@@ -18,7 +18,8 @@ function AuthLayout({
   title: string;
   subtitle: string;
   children: React.ReactNode;
-  footer: React.ReactNode;
+  /** The way out of this screen. Omitted where there isn't one worth offering. */
+  footer?: React.ReactNode;
 }) {
   return (
     <div className="relative flex min-h-[calc(100vh-4rem)] items-center justify-center overflow-hidden px-4 py-12">
@@ -38,7 +39,9 @@ function AuthLayout({
           <div className="mt-6">{children}</div>
         </div>
 
-        <p className="mt-5 text-center text-sm text-text-secondary">{footer}</p>
+        {footer ? (
+          <p className="mt-5 text-center text-sm text-text-secondary">{footer}</p>
+        ) : null}
       </div>
     </div>
   );
@@ -117,15 +120,25 @@ export function SignInPage() {
           onChange={(event) => setEmail(event.target.value)}
         />
 
-        <TextField
+        <PasswordField
           label={t('auth.password')}
           name="password"
-          type="password"
           autoComplete="current-password"
           required
           value={password}
           onChange={(event) => setPassword(event.target.value)}
+          showLabel={t('auth.showPassword')}
+          hideLabel={t('auth.hidePassword')}
         />
+
+        <div className="flex justify-end">
+          <Link
+            to={`/forgot-password${email ? `?email=${encodeURIComponent(email.trim())}` : ''}`}
+            className="text-sm font-semibold text-brand hover:underline"
+          >
+            {t('auth.forgotPassword')}
+          </Link>
+        </div>
 
         <Button type="submit" fullWidth size="lg" loading={busy}>
           {t('auth.signIn')}
@@ -228,16 +241,17 @@ export function RegisterPage() {
           onChange={(event) => setEmail(event.target.value)}
         />
 
-        <TextField
+        <PasswordField
           label={t('auth.password')}
           name="password"
-          type="password"
           autoComplete="new-password"
           required
           minLength={8}
           hint={t('auth.passwordHint')}
           value={password}
           onChange={(event) => setPassword(event.target.value)}
+          showLabel={t('auth.showPassword')}
+          hideLabel={t('auth.hidePassword')}
         />
 
         <Button type="submit" fullWidth size="lg" loading={busy}>
@@ -292,6 +306,192 @@ export function ConfirmedPage() {
           {session ? t('auth.confirmedBrowse') : t('auth.signIn')}
         </Button>
       </Link>
+    </AuthLayout>
+  );
+}
+
+/**
+ * Asks for the address and sends the reset link.
+ *
+ * The reply is the same whether or not that address has an account. It reads
+ * as unhelpful for a moment -- "we have sent it, check your inbox" when there
+ * may be nothing to check -- but the alternative is a form that tells anyone
+ * who asks which addresses are registered, which is the first half of an
+ * attack on the people behind them.
+ */
+export function ForgotPasswordPage() {
+  const t = useT();
+  const [params] = useSearchParams();
+  const requestPasswordReset = useAuth((state) => state.requestPasswordReset);
+
+  // Carried over from the sign-in form, so nobody types it twice.
+  const [email, setEmail] = useState(params.get('email') ?? '');
+  const [sent, setSent] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [busy, setBusy] = useState(false);
+
+  useSeo({ title: t('auth.forgotTitle'), noIndex: true, path: '/forgot-password' });
+
+  const onSubmit = async (event: FormEvent) => {
+    event.preventDefault();
+    setError(null);
+    setBusy(true);
+    try {
+      await requestPasswordReset(email.trim());
+      setSent(true);
+    } catch (caught) {
+      // Only a real failure to send reaches here -- an unknown address does
+      // not, because Supabase does not treat it as an error either.
+      setError(caught instanceof Error ? caught.message : t('error.generic'));
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  if (sent) {
+    return (
+      <AuthLayout
+        title={t('auth.forgotTitle')}
+        subtitle={t('auth.forgotSentSubtitle')}
+        footer={
+          <Link to="/signin" className="font-semibold text-brand hover:underline">
+            {t('auth.backToSignIn')}
+          </Link>
+        }
+      >
+        <div className="flex items-start gap-3 rounded-(--radius-field) bg-brand-subtle px-4 py-3 text-sm text-brand">
+          <Icon name="check" size={18} className="mt-0.5 shrink-0" />
+          {t('auth.forgotSent')}
+        </div>
+      </AuthLayout>
+    );
+  }
+
+  return (
+    <AuthLayout
+      title={t('auth.forgotTitle')}
+      subtitle={t('auth.forgotSubtitle')}
+      footer={
+        <Link to="/signin" className="font-semibold text-brand hover:underline">
+          {t('auth.backToSignIn')}
+        </Link>
+      }
+    >
+      <form onSubmit={onSubmit} className="space-y-4">
+        {error ? <FormError message={error} /> : null}
+
+        <TextField
+          label={t('auth.email')}
+          name="email"
+          type="email"
+          autoComplete="email"
+          inputMode="email"
+          required
+          value={email}
+          onChange={(event) => setEmail(event.target.value)}
+        />
+
+        <Button type="submit" fullWidth size="lg" loading={busy}>
+          {t('auth.sendResetLink')}
+        </Button>
+      </form>
+    </AuthLayout>
+  );
+}
+
+/**
+ * Where the reset link lands: set the new password.
+ *
+ * The link signs the person in before this page renders -- that is how
+ * Supabase recovery works, and it is what proves they can read the inbox the
+ * account belongs to. So the form asks for the new password and nothing else;
+ * there is no old password to confirm, because not knowing it is why they are
+ * here.
+ *
+ * A link that has expired or been used leaves no session behind, and the page
+ * says so rather than showing a form that cannot work.
+ */
+export function ResetPasswordPage() {
+  const t = useT();
+  const navigate = useNavigate();
+  const session = useAuth((state) => state.session);
+  const initialising = useAuth((state) => state.initialising);
+  const updatePassword = useAuth((state) => state.updatePassword);
+
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState<string | null>(null);
+  const [busy, setBusy] = useState(false);
+
+  useSeo({ title: t('auth.resetTitle'), noIndex: true, path: '/reset-password' });
+
+  const onSubmit = async (event: FormEvent) => {
+    event.preventDefault();
+    setError(null);
+
+    if (password.length < 8) {
+      setError(t('auth.passwordHint'));
+      return;
+    }
+
+    setBusy(true);
+    try {
+      await updatePassword(password);
+      navigate('/', { replace: true });
+    } catch (caught) {
+      setError(caught instanceof Error ? caught.message : t('error.generic'));
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  // The token is read out of the URL asynchronously, so an empty session is
+  // only meaningful once that has finished.
+  if (initialising) {
+    return (
+      <AuthLayout title={t('auth.resetTitle')} subtitle={t('common.loading')}>
+        <div />
+      </AuthLayout>
+    );
+  }
+
+  if (!session) {
+    return (
+      <AuthLayout
+        title={t('auth.resetTitle')}
+        subtitle={t('auth.resetExpiredSubtitle')}
+        footer={
+          <Link to="/forgot-password" className="font-semibold text-brand hover:underline">
+            {t('auth.forgotPassword')}
+          </Link>
+        }
+      >
+        <FormError message={t('auth.resetExpired')} />
+      </AuthLayout>
+    );
+  }
+
+  return (
+    <AuthLayout title={t('auth.resetTitle')} subtitle={t('auth.resetSubtitle')}>
+      <form onSubmit={onSubmit} className="space-y-4">
+        {error ? <FormError message={error} /> : null}
+
+        <PasswordField
+          label={t('auth.newPassword')}
+          name="new-password"
+          autoComplete="new-password"
+          required
+          minLength={8}
+          hint={t('auth.passwordHint')}
+          value={password}
+          onChange={(event) => setPassword(event.target.value)}
+          showLabel={t('auth.showPassword')}
+          hideLabel={t('auth.hidePassword')}
+        />
+
+        <Button type="submit" fullWidth size="lg" loading={busy}>
+          {t('auth.savePassword')}
+        </Button>
+      </form>
     </AuthLayout>
   );
 }

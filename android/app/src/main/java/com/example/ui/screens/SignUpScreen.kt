@@ -24,9 +24,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import com.example.ui.components.PasswordField
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.ui.theme.BrandNavy
@@ -79,25 +79,17 @@ fun SignUpScreen(
             modifier = Modifier.fillMaxWidth()
         )
         Spacer(modifier = Modifier.height(14.dp))
-        OutlinedTextField(
+        PasswordField(
             value = password,
             onValueChange = { password = it },
-            label = { Text("Password (min 6 characters)") },
-            singleLine = true,
-            visualTransformation = PasswordVisualTransformation(),
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-            modifier = Modifier.fillMaxWidth()
+            label = "Password (min 6 characters)"
         )
         Spacer(modifier = Modifier.height(14.dp))
-        OutlinedTextField(
+        PasswordField(
             value = confirmPassword,
             onValueChange = { confirmPassword = it },
-            label = { Text("Confirm password") },
-            singleLine = true,
-            isError = confirmPassword.isNotEmpty() && !passwordsMatch,
-            visualTransformation = PasswordVisualTransformation(),
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-            modifier = Modifier.fillMaxWidth()
+            label = "Confirm password",
+            isError = confirmPassword.isNotEmpty() && !passwordsMatch
         )
 
         if (error != null) {

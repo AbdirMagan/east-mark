@@ -15,6 +15,9 @@ data class SignInRequest(val email: String, val password: String)
 @JsonClass(generateAdapter = true)
 data class RefreshRequest(val refresh_token: String)
 
+@JsonClass(generateAdapter = true)
+data class RecoverRequest(val email: String)
+
 /* -------------------------------------------------------------------------- */
 /* Responses (Supabase GoTrue / auth/v1)                                     */
 /* -------------------------------------------------------------------------- */

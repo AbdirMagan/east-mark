@@ -30,6 +30,7 @@ export type IconName =
   | 'user'
   | 'arrow-right'
   | 'eye'
+  | 'eye-off'
   | 'verified'
   | 'image'
   | 'alert'
@@ -95,6 +96,10 @@ const PATHS: Record<IconName, string> = {
   user: 'M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2M12 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z',
   'arrow-right': 'M5 12h14M13 6l6 6-6 6',
   eye: 'M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7-10-7-10-7ZM12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z',
+  // The same eye with a stroke through it, so the two glyphs read as one
+  // control in two states rather than as two unrelated buttons.
+  'eye-off':
+    'M3 3l18 18M10.6 10.6a3 3 0 0 0 4.2 4.2M9.4 5.3A9.9 9.9 0 0 1 12 5c6.4 0 10 7 10 7a17 17 0 0 1-3.2 4M6.2 6.2A17 17 0 0 0 2 12s3.6 7 10 7a9.8 9.8 0 0 0 4-.85',
   verified: 'm9 12 2 2 4-4M12 2 4 5v6c0 5 3.4 9.7 8 11 4.6-1.3 8-6 8-11V5l-8-3Z',
   image: 'M3 5h18v14H3zM8.5 11a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3ZM21 15l-5-5L5 19',
   alert: 'M12 8v5M12 17h.01M12 3 2 20h20L12 3Z',

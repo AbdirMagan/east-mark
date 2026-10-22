@@ -25,9 +25,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import com.example.ui.components.PasswordField
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.ui.theme.BrandNavy
@@ -79,15 +79,22 @@ fun LoginScreen(
             modifier = Modifier.fillMaxWidth()
         )
         Spacer(modifier = Modifier.height(14.dp))
-        OutlinedTextField(
+        PasswordField(
             value = password,
             onValueChange = { password = it },
-            label = { Text("Password") },
-            singleLine = true,
-            visualTransformation = PasswordVisualTransformation(),
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-            modifier = Modifier.fillMaxWidth()
+            label = "Password"
         )
+
+        // Reaching the reset needs the address, and the person has usually
+        // just typed it -- so the button stays disabled until they have, and
+        // uses what is in the field rather than asking again on another screen.
+        TextButton(
+            onClick = { viewModel.requestPasswordReset(email) },
+            enabled = !loading && email.isNotBlank(),
+            modifier = Modifier.align(Alignment.End)
+        ) {
+            Text("Forgot your password?", fontSize = 13.sp)
+        }
 
         if (error != null) {
             Spacer(modifier = Modifier.height(10.dp))

@@ -40,6 +40,22 @@ interface SupabaseAuthApi {
         @Body body: RefreshRequest
     ): Response<SupabaseSessionDto>
 
+    /**
+     * Starts a password reset. Supabase answers 200 whether or not the address
+     * has an account, which is the right behaviour -- telling an app which
+     * addresses are registered hands over a list of who to go after.
+     *
+     * `redirect_to` is where the link in the email lands: the website, which
+     * has a page for setting a new password. A phone browser cannot hand a
+     * session back to this app, so the person sets the password there and
+     * returns here to sign in with it.
+     */
+    @POST("recover")
+    suspend fun recover(
+        @Query("redirect_to") redirectTo: String,
+        @Body body: RecoverRequest,
+    ): Response<Unit>
+
     @POST("logout")
     suspend fun signOut(@Header("Authorization") bearer: String): Response<Unit>
 }

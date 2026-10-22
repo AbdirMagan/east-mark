@@ -10,6 +10,7 @@ import { Listings } from './pages/Listings.js';
 import { Promotions } from './pages/Promotions.js';
 import { Audit, Reports, Verifications } from './pages/Queues.js';
 import { SignIn } from './pages/SignIn.js';
+import { ResetPassword } from './pages/ResetPassword.js';
 import { Users } from './pages/Users.js';
 
 const queryClient = new QueryClient({
@@ -57,10 +58,23 @@ function StaffGate({ children, onRefuse }: { children: ReactNode; onRefuse: (rea
   return <>{children}</>;
 }
 
+/**
+ * True when this page was opened from a password-reset email.
+ *
+ * Supabase hands the recovery token back in the URL fragment, and reading it
+ * signs the person in -- so by the time the app renders, a recovery visit and
+ * an ordinary visit look identical apart from this. Without the check they
+ * would land on the dashboard, still not knowing their password, with no way
+ * to set one. The flag is captured once at module load because the auth client
+ * strips the fragment as soon as it has consumed it.
+ */
+const ARRIVED_FROM_RECOVERY = window.location.hash.includes('type=recovery');
+
 export function App() {
   const [session, setSession] = useState<unknown>(null);
   const [checking, setChecking] = useState(true);
   const [notice, setNotice] = useState<string | null>(null);
+  const [resetting, setResetting] = useState(ARRIVED_FROM_RECOVERY);
 
   useEffect(() => {
     let currentUserId: string | null = null;
@@ -100,6 +114,20 @@ export function App() {
       <div className="flex min-h-screen items-center justify-center text-text-muted">
         <Spinner size={26} />
       </div>
+    );
+  }
+
+  // Before the role check: setting a password is the one thing someone with a
+  // recovery link has come to do, and it must work whether or not they turn
+  // out to be staff.
+  if (resetting) {
+    return (
+      <ResetPassword
+        onDone={() => {
+          setResetting(false);
+          void auth.getSession().then(({ data }) => setSession(data.session));
+        }}
+      />
     );
   }
 

@@ -417,6 +417,25 @@ class MarketplaceViewModel(application: Application) : AndroidViewModel(applicat
         }
     }
 
+    /**
+     * Sends the password-reset email.
+     *
+     * The message is the same whether or not that address has an account, and
+     * so is the one the repository returns: saying "no such account" would let
+     * anyone test addresses against the marketplace.
+     */
+    fun requestPasswordReset(email: String) {
+        viewModelScope.launch {
+            _authLoading.value = true
+            _authError.value = null
+            val result = authRepository.requestPasswordReset(email.trim())
+            _authLoading.value = false
+            result.onSuccess {
+                _snackbarEvent.emit("If that address has an account, a reset link is on its way")
+            }.onFailure { _authError.value = it.message ?: "Could not send the reset link" }
+        }
+    }
+
     fun signUp(email: String, password: String, onSuccess: () -> Unit) {
         viewModelScope.launch {
             _authLoading.value = true

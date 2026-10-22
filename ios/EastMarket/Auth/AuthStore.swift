@@ -29,6 +29,7 @@ final class AuthStore: ObservableObject {
     private let storageKey = "em.session"
     private let supabaseURL: String
     private let anonKey: String
+    private let webBaseURL: String
 
     var isSignedIn: Bool { session != nil }
 
@@ -36,6 +37,7 @@ final class AuthStore: ObservableObject {
         let info = Bundle.main.infoDictionary ?? [:]
         self.supabaseURL = (info["SUPABASE_URL"] as? String) ?? ""
         self.anonKey = (info["SUPABASE_ANON_KEY"] as? String) ?? ""
+        self.webBaseURL = (info["WEB_BASE_URL"] as? String) ?? ""
         loadSession()
 
         APIClient.shared.tokenProvider = { [weak self] in
@@ -70,6 +72,27 @@ final class AuthStore: ObservableObject {
                 "data": ["full_name": fullName]
             ]
         )
+    }
+
+    /// Asks Supabase to email a password-reset link.
+    ///
+    /// Reports success whether or not the address has an account, because
+    /// Supabase answers the same way and so should this: a screen that says
+    /// "no such account" lets anyone test addresses against the marketplace.
+    ///
+    /// The link lands on the website, which has a page for setting a new
+    /// password. A phone browser cannot hand a session back to this app, so
+    /// the person sets it there and returns here to sign in.
+    func requestPasswordReset(email: String) async -> Bool {
+        lastError = nil
+        isWorking = true
+        defer { isWorking = false }
+
+        let redirect = (webBaseURL.isEmpty ? "https://east-market-web.vercel.app" : webBaseURL)
+            + "/reset-password"
+        let encoded = redirect.addingPercentEncoding(withAllowedCharacters: .alphanumerics) ?? redirect
+        let payload = await callAuth(path: "recover?redirect_to=" + encoded, body: ["email": email])
+        return payload != nil
     }
 
     func signOut() {
