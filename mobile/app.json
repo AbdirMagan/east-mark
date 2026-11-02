@@ -1,0 +1,43 @@
+{
+  "expo": {
+    "name": "East Market",
+    "slug": "east-market",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "com.eastmarket.app",
+      "infoPlist": {
+        "NSPhotoLibraryUsageDescription": "East Market needs your photos so you can add pictures to a listing.",
+        "NSCameraUsageDescription": "East Market uses the camera so you can photograph what you are selling."
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#E6F4FE",
+        "foregroundImage": "./assets/android-icon-foreground.png",
+        "backgroundImage": "./assets/android-icon-background.png",
+        "monochromeImage": "./assets/android-icon-monochrome.png"
+      },
+      "predictiveBackGestureEnabled": false,
+      "package": "app.eastmarket.expo"
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      "expo-router",
+      "expo-image",
+      "expo-video"
+    ],
+    "scheme": "eastmarket",
+    "extra": {
+      "apiBaseUrl": "https://east-market-api-two.vercel.app/api/v1",
+      "webBaseUrl": "https://east-market-web.vercel.app",
+      "supabaseUrl": "https://ikfozizfgiemwuokoczf.supabase.co",
+      "supabaseAnonKey": "sb_publishable_3Ztr2sVd65gK5Y430CVUMw_Zw5dcXSx"
+    }
+  }
+}
