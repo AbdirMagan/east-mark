@@ -1,5 +1,6 @@
 import type { AuthContext } from '../types/express.js';
 import { BadRequestError, NotFoundError, fromPostgrest } from '../utils/errors.js';
+import { notify } from './notifications.service.js';
 
 /**
  * Buyer-seller messaging.
@@ -263,7 +264,56 @@ export async function sendMessage(auth: AuthContext, id: string, body: string): 
     if (error.code === '23503') throw new NotFoundError('Conversation');
     throw fromPostgrest(error, 'Conversation');
   }
+
+  // Deliberately not awaited into the response: the message is sent, and
+  // whether we also managed to buzz the other phone is not the sender's
+  // problem. notify() swallows its own failures.
+  void notifyRecipient(auth, id, text);
+
   return toMessage(data as MessageRow, auth.userId);
+}
+
+/**
+ * The other side of the thread, told that a message is waiting.
+ *
+ * Read as the caller, so RLS has already established they are a participant;
+ * the recipient is simply whichever of the two ids is not theirs. The
+ * listing's title is worth the second query -- "Amina" on its own does not
+ * say which of three conversations has moved.
+ */
+async function notifyRecipient(auth: AuthContext, conversationId: string, text: string): Promise<void> {
+  const { data } = await auth.db
+    .from('conversations')
+    .select('buyer_id, seller_id, product:products(title)')
+    .eq('id', conversationId)
+    .maybeSingle();
+
+  if (!data) return;
+
+  const row = data as { buyer_id: string; seller_id: string; product: { title: string } | null };
+  const recipient = row.buyer_id === auth.userId ? row.seller_id : row.buyer_id;
+  if (recipient === auth.userId) return;
+
+  const sender = await auth.db
+    .from('profiles')
+    .select('full_name, username')
+    .eq('id', auth.userId)
+    .maybeSingle();
+
+  const name =
+    (sender.data as { full_name: string | null; username: string | null } | null)?.full_name ??
+    (sender.data as { username: string | null } | null)?.username ??
+    'Someone';
+
+  await notify({
+    userId: recipient,
+    type: 'new_message',
+    title: row.product?.title ? `${name} about ${row.product.title}` : `Message from ${name}`,
+    // Trimmed: a notification is an invitation to open the thread, not the
+    // place to read it, and long previews push the rest off a lock screen.
+    body: text.length > 140 ? `${text.slice(0, 139)}…` : text,
+    data: { route: 'chat', conversationId },
+  });
 }
 
 /** Marks the other party's messages read and zeroes the caller's unread count. */

@@ -109,4 +109,26 @@ interface BackendApi {
 
     @GET("messages/unread")
     suspend fun getUnread(): ApiEnvelope<UnreadDto>
+
+    /* Notifications -------------------------------------------------------- */
+
+    @GET("notifications")
+    suspend fun getNotifications(
+        @Query("before") before: String? = null,
+        @Query("limit") limit: Int = 25
+    ): ApiEnvelope<List<NotificationDto>>
+
+    @GET("notifications/unread")
+    suspend fun getUnreadNotifications(): ApiEnvelope<UnreadNotificationsDto>
+
+    @POST("notifications/{id}/read")
+    suspend fun markNotificationRead(
+        @Path("id") id: String,
+        @Body body: Map<String, String> = emptyMap()
+    ): ApiEnvelope<UnreadNotificationsDto>
+
+    @POST("notifications/read-all")
+    suspend fun markAllNotificationsRead(
+        @Body body: Map<String, String> = emptyMap()
+    ): ApiEnvelope<UnreadNotificationsDto>
 }

@@ -1,5 +1,6 @@
 import { fireAndForget, request } from './client';
 import type {
+  AppNotification,
   Category,
   ChatMessage,
   ConversationSummary,
@@ -34,7 +35,7 @@ export const api = {
     request<Place[]>('locations/cities', { query: { countryId, lang } }),
 
   homeAds: (lang: string, countryId?: number | null) =>
-    request<HomeAd[]>('ads/home', { query: { lang, countryId } }),
+    request<HomeAd[]>('ads', { query: { placement: 'home_hero', lang, countryId } }),
 
   recordAdClick: (id: string) => fireAndForget(`ads/${id}/click`, { method: 'POST' }),
 
@@ -118,7 +119,40 @@ export const api = {
       authorized: true,
     }),
 
-  unread: () => request<UnreadCount>('messages/unread-count', { authorized: true }),
+  unread: () => request<UnreadCount>('messages/unread', { authorized: true }),
+
+  // Notifications -----------------------------------------------------------
+
+  notifications: () => request<AppNotification[]>('notifications', { authorized: true }),
+
+  unreadNotifications: () =>
+    request<{ unread: number }>('notifications/unread', { authorized: true }),
+
+  markNotificationRead: (id: string) =>
+    request<{ unread: number }>(`notifications/${id}/read`, { authorized: true, method: 'POST' }),
+
+  markAllNotificationsRead: () =>
+    request<{ unread: number }>('notifications/read-all', { authorized: true, method: 'POST' }),
+
+  /** Hands Expo's push token to the API so this phone can be woken. */
+  registerDevice: (input: {
+    token: string;
+    platform: 'ios' | 'android';
+    deviceName?: string;
+    locale?: string;
+  }) =>
+    request<{ registered: true }>('notifications/devices', {
+      authorized: true,
+      method: 'POST',
+      body: input,
+    }),
+
+  forgetDevice: (token: string) =>
+    request<null>('notifications/devices/forget', {
+      authorized: true,
+      method: 'POST',
+      body: { token },
+    }),
 
   // Selling -----------------------------------------------------------------
 

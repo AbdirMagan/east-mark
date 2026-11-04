@@ -133,6 +133,8 @@ dependencies {
   implementation(libs.androidx.compose.ui.tooling.preview)
   implementation(libs.androidx.core.ktx)
   implementation(libs.androidx.datastore.preferences)
+  // Background work: the periodic check for notifications while the app is shut.
+  implementation(libs.androidx.work.runtime.ktx)
   implementation(libs.coil.svg)
   implementation(libs.androidx.lifecycle.runtime.compose)
   implementation(libs.androidx.lifecycle.runtime.ktx)

@@ -166,7 +166,12 @@ fun EastMarketHeader(
                 }
 
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    actions()
+                    // On a screen with a search row the actions go down there,
+                    // where there is room. Up here they would be competing with
+                    // the brand, the city and the currency for the width of a
+                    // phone, and the brand was losing: "Magan", "East Africa
+                    // Online M...".
+                    if (!showSearch) actions()
 
                     Surface(
                         modifier = Modifier
@@ -303,6 +308,8 @@ fun EastMarketHeader(
                     )
 
                     Spacer(modifier = Modifier.width(8.dp))
+
+                    actions()
 
                     IconButton(
                         onClick = { viewModel.refreshAll() },

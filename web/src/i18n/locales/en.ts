@@ -22,6 +22,18 @@ export const en = {
   'nav.myListings': 'My listings',
   'nav.settings': 'Settings',
   'nav.admin': 'Admin dashboard',
+  'nav.notifications': 'Notifications',
+
+  'notifications.title': 'Notifications',
+  'notifications.signedOut': 'Sign in to see your notifications.',
+  'notifications.markAll': 'Mark all read',
+  'notifications.pushTitle': 'Browser notifications',
+  'notifications.pushBody': 'Get told about replies even when this site is closed.',
+  'notifications.pushBlocked': 'Your browser is blocking notifications. Turn them back on in site settings.',
+  'notifications.turnOn': 'Turn on',
+  'notifications.turnOff': 'Turn off',
+  'notifications.emptyTitle': 'Nothing yet',
+  'notifications.emptyBody': 'When someone messages you or a listing is approved, it shows up here.',
 
   'messages.title': 'Messages',
   'messages.empty': 'No conversations yet',

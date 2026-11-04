@@ -15,6 +15,7 @@ import com.example.data.local.AppDatabase
 import com.example.data.local.DatabaseInitializer
 import com.example.data.local.entity.ProductEntity
 import com.example.data.model.AppLanguage
+import com.example.data.model.AppNotification
 import com.example.data.model.CategoryItem
 import com.example.data.model.Country
 import com.example.data.model.Currency
@@ -77,27 +78,6 @@ class MarketplaceRepository(
     private val _featuredProducts = MutableStateFlow<List<Product>>(emptyList())
     private val _favoriteProducts = MutableStateFlow<List<Product>>(emptyList())
     private val _sellerCache = MutableStateFlow<Map<String, Seller>>(emptyMap())
-
-    init {
-        ioScope.launch { runCatching { DatabaseInitializer.seedDatabase(productDao, messageDao) } }
-        ioScope.launch { loadCategories() }
-        ioScope.launch { loadCountries() }
-        ioScope.launch { refreshFeatured() }
-        ioScope.launch { refreshHomeAds() }
-        ioScope.launch {
-            authRepository.authState.collect { state ->
-                if (state is AuthState.SignedIn) {
-                    refreshFavorites()
-                    refreshProfile()
-                    refreshConversations()
-                } else {
-                    _favoriteProducts.value = emptyList()
-                    _profile.value = null
-                    _conversations.value = emptyList()
-                }
-            }
-        }
-    }
 
     private suspend fun loadCategories() {
         runCatching { backendApi.getCategories() }
@@ -319,6 +299,56 @@ class MarketplaceRepository(
         }
     }
 
+    /* Notifications -------------------------------------------------------- */
+    // The record of what the marketplace has told this person. Creation is
+    // server-side; the app reads, dismisses and counts.
+
+    private val _notifications = MutableStateFlow<List<AppNotification>>(emptyList())
+    val notifications: StateFlow<List<AppNotification>> = _notifications.asStateFlow()
+
+    private val _unreadNotifications = MutableStateFlow(0)
+    val unreadNotifications: StateFlow<Int> = _unreadNotifications.asStateFlow()
+
+    suspend fun refreshNotifications(): Result<Unit> {
+        if (authRepository.authState.value !is AuthState.SignedIn) {
+            _notifications.value = emptyList()
+            _unreadNotifications.value = 0
+            return Result.failure(NotSignedInException())
+        }
+        return runCatching {
+            val items = backendApi.getNotifications().data.orEmpty().map { it.toDomain() }
+            _notifications.value = items
+            _unreadNotifications.value = items.count { !it.read }
+        }
+    }
+
+    /** Just the badge, for the header and the background check. */
+    suspend fun refreshUnreadNotifications(): Result<Int> {
+        if (authRepository.authState.value !is AuthState.SignedIn) {
+            _unreadNotifications.value = 0
+            return Result.failure(NotSignedInException())
+        }
+        return runCatching {
+            val unread = backendApi.getUnreadNotifications().data?.unread ?: 0
+            _unreadNotifications.value = unread
+            unread
+        }
+    }
+
+    suspend fun markNotificationRead(id: String) {
+        // Locally first: a tap should not wait for a round trip to stop
+        // looking unread.
+        _notifications.value = _notifications.value.map { if (it.id == id) it.copy(read = true) else it }
+        _unreadNotifications.value = _notifications.value.count { !it.read }
+        runCatching { backendApi.markNotificationRead(id) }
+    }
+
+    suspend fun markAllNotificationsRead() {
+        _notifications.value = _notifications.value.map { it.copy(read = true) }
+        _unreadNotifications.value = 0
+        runCatching { backendApi.markAllNotificationsRead() }
+    }
+
     /** Opens (or reopens) the thread with this listing's seller and returns its id. */
     suspend fun startConversation(product: Product): Result<String> {
         if (authRepository.authState.value !is AuthState.SignedIn) {
@@ -371,6 +401,42 @@ class MarketplaceRepository(
             _sellerCache.value = _sellerCache.value + (sellerId to seller)
         }
         emit(cards.map { it.toDomain() })
+    }
+
+    /**
+     * Last in the class on purpose.
+     *
+     * A Kotlin constructor runs the class body in order, so an init block
+     * placed above a property starts work that can reach that property while
+     * it is still null. This one collects a StateFlow, which emits its
+     * current value the moment it is collected: when the collector happened
+     * to run before the constructor finished, signing out wrote to a
+     * _conversations that did not exist yet and the app died on launch with
+     * a NullPointerException from inside a coroutine. Down here everything it
+     * touches is already built.
+     */
+    init {
+        ioScope.launch { runCatching { DatabaseInitializer.seedDatabase(productDao, messageDao) } }
+        ioScope.launch { loadCategories() }
+        ioScope.launch { loadCountries() }
+        ioScope.launch { refreshFeatured() }
+        ioScope.launch { refreshHomeAds() }
+        ioScope.launch {
+            authRepository.authState.collect { state ->
+                if (state is AuthState.SignedIn) {
+                    refreshFavorites()
+                    refreshProfile()
+                    refreshConversations()
+                    refreshUnreadNotifications()
+                } else {
+                    _favoriteProducts.value = emptyList()
+                    _profile.value = null
+                    _conversations.value = emptyList()
+                    _notifications.value = emptyList()
+                    _unreadNotifications.value = 0
+                }
+            }
+        }
     }
 }
 

@@ -1,3 +1,12 @@
 <resources>
     <string name="app_name">Magan Market</string>
+
+    <!--
+      The notification channel, as it appears in Android's own settings. The
+      in-app strings are localized by LocalizationManager, which follows the
+      language chosen in the app rather than the phone's; these two are read
+      by the system, so they stay in the system's language.
+    -->
+    <string name="notification_channel_name">Messages and listings</string>
+    <string name="notification_channel_description">Replies to your messages, and decisions on your listings.</string>
 </resources>

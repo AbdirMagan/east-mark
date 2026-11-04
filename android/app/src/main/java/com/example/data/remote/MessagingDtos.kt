@@ -83,6 +83,25 @@ data class ConversationIdDto(val id: String)
 data class UnreadDto(val total: Int, val conversations: Int)
 
 @JsonClass(generateAdapter = true)
+data class UnreadNotificationsDto(val unread: Int)
+
+/**
+ * One notification, as the API files it. `data` is the deep link -- the keys
+ * vary by type, so it stays a map rather than pretending to be a fixed shape.
+ */
+@JsonClass(generateAdapter = true)
+data class NotificationDto(
+    val id: String,
+    val type: String,
+    val title: String,
+    val body: String?,
+    val imageUrl: String?,
+    val data: Map<String, Any?> = emptyMap(),
+    val read: Boolean,
+    val createdAt: String
+)
+
+@JsonClass(generateAdapter = true)
 data class StartConversationBody(val productId: String)
 
 @JsonClass(generateAdapter = true)

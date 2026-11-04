@@ -9,6 +9,7 @@ import { adsRouter } from './ads.routes.js';
 import { categoriesRouter } from './categories.routes.js';
 import { locationsRouter } from './locations.routes.js';
 import { messagesRouter } from './messages.routes.js';
+import { notificationsRouter } from './notifications.routes.js';
 import { productsRouter } from './products.routes.js';
 import { usersRouter } from './users.routes.js';
 
@@ -19,6 +20,7 @@ apiRouter.use('/categories', categoriesRouter);
 apiRouter.use('/products', productsRouter);
 apiRouter.use('/users', usersRouter);
 apiRouter.use('/messages', messagesRouter);
+apiRouter.use('/notifications', notificationsRouter);
 apiRouter.use('/ads', adsRouter);
 apiRouter.use('/admin', adminRouter);
 
@@ -59,6 +61,11 @@ apiRouter.get('/config', async (_req, res) => {
     })),
     deeplinkHost: env.DEEPLINK_HOST,
     siteUrl: env.SITE_URL,
+    // The public half of the Web Push key pair. A browser cannot subscribe
+    // without it, and it is public by design: it travels in every
+    // subscription. Null when this deployment has no keys, which is the
+    // signal for the web app not to offer notifications at all.
+    webPushKey: env.VAPID_PUBLIC_KEY ?? null,
   });
 });
 

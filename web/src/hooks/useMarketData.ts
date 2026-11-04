@@ -177,6 +177,36 @@ export function useUnreadMessages() {
   });
 }
 
+/**
+ * The bell: how many notifications are waiting.
+ *
+ * Polled rather than pushed. The browser is told about a notification by the
+ * service worker when the tab is closed, and by this poll when it is open --
+ * a realtime subscription for a number that changes a handful of times a day
+ * is a connection held open for nothing.
+ */
+export function useUnreadNotifications() {
+  const session = useAuth((state) => state.session);
+  return useQuery({
+    queryKey: ['notifications-unread', session?.user.id],
+    queryFn: () => endpoints.unreadNotifications(),
+    enabled: Boolean(session),
+    refetchInterval: 60_000,
+    staleTime: 30_000,
+  });
+}
+
+/** The notification list itself, newest first. */
+export function useNotifications(enabled = true) {
+  const session = useAuth((state) => state.session);
+  return useQuery({
+    queryKey: ['notifications', session?.user.id],
+    queryFn: () => endpoints.notifications(),
+    enabled: Boolean(session) && enabled,
+    staleTime: 15_000,
+  });
+}
+
 /** Home carousel promotions, localized and scoped to the chosen country. */
 export function useHomeAds() {
   const { language } = useI18n();

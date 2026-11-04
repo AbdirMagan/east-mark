@@ -2,7 +2,14 @@ import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { Link, NavLink, useNavigate, useSearchParams } from 'react-router-dom';
 
 import { LANGUAGES, useI18n, useT } from '../../i18n/index.js';
-import { useCities, useConfig, useCountries, useMe, useUnreadMessages } from '../../hooks/useMarketData.js';
+import {
+  useCities,
+  useConfig,
+  useCountries,
+  useMe,
+  useUnreadMessages,
+  useUnreadNotifications,
+} from '../../hooks/useMarketData.js';
 import { useAuth } from '../../store/auth.js';
 import { usePreferences, type ThemeChoice } from '../../store/preferences.js';
 import { Logo } from '../brand/Logo.js';
@@ -172,6 +179,7 @@ export function Header() {
   const signOut = useAuth((state) => state.signOut);
   const { data: me } = useMe();
   const { data: unread } = useUnreadMessages();
+  const { data: notifications } = useUnreadNotifications();
   // The signed-in person's name rather than a generic "Account": profile
   // name, then username, then the part of the email before the @.
   const displayName = me?.fullName?.trim() || me?.username || session?.user.email?.split('@')[0] || '';
@@ -306,6 +314,17 @@ export function Header() {
           ) : null}
 
           {session ? (
+            <Link
+              to="/notifications"
+              aria-label={t('nav.notifications')}
+              className="relative hidden size-9 items-center justify-center rounded-(--radius-field) text-text-secondary transition-colors hover:bg-surface-sunken hover:text-text-primary md:inline-flex"
+            >
+              <Icon name="bell" size={19} />
+              <UnreadBadge count={notifications?.unread ?? 0} />
+            </Link>
+          ) : null}
+
+          {session ? (
             <Popover
               label={t('nav.account')}
               icon="user"
@@ -374,6 +393,17 @@ export function Header() {
           >
             {t('nav.sell')}
           </Button>
+
+          {session ? (
+            <Link
+              to="/notifications"
+              aria-label={t('nav.notifications')}
+              className="relative inline-flex size-9 items-center justify-center rounded-(--radius-field) text-text-secondary hover:bg-surface-sunken md:hidden"
+            >
+              <Icon name="bell" size={20} />
+              <UnreadBadge count={notifications?.unread ?? 0} />
+            </Link>
+          ) : null}
 
           <button
             type="button"

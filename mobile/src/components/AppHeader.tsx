@@ -1,7 +1,9 @@
 import { Ionicons } from '@expo/vector-icons';
+import { useQuery } from '@tanstack/react-query';
 import { Image } from 'expo-image';
 import { useState } from 'react';
 import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Radius, Space } from '../theme';
@@ -9,6 +11,8 @@ import type { Palette } from '../theme';
 import { useColors, useStyles } from '../useTheme';
 import { CurrencyPicker } from './CurrencyPicker';
 import { LocationPicker } from './LocationPicker';
+import { api } from '../api/endpoints';
+import { useAuth } from '../store/auth';
 import { usePrefs } from '../store/prefs';
 
 /**
@@ -40,12 +44,25 @@ export function AppHeader({
   const c = useColors();
   const styles = useStyles(makeStyles);
   const insets = useSafeAreaInsets();
+  const router = useRouter();
   const t = usePrefs((state) => state.t);
   const locationLabel = usePrefs((state) => state.locationLabel);
   const currency = usePrefs((state) => state.currency);
 
   const [pickingLocation, setPickingLocation] = useState(false);
   const [pickingCurrency, setPickingCurrency] = useState(false);
+
+  // Polled rather than pushed: a number that changes a few times a day does
+  // not earn a socket held open. A real push updates it by waking the app.
+  const session = useAuth((state) => state.session);
+  const { data: unreadData } = useQuery({
+    queryKey: ['notifications-unread'],
+    enabled: Boolean(session),
+    queryFn: () => api.unreadNotifications(),
+    refetchInterval: 60_000,
+    staleTime: 30_000,
+  });
+  const unread = unreadData?.unread ?? 0;
 
   return (
     <View style={[styles.bar, { paddingTop: insets.top + Space.md }]}>
@@ -118,6 +135,20 @@ export function AppHeader({
             style={styles.search}
           />
           </View>
+          <Pressable
+            onPress={() => router.push('/notifications')}
+            accessibilityRole="button"
+            accessibilityLabel={t('notifications')}
+            style={styles.iconButton}
+          >
+            <Ionicons name="notifications-outline" size={21} color={c.white} />
+            {unread > 0 ? (
+              <View style={styles.badge}>
+                <Text style={styles.badgeText}>{unread > 99 ? '99+' : unread}</Text>
+              </View>
+            ) : null}
+          </Pressable>
+
           {onRefresh ? (
             <Pressable onPress={onRefresh} accessibilityRole="button" accessibilityLabel={t('refresh')} style={styles.iconButton}>
               <Ionicons name="refresh" size={21} color={c.white} />
@@ -177,6 +208,19 @@ const makeStyles = (c: Palette) =>
   currencyText: { color: c.goldLight, fontSize: 12, fontWeight: '700' },
 
   searchRow: { flexDirection: 'row', alignItems: 'center', gap: Space.sm },
+  badge: {
+    position: 'absolute',
+    top: 4,
+    right: 4,
+    minWidth: 16,
+    height: 16,
+    paddingHorizontal: 3,
+    borderRadius: 8,
+    backgroundColor: c.gold,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  badgeText: { color: c.white, fontSize: 10, fontWeight: '800' },
   searchBox: {
     flex: 1,
     flexDirection: 'row',

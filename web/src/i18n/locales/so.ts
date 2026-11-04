@@ -18,6 +18,18 @@ export const so: Partial<Dictionary> = {
   'nav.myListings': 'Shayadayda',
   'nav.settings': 'Dejinta',
   'nav.admin': 'Maamulka',
+  'nav.notifications': 'Ogeysiisyo',
+
+  'notifications.title': 'Ogeysiisyo',
+  'notifications.signedOut': 'Gal si aad u aragto ogeysiisyadaada.',
+  'notifications.markAll': 'Dhammaan calaamadee',
+  'notifications.pushTitle': 'Ogeysiisyada browserka',
+  'notifications.pushBody': 'Hel ogeysiis xitaa marka boggan uusan furnayn.',
+  'notifications.pushBlocked': 'Browserkaagu wuu xannibay ogeysiisyada. Ka fur goobaha boggan.',
+  'notifications.turnOn': 'Shid',
+  'notifications.turnOff': 'Dami',
+  'notifications.emptyTitle': 'Weli waxba ma jiraan',
+  'notifications.emptyBody': 'Marka qof kula soo xiriiro ama liiskaaga la ansixiyo, halkan ayuu ka soo muuqan doonaa.',
 
   'messages.title': 'Fariimaha',
   'messages.empty': 'Weli wada-hadal ma jiro',

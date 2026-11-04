@@ -65,6 +65,7 @@ export default function TabsLayout() {
         `href: null` keeps them off the bar itself.
       */}
       <Tabs.Screen name="videos" options={{ href: null }} />
+      <Tabs.Screen name="notifications" options={{ href: null }} />
       <Tabs.Screen name="chat/[id]" options={{ href: null }} />
     </Tabs>
   );

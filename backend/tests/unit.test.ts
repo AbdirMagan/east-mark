@@ -199,3 +199,64 @@ describe('promotion links', () => {
     expect(linkFor('product', 'abc')).toBeNull();
   });
 });
+
+
+describe('push gating', () => {
+  it('reads a quiet-hours window that wraps midnight', async () => {
+    const { inQuietHours } = await import('../src/services/push.service.js');
+    const at = (hour: number, minute = 0) => new Date(2026, 0, 1, hour, minute);
+
+    // The ordinary case: 22:00 to 07:00 is one window, not two.
+    expect(inQuietHours('22:00', '07:00', at(23))).toBe(true);
+    expect(inQuietHours('22:00', '07:00', at(3))).toBe(true);
+    expect(inQuietHours('22:00', '07:00', at(7))).toBe(false);
+    expect(inQuietHours('22:00', '07:00', at(12))).toBe(false);
+
+    // A daytime window stays a daytime window.
+    expect(inQuietHours('09:00', '17:00', at(12))).toBe(true);
+    expect(inQuietHours('09:00', '17:00', at(20))).toBe(false);
+
+    // Unset, or a zero-length window, silences nothing.
+    expect(inQuietHours(null, '07:00', at(3))).toBe(false);
+    expect(inQuietHours('22:00', '22:00', at(22))).toBe(false);
+  });
+
+  it('respects the switch, the per-type override and the quiet window', async () => {
+    const { shouldPush } = await import('../src/services/push.service.js');
+    const noon = new Date(2026, 0, 1, 12);
+    const base = { push_enabled: true, type_overrides: null, quiet_hours_start: null, quiet_hours_end: null };
+
+    // No row yet: the schema's default is on, so a new account still hears.
+    expect(shouldPush(null, 'new_message', noon)).toBe(true);
+    expect(shouldPush(base, 'new_message', noon)).toBe(true);
+    expect(shouldPush({ ...base, push_enabled: false }, 'new_message', noon)).toBe(false);
+
+    // An override is per type: silencing one does not silence the rest.
+    const muted = { ...base, type_overrides: { new_message: false } };
+    expect(shouldPush(muted, 'new_message', noon)).toBe(false);
+    expect(shouldPush(muted, 'listing_approved', noon)).toBe(true);
+
+    const night = { ...base, quiet_hours_start: '22:00', quiet_hours_end: '07:00' };
+    expect(shouldPush(night, 'new_message', new Date(2026, 0, 1, 23))).toBe(false);
+    expect(shouldPush(night, 'new_message', noon)).toBe(true);
+  });
+
+  it('tells an Expo token from a browser subscription', async () => {
+    const { isExpoToken, parseWebSubscription } = await import('../src/services/push.service.js');
+
+    expect(isExpoToken('ExponentPushToken[xxxxxxxxxxxxxxxxxxxxxx]')).toBe(true);
+    expect(isExpoToken('ExpoPushToken[xxxxxxxxxxxxxxxxxxxxxx]')).toBe(true);
+    expect(isExpoToken('fcm-looking-token-0123456789')).toBe(false);
+
+    const subscription = {
+      endpoint: 'https://fcm.googleapis.com/fcm/send/abc',
+      keys: { p256dh: 'key', auth: 'auth' },
+    };
+    expect(parseWebSubscription(JSON.stringify(subscription))?.endpoint).toBe(subscription.endpoint);
+
+    // Half a subscription is no subscription: sending to it would throw
+    // inside web-push on every notification until the row was cleaned up.
+    expect(parseWebSubscription(JSON.stringify({ endpoint: 'https://x' }))).toBeNull();
+    expect(parseWebSubscription('ExponentPushToken[xxx]')).toBeNull();
+  });
+});

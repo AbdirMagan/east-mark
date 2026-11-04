@@ -18,6 +18,18 @@ export const am: Partial<Dictionary> = {
   'nav.myListings': 'የእኔ ዝርዝሮች',
   'nav.settings': 'ቅንብሮች',
   'nav.admin': 'የአስተዳደር ዳሽቦርድ',
+  'nav.notifications': 'ማሳወቂያዎች',
+
+  'notifications.title': 'ማሳወቂያዎች',
+  'notifications.signedOut': 'ማሳወቂያዎችዎን ለማየት ይግቡ።',
+  'notifications.markAll': 'ሁሉንም እንደተነበበ ምልክት አድርግ',
+  'notifications.pushTitle': 'የአሳሽ ማሳወቂያዎች',
+  'notifications.pushBody': 'ይህ ጣቢያ ባይከፈትም ስለ መልሶች ይወቁ።',
+  'notifications.pushBlocked': 'አሳሽዎ ማሳወቂያዎችን አግዷል። ከጣቢያ ቅንብሮች ውስጥ መልሰው ያብሩ።',
+  'notifications.turnOn': 'አብራ',
+  'notifications.turnOff': 'አጥፋ',
+  'notifications.emptyTitle': 'እስካሁን ምንም የለም',
+  'notifications.emptyBody': 'አንድ ሰው መልዕክት ሲልክልዎ ወይም ዝርዝርዎ ሲጸድቅ እዚህ ይታያል።',
 
   'messages.title': 'መልዕክቶች',
   'messages.empty': 'እስካሁን ምንም ውይይት የለም',

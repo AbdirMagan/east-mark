@@ -429,6 +429,42 @@ export interface Me {
   unreadNotifications: number;
 }
 
+export type NotificationType =
+  | 'new_message'
+  | 'listing_approved'
+  | 'listing_rejected'
+  | 'listing_expiring'
+  | 'product_sold'
+  | 'price_changed'
+  | 'saved_search_match'
+  | 'new_follower'
+  | 'advertisement'
+  | 'subscription_expiring'
+  | 'verification_result'
+  | 'review_received'
+  | 'system';
+
+export interface AppNotification {
+  id: string;
+  type: NotificationType;
+  title: string;
+  body: string | null;
+  imageUrl: string | null;
+  /** Where a tap goes: {"route":"chat","conversationId":"..."} */
+  data: Record<string, unknown>;
+  read: boolean;
+  createdAt: string;
+}
+
+export interface NotificationPreferences {
+  pushEnabled: boolean;
+  emailEnabled: boolean;
+  smsEnabled: boolean;
+  typeOverrides: Record<string, boolean>;
+  quietHoursStart: string | null;
+  quietHoursEnd: string | null;
+}
+
 /* -------------------------------------------------------------------------- */
 /* Endpoints                                                                  */
 /* -------------------------------------------------------------------------- */
@@ -587,6 +623,36 @@ export const endpoints = {
     api<null>(`/messages/conversations/${id}/read`, { method: 'POST' }),
 
   unreadMessages: () => api<{ total: number; conversations: number }>('/messages/unread'),
+
+  /* --- notifications --- */
+
+  notifications: (before?: string) =>
+    api<AppNotification[]>('/notifications', { query: { before, limit: 25 } }),
+
+  unreadNotifications: () => api<{ unread: number }>('/notifications/unread'),
+
+  markNotificationRead: (id: string) =>
+    api<{ unread: number }>(`/notifications/${id}/read`, { method: 'POST' }),
+
+  markAllNotificationsRead: () => api<{ unread: number }>('/notifications/read-all', { method: 'POST' }),
+
+  dismissNotification: (id: string) => api<null>(`/notifications/${id}`, { method: 'DELETE' }),
+
+  notificationPreferences: () => api<NotificationPreferences>('/notifications/preferences'),
+
+  updateNotificationPreferences: (patch: Partial<NotificationPreferences>) =>
+    api<NotificationPreferences>('/notifications/preferences', { method: 'PATCH', body: patch }),
+
+  /** Hands the browser's push subscription to the API, so it can be woken. */
+  registerDevice: (input: {
+    token: string;
+    platform: 'web' | 'android' | 'ios';
+    deviceName?: string;
+    locale?: string;
+  }) => api<{ registered: true }>('/notifications/devices', { method: 'POST', body: input }),
+
+  forgetDevice: (token: string) =>
+    api<null>('/notifications/devices/forget', { method: 'POST', body: { token } }),
 };
 
 /**

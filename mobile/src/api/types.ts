@@ -152,6 +152,21 @@ export interface MessagePage {
   hasMore: boolean;
 }
 
+/**
+ * One notification, as the API files it. `data` is the deep link; its keys
+ * depend on the type, so it stays loose here and is narrowed where it is read.
+ */
+export interface AppNotification {
+  id: string;
+  type: string;
+  title: string;
+  body: string | null;
+  imageUrl: string | null;
+  data: { route?: string; conversationId?: string; productId?: string };
+  read: boolean;
+  createdAt: string;
+}
+
 export interface UnreadCount {
   total: number;
   conversations: number;

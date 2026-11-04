@@ -18,6 +18,18 @@ export const sw: Partial<Dictionary> = {
   'nav.myListings': 'Matangazo yangu',
   'nav.settings': 'Mipangilio',
   'nav.admin': 'Dashibodi ya usimamizi',
+  'nav.notifications': 'Arifa',
+
+  'notifications.title': 'Arifa',
+  'notifications.signedOut': 'Ingia ili kuona arifa zako.',
+  'notifications.markAll': 'Weka zote kuwa zimesomwa',
+  'notifications.pushTitle': 'Arifa za kivinjari',
+  'notifications.pushBody': 'Pata taarifa za majibu hata tovuti hii ikiwa imefungwa.',
+  'notifications.pushBlocked': 'Kivinjari chako kinazuia arifa. Ziwashe tena katika mipangilio ya tovuti.',
+  'notifications.turnOn': 'Washa',
+  'notifications.turnOff': 'Zima',
+  'notifications.emptyTitle': 'Hakuna kitu bado',
+  'notifications.emptyBody': 'Mtu akikutumia ujumbe au tangazo lako likiidhinishwa, litaonekana hapa.',
 
   'messages.title': 'Ujumbe',
   'messages.empty': 'Hakuna mazungumzo bado',

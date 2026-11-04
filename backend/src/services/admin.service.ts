@@ -5,6 +5,7 @@ import type { AuthContext } from '../types/express.js';
 import { AD_TARGET_TYPES, invalidateAdsCache, linkFor, type AdPlacement, type AdTheme } from './ads.service.js';
 import { invalidateCategoryCache } from './categories.service.js';
 import { invalidateLocationCache } from './locations.service.js';
+import { notify } from './notifications.service.js';
 import { AppError, NotFoundError, fromPostgrest } from '../utils/errors.js';
 import type { PageMeta } from '../utils/response.js';
 import { buildPageMeta } from '../utils/response.js';
@@ -339,8 +340,7 @@ export async function moderateProduct(
 
   await audit(auth, `product.${decision}`, 'product', id, { reason, status });
 
-  // Tell the seller. Notifications have no client INSERT policy, but admins
-  // reach them through the same is_admin() path the rest of this file uses.
+  // Tell the seller.
   const copy: Record<ModerationDecision, { type: 'listing_approved' | 'listing_rejected'; title: string; body: string }> = {
     approve: { type: 'listing_approved', title: 'Your listing is live', body: `"${data.title}" has been approved.` },
     restore: { type: 'listing_approved', title: 'Your listing is live again', body: `"${data.title}" has been restored.` },
@@ -349,12 +349,14 @@ export async function moderateProduct(
   };
   const message = copy[decision];
 
-  await service().from('notifications').insert({
-    user_id: data.seller_id,
+  // notify() files the same row and then wakes the seller's phone or browser,
+  // which an insert on its own does not.
+  await notify({
+    userId: data.seller_id,
     type: message.type,
     title: message.title,
     body: message.body,
-    data: { route: 'product', product_id: id },
+    data: { route: 'product', productId: id },
   });
 
   return { id: data.id, status: data.status };

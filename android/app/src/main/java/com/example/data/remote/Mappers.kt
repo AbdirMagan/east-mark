@@ -1,5 +1,6 @@
 package com.example.data.remote
 
+import com.example.data.model.AppNotification
 import com.example.data.model.CategoryItem
 import com.example.data.model.ChatMessage
 import com.example.data.model.Conversation
@@ -170,6 +171,18 @@ fun ConversationSummaryDto.toDomain(): Conversation = Conversation(
     lastSenderIsMe = lastSenderIsMe,
     role = role,
     productRef = product?.ref
+)
+
+fun NotificationDto.toDomain(): AppNotification = AppNotification(
+    id = id,
+    type = type,
+    title = title,
+    body = body.orEmpty(),
+    createdAt = parseIsoToMillis(createdAt),
+    read = read,
+    route = data["route"] as? String,
+    conversationId = data["conversationId"] as? String,
+    productId = data["productId"] as? String
 )
 
 fun MessageDto.toDomain(otherName: String): ChatMessage = ChatMessage(

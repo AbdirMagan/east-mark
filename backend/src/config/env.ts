@@ -41,6 +41,20 @@ const schema = z.object({
 
   DEEPLINK_HOST: z.string().default('eastmarket.app'),
   SITE_URL: z.string().url().default('https://eastmarket.app'),
+
+  // Web Push. A VAPID key pair identifies this server to the browser push
+  // services; generate one with `npx web-push generate-vapid-keys`. Without
+  // them the API still records notifications and the clients still show them,
+  // it just cannot wake a closed browser.
+  VAPID_PUBLIC_KEY: z.string().min(40).optional(),
+  VAPID_PRIVATE_KEY: z.string().min(20).optional(),
+  // Push services want a way to contact whoever runs the server.
+  VAPID_SUBJECT: z.string().default('mailto:support@eastmarket.app'),
+
+  // Expo's push service relays to APNs and FCM for the Expo app. Anonymous
+  // sending works; an access token is only needed once push security is
+  // switched on in the Expo project.
+  EXPO_ACCESS_TOKEN: z.string().optional(),
 });
 
 export type Env = z.infer<typeof schema>;

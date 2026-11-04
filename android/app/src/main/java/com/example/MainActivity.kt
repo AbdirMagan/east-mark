@@ -1,17 +1,30 @@
 package com.example
 
+import android.Manifest
+import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import coil.Coil
 import coil.ImageLoader
 import coil.decode.SvgDecoder
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Notifications
+import androidx.compose.material3.Badge
+import androidx.compose.material3.BadgedBox
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -19,7 +32,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.NavHost
@@ -29,26 +47,49 @@ import androidx.navigation.compose.rememberNavController
 import com.example.ui.components.EastMarketBottomBar
 import com.example.ui.navigation.Screen
 import com.example.ui.components.EastMarketHeader
+import com.example.domain.LocalizationManager
 import com.example.ui.screens.CategoriesScreen
 import com.example.ui.screens.ChatDetailScreen
 import com.example.ui.screens.FavoritesScreen
 import com.example.ui.screens.HomeScreen
 import com.example.ui.screens.LoginScreen
 import com.example.ui.screens.MessagingScreen
+import com.example.ui.screens.NotificationsScreen
 import com.example.ui.screens.ProductDetailScreen
 import com.example.ui.screens.SellProductScreen
 import com.example.ui.screens.SellerProfileScreen
 import com.example.ui.screens.SettingsScreen
 import com.example.ui.screens.VideoFeedScreen
 import com.example.ui.screens.SignUpScreen
+import com.example.notifications.NotificationSyncWorker
 import com.example.ui.theme.MyApplicationTheme
 import com.example.ui.viewmodel.MarketplaceViewModel
 import kotlinx.coroutines.flow.collectLatest
 
 class MainActivity : ComponentActivity() {
+
+    /**
+     * Android 13 and up refuses to post a notification until the person has
+     * said yes. Asked for once at launch rather than buried in settings: the
+     * app has something to tell them the moment they have a listing or a
+     * conversation.
+     */
+    private val askForNotifications =
+        registerForActivityResult(ActivityResultContracts.RequestPermission()) { }
+
+    /** The notification that opened the app, read by the composable below. */
+    private var openedFrom by mutableStateOf<Intent?>(null)
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+
+        NotificationSyncWorker.ensureChannel(this)
+        NotificationSyncWorker.schedule(this)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            askForNotifications.launch(Manifest.permission.POST_NOTIFICATIONS)
+        }
+        openedFrom = intent
         // Listing thumbnails from the seed data are inline SVG data: URIs;
         // SvgDecoder is what lets Coil render those instead of erroring out.
         Coil.setImageLoader(
@@ -58,19 +99,25 @@ class MainActivity : ComponentActivity() {
         )
         setContent {
             MyApplicationTheme {
-                EastMarketApp()
+                EastMarketApp(openedFrom = openedFrom, onHandled = { openedFrom = null })
             }
         }
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        openedFrom = intent
     }
 }
 
 @Composable
-fun EastMarketApp() {
+fun EastMarketApp(openedFrom: Intent? = null, onHandled: () -> Unit = {}) {
     val navController = rememberNavController()
     val viewModel: MarketplaceViewModel = viewModel()
     val language by viewModel.selectedLanguage.collectAsState()
     val conversations by viewModel.conversations.collectAsState()
     val unreadCount = conversations.sumOf { it.unreadCount }
+    val unreadNotifications by viewModel.unreadNotifications.collectAsState()
 
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route ?: Screen.Home.route
@@ -85,6 +132,24 @@ fun EastMarketApp() {
 
     var viewingSellerId by remember { mutableStateOf<String?>(null) }
     var activeConvId by remember { mutableStateOf<String?>(null) }
+
+    // Tapping a system notification lands here: go where it pointed, and mark
+    // it read on the way, so the badge matches what the person has seen.
+    LaunchedEffect(openedFrom) {
+        val intent = openedFrom ?: return@LaunchedEffect
+        intent.getStringExtra(NotificationSyncWorker.EXTRA_NOTIFICATION_ID)?.let {
+            viewModel.markNotificationRead(it)
+        }
+        val conversationId = intent.getStringExtra(NotificationSyncWorker.EXTRA_CONVERSATION_ID)
+        if (conversationId != null) {
+            activeConvId = conversationId
+            viewModel.openConversation(conversationId)
+            navController.navigate(Screen.ChatDetail.route)
+        } else if (intent.getStringExtra(NotificationSyncWorker.EXTRA_PRODUCT_ID) != null) {
+            navController.navigate(Screen.Notifications.route)
+        }
+        onHandled()
+    }
 
     // Every screen carries the app's own header and its navigation buttons: a
     // marketplace where the logo, the city, the search box and the tabs vanish
@@ -111,7 +176,40 @@ fun EastMarketApp() {
                 viewModel = viewModel,
                 showSearch = showSearch,
                 onBack = if (isRoot) null else ({ navController.popBackStack(); Unit })
-            )
+            ) {
+                // The bell sits with the city and the currency, left of them,
+                // because it is about this person rather than about what they
+                // are looking at.
+                IconButton(
+                    onClick = {
+                        if (currentRoute != Screen.Notifications.route) {
+                            navController.navigate(Screen.Notifications.route)
+                        }
+                    },
+                    // Shaped like the refresh and filter buttons it sits beside.
+                    modifier = Modifier
+                        .padding(end = 8.dp)
+                        .size(50.dp)
+                        .clip(RoundedCornerShape(12.dp))
+                        .background(Color.White.copy(alpha = 0.14f))
+                        .testTag("header_notifications_btn")
+                ) {
+                    BadgedBox(
+                        badge = {
+                            if (unreadNotifications > 0) {
+                                Badge { Text(if (unreadNotifications > 99) "99+" else "$unreadNotifications") }
+                            }
+                        }
+                    ) {
+                        Icon(
+                            imageVector = Icons.Filled.Notifications,
+                            contentDescription = LocalizationManager.getString("notifications", language),
+                            tint = Color.White,
+                            modifier = Modifier.size(20.dp)
+                        )
+                    }
+                }
+            }
         },
         bottomBar = {
             run {
@@ -210,6 +308,23 @@ fun EastMarketApp() {
                     },
                     onNavigateToSignUp = {
                         navController.navigate(Screen.SignUp.route)
+                    }
+                )
+            }
+
+            // 5b. Notifications
+            composable(Screen.Notifications.route) {
+                NotificationsScreen(
+                    viewModel = viewModel,
+                    onOpenConversation = { convId ->
+                        activeConvId = convId
+                        viewModel.openConversation(convId)
+                        navController.navigate(Screen.ChatDetail.route)
+                    },
+                    onOpenProduct = { productId ->
+                        viewModel.selectProductById(productId) {
+                            navController.navigate(Screen.ProductDetail.route)
+                        }
                     }
                 )
             }

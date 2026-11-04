@@ -251,3 +251,35 @@ describe('ads', () => {
     await request(app).post('/api/v1/admin/ads').send({ title: 'x' }).expect(401);
   });
 });
+
+
+describe('notifications', () => {
+  const id = '00000000-0000-4000-8000-000000000000';
+
+  it('keeps the list behind sign-in', async () => {
+    await request(app).get('/api/v1/notifications').expect(401);
+    await request(app).get('/api/v1/notifications/unread').expect(401);
+  });
+
+  it('keeps dismissing and preferences behind sign-in', async () => {
+    await request(app).post(`/api/v1/notifications/${id}/read`).expect(401);
+    await request(app).post('/api/v1/notifications/read-all').expect(401);
+    await request(app).get('/api/v1/notifications/preferences').expect(401);
+    await request(app).patch('/api/v1/notifications/preferences').send({ pushEnabled: false }).expect(401);
+  });
+
+  it('keeps device registration behind sign-in', async () => {
+    // The whole point of a device token is that it belongs to an account.
+    await request(app)
+      .post('/api/v1/notifications/devices')
+      .send({ token: 'ExponentPushToken[xxxxxxxxxxxxxxxxxxxxxx]', platform: 'ios' })
+      .expect(401);
+  });
+
+  it('publishes the web push key through config, never the private half', async () => {
+    const res = await request(app).get('/api/v1/config').expect(200);
+    expect(res.body.data).toHaveProperty('webPushKey');
+    const body = JSON.stringify(res.body);
+    expect(body).not.toContain(process.env.VAPID_PRIVATE_KEY ?? 'VAPID_PRIVATE_KEY_UNSET');
+  });
+});

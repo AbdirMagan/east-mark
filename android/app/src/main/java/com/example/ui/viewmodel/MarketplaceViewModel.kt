@@ -14,6 +14,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.data.local.AppDatabase
 import com.example.data.model.AppLanguage
+import com.example.data.model.AppNotification
 import com.example.data.model.CategoryItem
 import com.example.data.model.Country
 import com.example.data.model.Currency
@@ -91,6 +92,10 @@ class MarketplaceViewModel(application: Application) : AndroidViewModel(applicat
 
     val conversations: StateFlow<List<Conversation>> = repository.conversations
 
+    /** The notification list and the number on the bell. */
+    val notifications: StateFlow<List<AppNotification>> = repository.notifications
+    val unreadNotifications: StateFlow<Int> = repository.unreadNotifications
+
     /** Home carousel promotions, the same slides as the web app's hero. */
     val homeAds: StateFlow<List<HomeAd>> = repository.homeAds
 
@@ -114,13 +119,46 @@ class MarketplaceViewModel(application: Application) : AndroidViewModel(applicat
     private var messagePolling: Job? = null
 
     init {
-        // Keeps the Messages badge current while the app is open.
+        // Keeps the Messages and bell badges current while the app is open.
+        // The background worker covers the app being closed.
         viewModelScope.launch {
             while (isActive) {
                 delay(30_000)
-                if (authState.value is AuthState.SignedIn) repository.refreshConversations()
+                if (authState.value is AuthState.SignedIn) {
+                    repository.refreshConversations()
+                    repository.refreshUnreadNotifications()
+                }
             }
         }
+    }
+
+    /**
+     * Opens a listing the app only knows the id of -- a notification about a
+     * moderation decision, say. Fetches it, selects it, and only then calls
+     * back, so the detail screen never opens onto nothing.
+     */
+    fun selectProductById(id: String, onReady: () -> Unit) {
+        viewModelScope.launch {
+            val product = repository.getProductById(id)
+            if (product != null) {
+                _selectedProduct.value = product
+                onReady()
+            } else {
+                _snackbarEvent.emit("That listing is no longer available")
+            }
+        }
+    }
+
+    fun refreshNotifications() {
+        viewModelScope.launch { repository.refreshNotifications() }
+    }
+
+    fun markNotificationRead(id: String) {
+        viewModelScope.launch { repository.markNotificationRead(id) }
+    }
+
+    fun markAllNotificationsRead() {
+        viewModelScope.launch { repository.markAllNotificationsRead() }
     }
 
     fun selectProduct(product: Product) {

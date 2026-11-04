@@ -144,6 +144,25 @@ data class ChatMessage(
     val pending: Boolean = false
 )
 
+/**
+ * One notification: what happened, and where tapping it goes.
+ *
+ * `route` and the two ids are lifted out of the API's free-form `data` map at
+ * the edge, so the screens that act on a notification deal in fields rather
+ * than in map lookups that could silently be null.
+ */
+data class AppNotification(
+    val id: String,
+    val type: String,
+    val title: String,
+    val body: String,
+    val createdAt: Long,
+    val read: Boolean,
+    val route: String?,
+    val conversationId: String?,
+    val productId: String?
+)
+
 data class FilterCriteria(
     val query: String = "",
     val categoryId: String? = null,

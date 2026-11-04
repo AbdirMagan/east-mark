@@ -32,6 +32,9 @@ const CategoriesPage = lazy(() =>
   import('./pages/MiscPages.js').then((m) => ({ default: m.CategoriesPage })),
 );
 const SavedPage = lazy(() => import('./pages/MiscPages.js').then((m) => ({ default: m.SavedPage })));
+const NotificationsPage = lazy(() =>
+  import('./pages/NotificationsPage.js').then((m) => ({ default: m.NotificationsPage })),
+);
 const SellPage = lazy(() => import('./pages/SellPage.js').then((m) => ({ default: m.SellPage })));
 const PrivacyPage = lazy(() => import('./pages/LegalPages.js').then((m) => ({ default: m.PrivacyPage })));
 const TermsPage = lazy(() => import('./pages/LegalPages.js').then((m) => ({ default: m.TermsPage })));
@@ -116,6 +119,7 @@ function Shell() {
             <Route path="/my-listings" element={<MyListingsPage />} />
             <Route path="/messages" element={<MessagesPage />} />
             <Route path="/messages/:conversationId" element={<MessagesPage />} />
+            <Route path="/notifications" element={<NotificationsPage />} />
             <Route path="/legal/privacy" element={<PrivacyPage />} />
             <Route path="/legal/terms" element={<TermsPage />} />
             <Route path="/legal/community-guidelines" element={<CommunityGuidelinesPage />} />
