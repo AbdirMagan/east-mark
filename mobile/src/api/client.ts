@@ -96,7 +96,7 @@ export async function request<T>(path: string, options: RequestOptions = {}): Pr
   } catch {
     // On a 2G connection this is the common failure, and "network request
     // failed" tells a seller nothing they can act on.
-    throw new ApiError(0, 'Could not reach East Market. Check your connection.', 'offline');
+    throw new ApiError(0, 'Could not reach Magan Market. Check your connection.', 'offline');
   }
 
   return parse<T>(response);

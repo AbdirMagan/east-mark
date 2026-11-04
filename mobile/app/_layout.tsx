@@ -4,7 +4,8 @@ import { StatusBar } from 'expo-status-bar';
 import { useEffect, useState } from 'react';
 import { ActivityIndicator, View } from 'react-native';
 
-import { Brand } from '../src/theme';
+import type { Palette } from '../src/theme';
+import { useColors, useStyles } from '../src/useTheme';
 import { useAuth } from '../src/store/auth';
 import { usePrefs } from '../src/store/prefs';
 
@@ -22,6 +23,7 @@ const queryClient = new QueryClient({
 });
 
 export default function RootLayout() {
+  const c = useColors();
   const [ready, setReady] = useState(false);
   const initAuth = useAuth((state) => state.init);
   const loadPrefs = usePrefs((state) => state.load);
@@ -34,28 +36,26 @@ export default function RootLayout() {
 
   if (!ready) {
     return (
-      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: Brand.sand }}>
-        <ActivityIndicator color={Brand.acacia} />
+      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: c.bg }}>
+        <ActivityIndicator color={c.teal} />
       </View>
     );
   }
 
   return (
     <QueryClientProvider client={queryClient}>
-      <StatusBar style="dark" />
+      {/* Light text: every screen's own header is navy in both themes, so a
+          dark status bar would be unreadable against it. */}
+      <StatusBar style="light" />
+      {/* No navigator header anywhere. Each screen draws AppHeader instead,
+          which is navy, full-bleed and carries the search box -- more than a
+          title bar can be, and the same bar the Android app shows. */}
       <Stack
         screenOptions={{
-          headerStyle: { backgroundColor: Brand.sand },
-          headerTintColor: Brand.ink,
-          headerTitleStyle: { fontWeight: '700' },
-          contentStyle: { backgroundColor: Brand.sand },
+          headerShown: false,
+          contentStyle: { backgroundColor: c.bg },
         }}
-      >
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="product/[ref]" options={{ title: '' }} />
-        <Stack.Screen name="videos" options={{ title: 'Video listings' }} />
-        <Stack.Screen name="chat/[id]" options={{ title: '' }} />
-      </Stack>
+      />
     </QueryClientProvider>
   );
 }

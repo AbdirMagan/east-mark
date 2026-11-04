@@ -1,7 +1,9 @@
 import { useState } from 'react';
 import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 
-import { Brand, Radius, Space } from '../theme';
+import { Radius, Space } from '../theme';
+import type { Palette } from '../theme';
+import { useColors, useStyles } from '../useTheme';
 import { usePrefs } from '../store/prefs';
 
 /**
@@ -24,6 +26,8 @@ export function PasswordField({
   placeholder: string;
   textContentType?: 'password' | 'newPassword';
 }) {
+  const c = useColors();
+  const styles = useStyles(makeStyles);
   const t = usePrefs((state) => state.t);
   const [visible, setVisible] = useState(false);
 
@@ -33,7 +37,7 @@ export function PasswordField({
         value={value}
         onChangeText={onChangeText}
         placeholder={placeholder}
-        placeholderTextColor={Brand.muted}
+        placeholderTextColor={c.slateLight}
         secureTextEntry={!visible}
         autoCapitalize="none"
         autoCorrect={false}
@@ -54,22 +58,23 @@ export function PasswordField({
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (c: Palette) =>
+  StyleSheet.create({
   row: {
     flexDirection: 'row',
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: Brand.sandDeep,
+    borderColor: c.divider,
     borderRadius: Radius.field,
-    backgroundColor: Brand.white,
+    backgroundColor: c.surface,
   },
   input: {
     flex: 1,
     height: 48,
     paddingHorizontal: Space.md,
     fontSize: 15,
-    color: Brand.ink,
+    color: c.text,
   },
   toggle: { width: 44, height: 44, alignItems: 'center', justifyContent: 'center' },
-  toggleText: { fontSize: 18 },
+  toggleText: { fontSize: 20 },
 });

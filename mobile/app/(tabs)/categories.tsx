@@ -1,31 +1,40 @@
 import { useQuery } from '@tanstack/react-query';
-import { useLocalSearchParams } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useState } from 'react';
 import {
   ActivityIndicator,
   FlatList,
+  ScrollView,
   Pressable,
   StyleSheet,
   Text,
-  TextInput,
   View,
 } from 'react-native';
 
 import { api } from '../../src/api/endpoints';
 import { ProductCardView } from '../../src/components/ProductCard';
-import { Brand, Radius, Space } from '../../src/theme';
+import { Radius, Space } from '../../src/theme';
+import type { Palette } from '../../src/theme';
+import { useColors, useStyles } from '../../src/useTheme';
+import { AppHeader } from '../../src/components/AppHeader';
+import { useFeedContext } from '../../src/store/feed';
 import { usePrefs } from '../../src/store/prefs';
 
 export default function BrowseScreen() {
+  const c = useColors();
+  const styles = useStyles(makeStyles);
   const t = usePrefs((state) => state.t);
   const language = usePrefs((state) => state.language);
   const countryId = usePrefs((state) => state.countryId);
+  const cityId = usePrefs((state) => state.cityId);
+  const openListing = useFeedContext((state) => state.openListing);
+  const router = useRouter();
+  const currency = usePrefs((state) => state.currency);
 
   // Home links in with a category or a media filter already chosen.
   const params = useLocalSearchParams<{ categoryId?: string; media?: string }>();
   const media = params.media === 'photo' || params.media === 'video' ? params.media : undefined;
 
-  const [draft, setDraft] = useState('');
   const [search, setSearch] = useState('');
   const [categoryId, setCategoryId] = useState<number | null>(
     params.categoryId ? Number(params.categoryId) : null,
@@ -37,48 +46,38 @@ export default function BrowseScreen() {
   });
 
   const products = useQuery({
-    queryKey: ['products', 'browse', search, categoryId, media, countryId],
-    queryFn: () => api.products({ search, categoryId, media, countryId, limit: 40 }),
+    queryKey: ['products', 'browse', search, categoryId, media, countryId, cityId, currency],
+    queryFn: () => api.products({ search, categoryId, media, countryId, cityId, limit: 40 }),
   });
 
   return (
     <View style={styles.screen}>
-      <View style={styles.searchRow}>
-        <TextInput
-          value={draft}
-          onChangeText={setDraft}
-          // Searching on every keystroke would be a request per character on
-          // a connection that can barely afford one.
-          onSubmitEditing={() => setSearch(draft.trim())}
-          returnKeyType="search"
-          placeholder={t('search')}
-          placeholderTextColor={Brand.muted}
-          style={styles.search}
-        />
+      <AppHeader onSearch={setSearch} onRefresh={() => void products.refetch()} />
+      <View style={styles.chipStrip}>
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.chipRow}
+        >
+          {[{ id: 0, name: t('categories') }, ...(categories.data ?? [])].map((item) => {
+            const selected = item.id === 0 ? categoryId === null : categoryId === item.id;
+            return (
+              <Pressable
+                key={item.id}
+                onPress={() => setCategoryId(item.id === 0 ? null : item.id)}
+                style={[styles.chip, selected && styles.chipSelected]}
+              >
+                <Text style={[styles.chipText, selected && styles.chipTextSelected]}>
+                  {item.name}
+                </Text>
+              </Pressable>
+            );
+          })}
+        </ScrollView>
       </View>
 
-      <FlatList
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        data={[{ id: 0, name: t('categories') }, ...(categories.data ?? [])]}
-        keyExtractor={(item) => String(item.id)}
-        contentContainerStyle={styles.chipRow}
-        style={styles.chipStrip}
-        renderItem={({ item }) => {
-          const selected = item.id === 0 ? categoryId === null : categoryId === item.id;
-          return (
-            <Pressable
-              onPress={() => setCategoryId(item.id === 0 ? null : item.id)}
-              style={[styles.chip, selected && styles.chipSelected]}
-            >
-              <Text style={[styles.chipText, selected && styles.chipTextSelected]}>{item.name}</Text>
-            </Pressable>
-          );
-        }}
-      />
-
       {products.isLoading ? (
-        <ActivityIndicator color={Brand.acacia} style={{ marginTop: Space.xl }} />
+        <ActivityIndicator color={c.teal} style={{ marginTop: Space.xl }} />
       ) : (
         <FlatList
           data={products.data ?? []}
@@ -88,7 +87,21 @@ export default function BrowseScreen() {
           contentContainerStyle={styles.list}
           renderItem={({ item }) => (
             <View style={styles.cell}>
-              <ProductCardView product={item} />
+              <ProductCardView
+                product={item}
+                onPress={() => {
+                  // The feed follows the listing, not the grid's filter: photo
+                  // and video are disjoint lists, so opening a video listing
+                  // in the photo feed lands on something unrelated.
+                  openListing({
+                    start: item.id,
+                    media: item.hasVideo ? 'video' : 'photo',
+                    search,
+                    categoryId,
+                  });
+                  router.push('/');
+                }}
+              />
             </View>
           )}
           ListEmptyComponent={<Text style={styles.empty}>{t('noListings')}</Text>}
@@ -100,34 +113,26 @@ export default function BrowseScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  screen: { flex: 1, backgroundColor: Brand.sand },
-  searchRow: { padding: Space.lg, paddingBottom: Space.md },
-  search: {
-    height: 46,
-    borderRadius: Radius.field,
-    borderWidth: 1,
-    borderColor: Brand.sandDeep,
-    backgroundColor: Brand.white,
-    paddingHorizontal: Space.lg,
-    fontSize: 15,
-    color: Brand.ink,
-  },
-  chipStrip: { flexGrow: 0 },
-  chipRow: { paddingHorizontal: Space.lg, gap: Space.sm, paddingBottom: Space.md },
+const makeStyles = (c: Palette) =>
+  StyleSheet.create({
+  screen: { flex: 1, backgroundColor: c.bg },
+  // A fixed height: a horizontal strip inside a flex column has none of
+  // its own, and came out clipped to half a chip.
+  chipStrip: { height: 56, justifyContent: 'center' },
+  chipRow: { paddingHorizontal: Space.lg, gap: Space.sm, alignItems: 'center' },
   chip: {
     paddingHorizontal: Space.lg,
     paddingVertical: Space.sm,
     borderRadius: Radius.pill,
     borderWidth: 1,
-    borderColor: Brand.sandDeep,
-    backgroundColor: Brand.white,
+    borderColor: c.divider,
+    backgroundColor: c.surface,
   },
-  chipSelected: { backgroundColor: Brand.acacia, borderColor: Brand.acacia },
-  chipText: { fontSize: 14, color: Brand.ink },
-  chipTextSelected: { color: Brand.white, fontWeight: '700' },
+  chipSelected: { backgroundColor: c.teal, borderColor: c.teal },
+  chipText: { fontSize: 15, color: c.text },
+  chipTextSelected: { color: c.white, fontWeight: '700' },
   list: { padding: Space.lg, paddingTop: 0, gap: Space.md },
   column: { gap: Space.md },
   cell: { flex: 1 },
-  empty: { textAlign: 'center', color: Brand.muted, marginTop: Space.xl },
+  empty: { textAlign: 'center', color: c.textMuted, marginTop: Space.xl },
 });

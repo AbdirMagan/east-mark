@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { useLocalSearchParams } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
 import {
   ActivityIndicator,
@@ -13,13 +13,19 @@ import {
   View,
 } from 'react-native';
 
-import { api } from '../../src/api/endpoints';
-import { Brand, Radius, Space } from '../../src/theme';
-import { usePrefs } from '../../src/store/prefs';
+import { api } from '../../../src/api/endpoints';
+import { Radius, Space } from '../../../src/theme';
+import type { Palette } from '../../../src/theme';
+import { useColors, useStyles } from '../../../src/useTheme';
+import { AppHeader } from '../../../src/components/AppHeader';
+import { usePrefs } from '../../../src/store/prefs';
 
 export default function ChatScreen() {
+  const c = useColors();
+  const styles = useStyles(makeStyles);
   const t = usePrefs((state) => state.t);
   const { id } = useLocalSearchParams<{ id: string }>();
+  const router = useRouter();
   const queryClient = useQueryClient();
   const [draft, setDraft] = useState('');
 
@@ -47,7 +53,7 @@ export default function ChatScreen() {
   if (messages.isLoading) {
     return (
       <View style={styles.centred}>
-        <ActivityIndicator color={Brand.acacia} />
+        <ActivityIndicator color={c.teal} />
       </View>
     );
   }
@@ -58,6 +64,8 @@ export default function ChatScreen() {
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       keyboardVerticalOffset={90}
     >
+      {/* No search here: a query typed inside a conversation has nowhere to go. */}
+      <AppHeader onBack={() => router.back()} showSearch={false} />
       <FlatList
         data={messages.data?.items ?? []}
         keyExtractor={(item) => item.id}
@@ -77,7 +85,7 @@ export default function ChatScreen() {
           value={draft}
           onChangeText={setDraft}
           placeholder={t('typeMessage')}
-          placeholderTextColor={Brand.muted}
+          placeholderTextColor={c.slateLight}
           multiline
           style={styles.input}
         />
@@ -93,9 +101,10 @@ export default function ChatScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  screen: { flex: 1, backgroundColor: Brand.sand },
-  centred: { flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: Brand.sand },
+const makeStyles = (c: Palette) =>
+  StyleSheet.create({
+  screen: { flex: 1, backgroundColor: c.bg },
+  centred: { flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: c.bg },
   list: { padding: Space.lg, gap: Space.sm },
   bubble: {
     maxWidth: '80%',
@@ -103,18 +112,18 @@ const styles = StyleSheet.create({
     paddingVertical: Space.sm,
     borderRadius: Radius.card,
   },
-  mine: { alignSelf: 'flex-end', backgroundColor: Brand.acacia },
-  theirs: { alignSelf: 'flex-start', backgroundColor: Brand.white, borderWidth: 1, borderColor: Brand.sandDeep },
-  mineText: { color: Brand.white, fontSize: 14 },
-  theirsText: { color: Brand.ink, fontSize: 14 },
+  mine: { alignSelf: 'flex-end', backgroundColor: c.teal },
+  theirs: { alignSelf: 'flex-start', backgroundColor: c.surface, borderWidth: 1, borderColor: c.divider },
+  mineText: { color: c.white, fontSize: 15 },
+  theirsText: { color: c.text, fontSize: 15 },
   composer: {
     flexDirection: 'row',
     alignItems: 'flex-end',
     gap: Space.sm,
     padding: Space.md,
     borderTopWidth: 1,
-    borderTopColor: Brand.sandDeep,
-    backgroundColor: Brand.white,
+    borderTopColor: c.divider,
+    backgroundColor: c.surface,
   },
   input: {
     flex: 1,
@@ -122,20 +131,20 @@ const styles = StyleSheet.create({
     minHeight: 44,
     borderRadius: Radius.field,
     borderWidth: 1,
-    borderColor: Brand.sandDeep,
+    borderColor: c.divider,
     paddingHorizontal: Space.md,
     paddingTop: Space.sm,
     fontSize: 15,
-    color: Brand.ink,
+    color: c.text,
   },
   send: {
     height: 44,
     paddingHorizontal: Space.lg,
     borderRadius: Radius.pill,
-    backgroundColor: Brand.acacia,
+    backgroundColor: c.teal,
     alignItems: 'center',
     justifyContent: 'center',
   },
   sendDisabled: { opacity: 0.5 },
-  sendText: { color: Brand.white, fontWeight: '700' },
+  sendText: { color: c.white, fontWeight: '700' },
 });

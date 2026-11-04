@@ -15,13 +15,18 @@ import {
 } from 'react-native';
 
 import { api } from '../../src/api/endpoints';
-import { Brand, Radius, Space } from '../../src/theme';
+import { Radius, Space } from '../../src/theme';
+import type { Palette } from '../../src/theme';
+import { useColors, useStyles } from '../../src/useTheme';
 import { useAuth } from '../../src/store/auth';
+import { AppHeader } from '../../src/components/AppHeader';
 import { usePrefs } from '../../src/store/prefs';
 
 const CONDITIONS = ['new', 'like_new', 'used', 'refurbished'] as const;
 
 export default function SellScreen() {
+  const c = useColors();
+  const styles = useStyles(makeStyles);
   const t = usePrefs((state) => state.t);
   const language = usePrefs((state) => state.language);
   const session = useAuth((state) => state.session);
@@ -43,13 +48,16 @@ export default function SellScreen() {
 
   if (!session) {
     return (
+      <View style={styles.screen}>
+      <AppHeader showSearch={false} />
       <View style={styles.centred}>
         <Text style={styles.muted}>{t('signIn')}</Text>
-        <Link href="/account" asChild>
+        <Link href="/profile" asChild>
           <Pressable style={styles.primary}>
             <Text style={styles.primaryText}>{t('signIn')}</Text>
           </Pressable>
         </Link>
+      </View>
       </View>
     );
   }
@@ -58,7 +66,7 @@ export default function SellScreen() {
     const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (!permission.granted) {
       // Saying what was refused and why it mattered beats a silent no-op.
-      Alert.alert(t('post'), 'East Market needs access to your photos to add pictures to a listing.');
+      Alert.alert(t('post'), 'Magan Market needs access to your photos to add pictures to a listing.');
       return;
     }
     const result = await ImagePicker.launchImageLibraryAsync({
@@ -104,9 +112,11 @@ export default function SellScreen() {
   const ready = Boolean(title.trim() && Number(price) > 0 && categoryId);
 
   return (
+    <View style={styles.screen}>
+    <AppHeader showSearch={false} />
     <ScrollView style={styles.screen} contentContainerStyle={styles.content}>
       <Field label={t('title')}>
-        <TextInput value={title} onChangeText={setTitle} style={styles.input} placeholderTextColor={Brand.muted} />
+        <TextInput value={title} onChangeText={setTitle} style={styles.input} placeholderTextColor={c.slateLight} />
       </Field>
 
       <Field label={t('price')}>
@@ -115,7 +125,7 @@ export default function SellScreen() {
           onChangeText={setPrice}
           keyboardType="decimal-pad"
           style={styles.input}
-          placeholderTextColor={Brand.muted}
+          placeholderTextColor={c.slateLight}
         />
       </Field>
 
@@ -125,7 +135,7 @@ export default function SellScreen() {
           onChangeText={setDescription}
           multiline
           style={[styles.input, styles.multiline]}
-          placeholderTextColor={Brand.muted}
+          placeholderTextColor={c.slateLight}
         />
       </Field>
 
@@ -180,13 +190,15 @@ export default function SellScreen() {
         disabled={!ready || busy}
         style={[styles.primary, (!ready || busy) && styles.disabled]}
       >
-        {busy ? <ActivityIndicator color={Brand.white} /> : <Text style={styles.primaryText}>{t('post')}</Text>}
+        {busy ? <ActivityIndicator color={c.white} /> : <Text style={styles.primaryText}>{t('post')}</Text>}
       </Pressable>
     </ScrollView>
+    </View>
   );
 }
 
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
+  const styles = useStyles(makeStyles);
   return (
     <View style={styles.field}>
       <Text style={styles.label}>{label}</Text>
@@ -195,28 +207,29 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
   );
 }
 
-const styles = StyleSheet.create({
-  screen: { flex: 1, backgroundColor: Brand.sand },
+const makeStyles = (c: Palette) =>
+  StyleSheet.create({
+  screen: { flex: 1, backgroundColor: c.bg },
   content: { padding: Space.lg, gap: Space.lg, paddingBottom: Space.xl * 2 },
   centred: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
     gap: Space.lg,
-    backgroundColor: Brand.sand,
+    backgroundColor: c.bg,
   },
-  muted: { color: Brand.muted },
+  muted: { color: c.textMuted },
   field: { gap: Space.sm },
-  label: { fontSize: 14, fontWeight: '600', color: Brand.ink },
+  label: { fontSize: 15, fontWeight: '600', color: c.text },
   input: {
     minHeight: 48,
     borderRadius: Radius.field,
     borderWidth: 1,
-    borderColor: Brand.sandDeep,
-    backgroundColor: Brand.white,
+    borderColor: c.divider,
+    backgroundColor: c.surface,
     paddingHorizontal: Space.md,
     fontSize: 15,
-    color: Brand.ink,
+    color: c.text,
   },
   multiline: { minHeight: 110, paddingTop: Space.md, textAlignVertical: 'top' },
   chips: { flexDirection: 'row', flexWrap: 'wrap', gap: Space.sm },
@@ -225,32 +238,32 @@ const styles = StyleSheet.create({
     paddingVertical: Space.sm,
     borderRadius: Radius.pill,
     borderWidth: 1,
-    borderColor: Brand.sandDeep,
-    backgroundColor: Brand.white,
+    borderColor: c.divider,
+    backgroundColor: c.surface,
   },
-  chipSelected: { backgroundColor: Brand.acacia, borderColor: Brand.acacia },
-  chipText: { fontSize: 14, color: Brand.ink },
-  chipTextSelected: { color: Brand.white, fontWeight: '700' },
+  chipSelected: { backgroundColor: c.teal, borderColor: c.teal },
+  chipText: { fontSize: 15, color: c.text },
+  chipTextSelected: { color: c.white, fontWeight: '700' },
   thumbs: { gap: Space.sm },
-  thumb: { width: 84, height: 84, borderRadius: Radius.field, backgroundColor: Brand.sandDeep },
+  thumb: { width: 84, height: 84, borderRadius: Radius.field, backgroundColor: c.divider },
   primary: {
     height: 52,
     paddingHorizontal: Space.xl,
     borderRadius: Radius.pill,
-    backgroundColor: Brand.acacia,
+    backgroundColor: c.teal,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  primaryText: { color: Brand.white, fontWeight: '700', fontSize: 15 },
+  primaryText: { color: c.white, fontWeight: '700', fontSize: 15 },
   secondary: {
     height: 48,
     borderRadius: Radius.pill,
     borderWidth: 1,
-    borderColor: Brand.sandDeep,
-    backgroundColor: Brand.white,
+    borderColor: c.divider,
+    backgroundColor: c.surface,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  secondaryText: { color: Brand.ink, fontWeight: '600' },
+  secondaryText: { color: c.text, fontWeight: '600' },
   disabled: { opacity: 0.5 },
 });

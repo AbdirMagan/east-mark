@@ -45,6 +45,7 @@ export const api = {
     search?: string;
     categoryId?: number | null;
     countryId?: number | null;
+    cityId?: number | null;
     featuredOnly?: boolean;
     media?: 'photo' | 'video';
     sort?: string;
@@ -56,6 +57,7 @@ export const api = {
         q: options.search,
         categoryId: options.categoryId,
         countryId: options.countryId,
+        cityId: options.cityId,
         featuredOnly: options.featuredOnly ? 'true' : undefined,
         media: options.media,
         sort: options.sort ?? 'newest',

@@ -1,3 +1,4 @@
+import { Ionicons } from '@expo/vector-icons';
 import { useState } from 'react';
 import {
   ActivityIndicator,
@@ -10,15 +11,34 @@ import {
 } from 'react-native';
 
 import { PasswordField } from '../../src/components/PasswordField';
-import { Brand, Radius, Space } from '../../src/theme';
+import { Radius, Space } from '../../src/theme';
+import type { Palette } from '../../src/theme';
+import { useColors, useStyles } from '../../src/useTheme';
 import { LANGUAGES, LANGUAGE_NAMES } from '../../src/i18n';
 import { displayName } from '../../src/api/types';
 import { useAuth } from '../../src/store/auth';
+import { AppHeader } from '../../src/components/AppHeader';
 import { usePrefs } from '../../src/store/prefs';
 
+/**
+ * System first, because someone who has set their whole phone to dark at night
+ * has already said what they want. The other two are there because that
+ * setting is blunt: people read in bed with the lights on, and people use a
+ * bright phone outdoors.
+ */
+const THEME_OPTIONS = [
+  { mode: 'system', label: 'System', icon: 'phone-portrait-outline' },
+  { mode: 'light', label: 'Light', icon: 'sunny-outline' },
+  { mode: 'dark', label: 'Dark', icon: 'moon-outline' },
+] as const;
+
 export default function AccountScreen() {
+  const c = useColors();
+  const styles = useStyles(makeStyles);
   const t = usePrefs((state) => state.t);
   const language = usePrefs((state) => state.language);
+  const themeMode = usePrefs((state) => state.themeMode);
+  const setThemeMode = usePrefs((state) => state.setThemeMode);
   const setLanguage = usePrefs((state) => state.setLanguage);
 
   const session = useAuth((state) => state.session);
@@ -38,6 +58,8 @@ export default function AccountScreen() {
   const [confirmSent, setConfirmSent] = useState(false);
 
   return (
+    <View style={styles.screen}>
+    <AppHeader showSearch={false} />
     <ScrollView style={styles.screen} contentContainerStyle={styles.content}>
       {session ? (
         <View style={styles.card}>
@@ -56,7 +78,7 @@ export default function AccountScreen() {
               value={fullName}
               onChangeText={setFullName}
               placeholder={t('name')}
-              placeholderTextColor={Brand.muted}
+              placeholderTextColor={c.slateLight}
               textContentType="name"
               style={styles.input}
             />
@@ -66,7 +88,7 @@ export default function AccountScreen() {
             value={email}
             onChangeText={setEmail}
             placeholder={t('email')}
-            placeholderTextColor={Brand.muted}
+            placeholderTextColor={c.slateLight}
             keyboardType="email-address"
             autoCapitalize="none"
             autoCorrect={false}
@@ -96,7 +118,7 @@ export default function AccountScreen() {
             style={[styles.button, (working || !email.trim() || !password) && styles.buttonDisabled]}
           >
             {working ? (
-              <ActivityIndicator color={Brand.white} />
+              <ActivityIndicator color={c.white} />
             ) : (
               <Text style={styles.buttonText}>{registering ? t('signUp') : t('signIn')}</Text>
             )}
@@ -131,6 +153,34 @@ export default function AccountScreen() {
       )}
 
       <View style={styles.card}>
+        <Text style={styles.cardTitle}>Appearance</Text>
+        <View style={styles.themes}>
+          {THEME_OPTIONS.map((option) => {
+            const selected = themeMode === option.mode;
+            return (
+              <Pressable
+                key={option.mode}
+                onPress={() => setThemeMode(option.mode)}
+                style={[styles.themeOption, selected && styles.themeOptionSelected]}
+                accessibilityRole="radio"
+                accessibilityState={{ selected }}
+                accessibilityLabel={option.label}
+              >
+                <Ionicons
+                  name={option.icon}
+                  size={20}
+                  color={selected ? c.white : c.slate}
+                />
+                <Text style={[styles.themeLabel, selected && styles.themeLabelSelected]}>
+                  {option.label}
+                </Text>
+              </Pressable>
+            );
+          })}
+        </View>
+      </View>
+
+      <View style={styles.card}>
         <Text style={styles.cardTitle}>{t('language')}</Text>
         <View style={styles.languages}>
           {LANGUAGES.map((code) => (
@@ -147,64 +197,79 @@ export default function AccountScreen() {
         </View>
       </View>
     </ScrollView>
+    </View>
   );
 }
 
-const styles = StyleSheet.create({
-  screen: { flex: 1, backgroundColor: Brand.sand },
+const makeStyles = (c: Palette) =>
+  StyleSheet.create({
+  screen: { flex: 1, backgroundColor: c.bg },
   content: { padding: Space.lg, gap: Space.lg },
   card: {
     padding: Space.lg,
     borderRadius: Radius.card,
     borderWidth: 1,
-    borderColor: Brand.sandDeep,
-    backgroundColor: Brand.white,
+    borderColor: c.divider,
+    backgroundColor: c.surface,
     gap: Space.md,
   },
-  cardTitle: { fontSize: 17, fontWeight: '800', color: Brand.ink },
-  name: { fontSize: 18, fontWeight: '700', color: Brand.ink },
-  email: { fontSize: 13, color: Brand.muted },
+  cardTitle: { fontSize: 17, fontWeight: '800', color: c.text },
+  name: { fontSize: 20, fontWeight: '700', color: c.text },
+  email: { fontSize: 13, color: c.textMuted },
   input: {
     height: 48,
     borderRadius: Radius.field,
     borderWidth: 1,
-    borderColor: Brand.sandDeep,
+    borderColor: c.divider,
     paddingHorizontal: Space.md,
     fontSize: 15,
-    color: Brand.ink,
-    backgroundColor: Brand.white,
+    color: c.text,
+    backgroundColor: c.surface,
   },
   button: {
     height: 50,
     borderRadius: Radius.pill,
-    backgroundColor: Brand.acacia,
+    backgroundColor: c.teal,
     alignItems: 'center',
     justifyContent: 'center',
   },
   buttonDisabled: { opacity: 0.5 },
-  buttonText: { color: Brand.white, fontWeight: '700', fontSize: 15 },
+  buttonText: { color: c.white, fontWeight: '700', fontSize: 15 },
   secondaryButton: {
     height: 46,
     borderRadius: Radius.pill,
     borderWidth: 1,
-    borderColor: Brand.sandDeep,
+    borderColor: c.divider,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  secondaryButtonText: { color: Brand.ink, fontWeight: '600' },
-  link: { color: Brand.acacia, fontWeight: '600', fontSize: 13, textAlign: 'center' },
+  secondaryButtonText: { color: c.text, fontWeight: '600' },
+  link: { color: c.teal, fontWeight: '600', fontSize: 13, textAlign: 'center' },
   linkDisabled: { opacity: 0.4 },
-  error: { color: Brand.clayDark, fontSize: 13 },
-  notice: { color: Brand.muted, fontSize: 13 },
+  error: { color: c.error, fontSize: 13 },
+  notice: { color: c.textMuted, fontSize: 13 },
   languages: { flexDirection: 'row', flexWrap: 'wrap', gap: Space.sm },
+  themes: { flexDirection: 'row', gap: Space.sm },
+  themeOption: {
+    flex: 1,
+    alignItems: 'center',
+    gap: Space.xs,
+    paddingVertical: Space.md,
+    borderRadius: Radius.field,
+    borderWidth: 1,
+    borderColor: c.divider,
+  },
+  themeOptionSelected: { backgroundColor: c.teal, borderColor: c.teal },
+  themeLabel: { fontSize: 12, fontWeight: '600', color: c.textMuted },
+  themeLabelSelected: { color: c.white },
   chip: {
     paddingHorizontal: Space.lg,
     paddingVertical: Space.sm,
     borderRadius: Radius.pill,
     borderWidth: 1,
-    borderColor: Brand.sandDeep,
+    borderColor: c.divider,
   },
-  chipSelected: { backgroundColor: Brand.acacia, borderColor: Brand.acacia },
-  chipText: { fontSize: 14, color: Brand.ink },
-  chipTextSelected: { color: Brand.white, fontWeight: '700' },
+  chipSelected: { backgroundColor: c.teal, borderColor: c.teal },
+  chipText: { fontSize: 15, color: c.text },
+  chipTextSelected: { color: c.white, fontWeight: '700' },
 });

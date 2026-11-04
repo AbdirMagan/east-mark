@@ -1,4 +1,4 @@
-# East Market — Expo app
+# Magan Market — Expo app
 
 The marketplace as a React Native app, built with Expo. One codebase that runs
 on both phones, and — the reason it exists — **you can run it on your own

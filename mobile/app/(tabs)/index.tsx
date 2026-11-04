@@ -1,267 +1,116 @@
 import { useQuery } from '@tanstack/react-query';
-import { Link, useRouter } from 'expo-router';
-import { useMemo } from 'react';
-import {
-  ActivityIndicator,
-  Pressable,
-  RefreshControl,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
+import { useRouter } from 'expo-router';
+import { ActivityIndicator, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { api } from '../../src/api/endpoints';
-import { ProductCardView } from '../../src/components/ProductCard';
-import { Brand, Radius, Space } from '../../src/theme';
+import { AppHeader } from '../../src/components/AppHeader';
+import { MediaTabs } from '../../src/components/MediaTabs';
+import { ProductFeed } from '../../src/components/ProductFeed';
+import { Radius, Space } from '../../src/theme';
+import type { Palette } from '../../src/theme';
+import { useColors, useStyles } from '../../src/useTheme';
+import { useFeedContext } from '../../src/store/feed';
 import { usePrefs } from '../../src/store/prefs';
-import type { HomeAd, ProductCard } from '../../src/api/types';
-
-export default function HomeScreen() {
-  const t = usePrefs((state) => state.t);
-  const language = usePrefs((state) => state.language);
-  const countryId = usePrefs((state) => state.countryId);
-  const router = useRouter();
-
-  const ads = useQuery({
-    queryKey: ['ads', language, countryId],
-    queryFn: () => api.homeAds(language, countryId),
-  });
-
-  const categories = useQuery({
-    queryKey: ['categories', language],
-    queryFn: () => api.categories(language),
-  });
-
-  const featured = useQuery({
-    queryKey: ['products', 'featured', countryId],
-    queryFn: () => api.products({ featuredOnly: true, countryId, limit: 10 }),
-  });
-
-  const recent = useQuery({
-    queryKey: ['products', 'recent', countryId],
-    queryFn: () => api.products({ sort: 'newest', countryId, limit: 20 }),
-  });
-
-  const refreshing = ads.isFetching || recent.isFetching;
-  const refresh = () => {
-    void ads.refetch();
-    void categories.refetch();
-    void featured.refetch();
-    void recent.refetch();
-  };
-
-  // The first thing the API fails at is usually the first thing it is asked
-  // for, so show one message rather than four identical ones.
-  const offline = recent.isError || categories.isError;
-
-  return (
-    <ScrollView
-      style={styles.screen}
-      contentContainerStyle={styles.content}
-      refreshControl={<RefreshControl refreshing={refreshing} onRefresh={refresh} tintColor={Brand.acacia} />}
-    >
-      {offline ? (
-        <View style={styles.offline}>
-          <Text style={styles.offlineText}>{t('offline')}</Text>
-          <Pressable onPress={refresh} accessibilityRole="button">
-            <Text style={styles.offlineAction}>{t('retry')}</Text>
-          </Pressable>
-        </View>
-      ) : null}
-
-      {ads.data?.length ? <HeroCarousel ads={ads.data} /> : null}
-
-      <Section title={t('categories')}>
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.chipRow}>
-          {(categories.data ?? []).map((category) => (
-            <Pressable
-              key={category.id}
-              onPress={() => router.push(`/browse?categoryId=${category.id}`)}
-              style={styles.chip}
-            >
-              <Text style={styles.chipText}>{category.name}</Text>
-            </Pressable>
-          ))}
-        </ScrollView>
-      </Section>
-
-      <View style={styles.modes}>
-        <ModeCard
-          title={t('photoListings')}
-          hint={t('photoListingsHint')}
-          onPress={() => router.push('/browse?media=photo')}
-        />
-        <ModeCard
-          title={t('videoListings')}
-          hint={t('videoListingsHint')}
-          onPress={() => router.push('/videos')}
-        />
-      </View>
-
-      {featured.data?.length ? (
-        <Section title={t('featured')}>
-          <Grid products={featured.data} />
-        </Section>
-      ) : null}
-
-      <Section title={t('recent')}>
-        {recent.isLoading ? (
-          <ActivityIndicator color={Brand.acacia} style={{ marginVertical: Space.xl }} />
-        ) : recent.data?.length ? (
-          <Grid products={recent.data} />
-        ) : (
-          <Text style={styles.empty}>{t('noListings')}</Text>
-        )}
-      </Section>
-    </ScrollView>
-  );
-}
-
-function Section({ title, children }: { title: string; children: React.ReactNode }) {
-  return (
-    <View style={styles.section}>
-      <Text style={styles.sectionTitle}>{title}</Text>
-      {children}
-    </View>
-  );
-}
 
 /**
- * Two columns, each card half the width minus the gap.
- *
- * Deliberately a wrapping flex row rather than a FlatList: these lists are
- * capped at twenty and already inside a ScrollView, and nesting a virtualised
- * list in a scroll view is what produces the "VirtualizedLists should never be
- * nested" warning along with broken scrolling.
+ * Home is the feed: one listing filling the screen at a time, swiped
+ * vertically, the way TikTok shows one post at a time.
  */
-function Grid({ products }: { products: ProductCard[] }) {
+export default function HomeScreen() {
+  const c = useColors();
+  const styles = useStyles(makeStyles);
+  const t = usePrefs((state) => state.t);
+  const countryId = usePrefs((state) => state.countryId);
+  const cityId = usePrefs((state) => state.cityId);
+  const currency = usePrefs((state) => state.currency);
+  const router = useRouter();
+
+  /**
+   * What the feed shows, held in a store rather than in local state.
+   *
+   * Home is the feed, and tapping a card in Categories brings you here
+   * positioned on that listing. A store carries that across, where route
+   * params cannot: this screen is a tab, so arriving is a tab switch to a
+   * screen that was never unmounted.
+   *
+   * Photo and video partition the whole catalogue between them -- "photo" is
+   * a listing with no video, "video" is one that has one -- so the two tabs
+   * together still show everything.
+   */
+  const media = useFeedContext((state) => state.media);
+  const setMedia = useFeedContext((state) => state.setMedia);
+  const start = useFeedContext((state) => state.start);
+  const search = useFeedContext((state) => state.search);
+  const categoryId = useFeedContext((state) => state.categoryId);
+
+  const listings = useQuery({
+    queryKey: ['products', 'home', media, search, categoryId, countryId, cityId, currency],
+    queryFn: () =>
+      api.products({ media, search, categoryId, sort: 'newest', countryId, cityId, limit: 40 }),
+  });
+
+  const items = listings.data ?? [];
+  // Arriving from a card opens on that listing; arriving by tapping Home
+  // starts at the top, because the tab clears it.
+  const startIndex = start ? Math.max(0, items.findIndex((item) => item.id === start)) : 0;
+
+  const refresh = () => void listings.refetch();
+
   return (
-    <View style={styles.grid}>
-      {products.map((product) => (
-        <View key={product.id} style={styles.gridCell}>
-          <ProductCardView product={product} />
-        </View>
-      ))}
+    <View style={styles.screen}>
+      <AppHeader
+        onRefresh={refresh}
+        onSearch={(query) => router.push(`/categories?q=${encodeURIComponent(query)}`)}
+      />
+
+      <View style={styles.feed}>
+        {listings.isLoading ? (
+          <View style={styles.centred}>
+            <ActivityIndicator color={c.white} />
+          </View>
+        ) : listings.isError ? (
+          <View style={styles.centred}>
+            <Text style={styles.message}>{t('offline')}</Text>
+            <Pressable onPress={refresh} accessibilityRole="button" style={styles.retry}>
+              <Text style={styles.retryText}>{t('retry')}</Text>
+            </Pressable>
+          </View>
+        ) : !items.length ? (
+          <View style={styles.centred}>
+            <Text style={styles.message}>{media === 'video' ? t('noVideos') : t('noListings')}</Text>
+          </View>
+        ) : (
+          <ProductFeed
+            // Remount per arrival: initialScrollIndex is only read on mount,
+            // and this screen is never unmounted.
+            key={`${media}:${start ?? ''}`}
+            products={items}
+            initialIndex={startIndex}
+            refreshing={listings.isRefetching}
+            onRefresh={refresh}
+            tint={c.white}
+          />
+        )}
+
+        {/* Over the feed rather than above it, so the listing gets the whole
+            screen -- the same place TikTok puts Following and For You. */}
+        <MediaTabs media={media} onChange={setMedia} />
+      </View>
     </View>
   );
 }
 
-function ModeCard({ title, hint, onPress }: { title: string; hint: string; onPress: () => void }) {
-  return (
-    <Pressable onPress={onPress} style={styles.modeCard} accessibilityRole="button">
-      <Text style={styles.modeTitle}>{title}</Text>
-      <Text style={styles.modeHint}>{hint}</Text>
-    </Pressable>
-  );
-}
-
-/** The promotional strip. Horizontal paging rather than a timer: a carousel
- *  that moves on its own takes the page away from whoever was reading it. */
-function HeroCarousel({ ads }: { ads: HomeAd[] }) {
-  const themes = useMemo(
-    () => ({
-      acacia: Brand.acacia,
-      clay: Brand.clay,
-      navy: Brand.navy,
-      sun: Brand.sun,
-    }) as Record<string, string>,
-    [],
-  );
-
-  return (
-    <ScrollView horizontal pagingEnabled showsHorizontalScrollIndicator={false} style={styles.hero}>
-      {ads.map((ad) => (
-        <Link key={ad.id} href={ad.categoryId ? `/browse?categoryId=${ad.categoryId}` : '/browse'} asChild>
-          <Pressable
-            onPress={() => void api.recordAdClick(ad.id)}
-            style={[styles.heroCard, { backgroundColor: themes[ad.theme ?? ''] ?? Brand.acacia }]}
-          >
-            {ad.badge ? (
-              <View style={styles.heroBadge}>
-                <Text style={styles.heroBadgeText}>{ad.badge}</Text>
-              </View>
-            ) : null}
-            <Text style={styles.heroTitle}>{ad.title}</Text>
-            {ad.subtitle ? <Text style={styles.heroSubtitle}>{ad.subtitle}</Text> : null}
-          </Pressable>
-        </Link>
-      ))}
-    </ScrollView>
-  );
-}
-
-const styles = StyleSheet.create({
-  screen: { flex: 1, backgroundColor: Brand.sand },
-  content: { paddingVertical: Space.md, gap: Space.xl },
-
-  offline: {
-    marginHorizontal: Space.lg,
-    padding: Space.md,
-    borderRadius: Radius.field,
-    backgroundColor: Brand.sandDeep,
-    gap: Space.xs,
-  },
-  offlineText: { color: Brand.ink, fontSize: 13 },
-  offlineAction: { color: Brand.acacia, fontWeight: '700', fontSize: 13 },
-
-  hero: { paddingLeft: Space.lg },
-  heroCard: {
-    width: 300,
-    minHeight: 150,
-    marginRight: Space.md,
-    padding: Space.lg,
-    borderRadius: Radius.card,
-    justifyContent: 'center',
-    gap: Space.sm,
-  },
-  heroBadge: {
-    alignSelf: 'flex-start',
-    backgroundColor: Brand.sun,
+const makeStyles = (c: Palette) =>
+  StyleSheet.create({
+  screen: { flex: 1, backgroundColor: c.navyDark },
+  feed: { flex: 1 },
+  centred: { flex: 1, alignItems: 'center', justifyContent: 'center', gap: Space.md, padding: Space.lg },
+  message: { color: c.white, opacity: 0.85, textAlign: 'center' },
+  retry: {
+    paddingHorizontal: Space.xl,
+    paddingVertical: Space.sm,
     borderRadius: Radius.pill,
-    paddingHorizontal: Space.md,
-    paddingVertical: 3,
+    backgroundColor: c.teal,
   },
-  heroBadgeText: { fontSize: 11, fontWeight: '800', color: Brand.ink },
-  heroTitle: { color: Brand.white, fontSize: 20, fontWeight: '800' },
-  heroSubtitle: { color: Brand.white, opacity: 0.9, fontSize: 13 },
-
-  section: { gap: Space.md },
-  sectionTitle: { paddingHorizontal: Space.lg, fontSize: 17, fontWeight: '800', color: Brand.ink },
-
-  chipRow: { paddingHorizontal: Space.lg, gap: Space.sm },
-  chip: {
-    paddingHorizontal: Space.lg,
-    paddingVertical: Space.md,
-    borderRadius: Radius.pill,
-    borderWidth: 1,
-    borderColor: Brand.sandDeep,
-    backgroundColor: Brand.white,
-  },
-  chipText: { fontSize: 14, color: Brand.ink },
-
-  modes: { flexDirection: 'row', gap: Space.md, paddingHorizontal: Space.lg },
-  modeCard: {
-    flex: 1,
-    padding: Space.lg,
-    borderRadius: Radius.card,
-    borderWidth: 1,
-    borderColor: Brand.sandDeep,
-    backgroundColor: Brand.white,
-    gap: Space.xs,
-  },
-  modeTitle: { fontSize: 15, fontWeight: '700', color: Brand.ink },
-  modeHint: { fontSize: 12, color: Brand.muted },
-
-  grid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    paddingHorizontal: Space.lg,
-    gap: Space.md,
-  },
-  // Half the row minus half the gap. Written out rather than using percentages
-  // so the two columns stay equal when the gap changes.
-  gridCell: { width: '48%', flexGrow: 1 },
-
-  empty: { paddingHorizontal: Space.lg, color: Brand.muted },
+  retryText: { color: c.white, fontWeight: '700' },
 });

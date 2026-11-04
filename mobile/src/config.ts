@@ -27,4 +27,4 @@ export const SUPABASE_ANON_KEY = required('supabaseAnonKey', extra.supabaseAnonK
  * The website. A password-reset email has to land somewhere that can set the
  * new password, and a phone browser cannot hand a session back to this app.
  */
-export const WEB_BASE_URL = extra.webBaseUrl ?? 'https://east-market-web.vercel.app';
+export const WEB_BASE_URL = extra.webBaseUrl ?? 'https://east-market-web.vercel.app/';

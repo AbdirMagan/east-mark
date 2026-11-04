@@ -186,7 +186,7 @@ export interface UploadSlots {
 export function displayName(profile: Profile | null | undefined): string {
   if (profile?.fullName?.trim()) return profile.fullName.trim();
   if (profile?.username) return profile.username;
-  return 'East Market';
+  return 'Magan Market';
 }
 
 /** Cards carry a thumbnail or a full image; either will do. */

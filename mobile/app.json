@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "East Market",
+    "name": "Magan Market",
     "slug": "east-market",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -10,8 +10,8 @@
       "supportsTablet": false,
       "bundleIdentifier": "com.eastmarket.app",
       "infoPlist": {
-        "NSPhotoLibraryUsageDescription": "East Market needs your photos so you can add pictures to a listing.",
-        "NSCameraUsageDescription": "East Market uses the camera so you can photograph what you are selling."
+        "NSPhotoLibraryUsageDescription": "Magan Market needs your photos so you can add pictures to a listing.",
+        "NSCameraUsageDescription": "Magan Market uses the camera so you can photograph what you are selling."
       }
     },
     "android": {
