@@ -75,7 +75,7 @@ const onboardingSchema = z.object({
 
 /** Country, language, city and interests, stamped as one step. */
 usersRouter.post('/me/onboarding', writeLimiter, validateBody(onboardingSchema), async (req, res) => {
-  ok(res, await users.completeOnboarding(authOf(req), req.body), 'Welcome to East-Market');
+  ok(res, await users.completeOnboarding(authOf(req), req.body), 'Welcome to Magan Market');
 });
 
 const contactSchema = z

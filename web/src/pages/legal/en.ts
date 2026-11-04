@@ -6,14 +6,14 @@ import type { LegalContent } from './types.js';
  */
 export const en: LegalContent = {
   updated: 'Last updated 30 September 2026',
-  back: '← Back to East-Market',
+  back: '← Back to Magan Market',
 
   privacy: {
     title: 'Privacy Policy',
     description:
-      'What East-Market collects when you buy and sell, why, who it is shared with, and how to have it deleted.',
+      'What Magan Market collects when you buy and sell, why, who it is shared with, and how to have it deleted.',
     intro:
-      'East-Market is an online marketplace for buying and selling in Somaliland, Somalia, Ethiopia, Kenya and Djibouti. This policy explains what information we collect when you use the East-Market website and the Android and iOS apps, why we collect it, and the choices you have. It applies to all three.',
+      'Magan Market is an online marketplace for buying and selling in Somaliland, Somalia, Ethiopia, Kenya and Djibouti. This policy explains what information we collect when you use the Magan Market website and the Android and iOS apps, why we collect it, and the choices you have. It applies to all three.',
     sections: [
       {
         title: 'Information you give us',
@@ -67,13 +67,13 @@ export const en: LegalContent = {
             list: [
               'Other users — your public listings and seller profile, and the messages you send them.',
               'Our moderators — to handle reports and verification requests.',
-              'Service providers that host and operate East-Market for us: Supabase (database, sign-in and file storage, in the European Union), Vercel (website and API hosting) and, for push notifications, Google Firebase and Apple.',
+              'Service providers that host and operate Magan Market for us: Supabase (database, sign-in and file storage, in the European Union), Vercel (website and API hosting) and, for push notifications, Google Firebase and Apple.',
               'Mobile money providers (such as Zaad, eDahab, EVC Plus, Sahal, Telebirr and M-Pesa) — only the details needed to complete a payment you make.',
               'Authorities — when the law requires it, or to protect people from harm or fraud.',
             ],
           },
           {
-            p: 'When you contact a seller by WhatsApp or phone, that conversation happens outside East-Market and is covered by those services’ own policies.',
+            p: 'When you contact a seller by WhatsApp or phone, that conversation happens outside Magan Market and is covered by those services’ own policies.',
           },
         ],
       },
@@ -101,7 +101,7 @@ export const en: LegalContent = {
         title: 'Security',
         blocks: [
           {
-            p: 'Connections to East-Market are encrypted (HTTPS). Access to data is limited by account: you can only change your own listings and read your own conversations, and identity documents are kept in private storage. No system is perfectly secure, so please use a strong password that you do not use elsewhere.',
+            p: 'Connections to Magan Market are encrypted (HTTPS). Access to data is limited by account: you can only change your own listings and read your own conversations, and identity documents are kept in private storage. No system is perfectly secure, so please use a strong password that you do not use elsewhere.',
           },
         ],
       },
@@ -109,7 +109,7 @@ export const en: LegalContent = {
         title: 'Children',
         blocks: [
           {
-            p: 'East-Market is not intended for children under 16, and we do not knowingly collect information from them. If you believe a child has created an account, contact us and we will remove it.',
+            p: 'Magan Market is not intended for children under 16, and we do not knowingly collect information from them. If you believe a child has created an account, contact us and we will remove it.',
           },
         ],
       },
@@ -131,15 +131,15 @@ export const en: LegalContent = {
   terms: {
     title: 'Terms of Service',
     description:
-      'The rules for buying and selling on East-Market: accounts, listings, prohibited items, paid features and safety.',
+      'The rules for buying and selling on Magan Market: accounts, listings, prohibited items, paid features and safety.',
     intro:
-      'These terms are the agreement between you and East-Market for using the East-Market website and the Android and iOS apps. By creating an account or using East-Market you agree to them. Please also read our [Privacy Policy](/legal/privacy), which explains how we handle your information.',
+      'These terms are the agreement between you and Magan Market for using the Magan Market website and the Android and iOS apps. By creating an account or using Magan Market you agree to them. Please also read our [Privacy Policy](/legal/privacy), which explains how we handle your information.',
     sections: [
       {
-        title: 'What East-Market is',
+        title: 'What Magan Market is',
         blocks: [
           {
-            p: 'East-Market is a place where people in Somaliland, Somalia, Ethiopia, Kenya and Djibouti advertise items and property for sale or rent and contact each other. We are not the buyer or the seller, we do not own or inspect the items listed, and we are not a party to any deal you make. Payment, delivery and the condition of an item are between the buyer and the seller.',
+            p: 'Magan Market is a place where people in Somaliland, Somalia, Ethiopia, Kenya and Djibouti advertise items and property for sale or rent and contact each other. We are not the buyer or the seller, we do not own or inspect the items listed, and we are not a party to any deal you make. Payment, delivery and the condition of an item are between the buyer and the seller.',
           },
         ],
       },
@@ -148,7 +148,7 @@ export const en: LegalContent = {
         blocks: [
           {
             list: [
-              'You must be at least 16 years old to use East-Market.',
+              'You must be at least 16 years old to use Magan Market.',
               'Give accurate information, and keep your contact details up to date so buyers and sellers can reach you.',
               'Keep your password private. You are responsible for what happens on your account; tell us straight away if you think someone else is using it.',
               'Do not use another person’s account, or open new accounts to get around a suspension.',
@@ -172,7 +172,7 @@ export const en: LegalContent = {
       {
         title: 'What is not allowed',
         blocks: [
-          { p: 'You may not list, or use East-Market to arrange:' },
+          { p: 'You may not list, or use Magan Market to arrange:' },
           {
             list: [
               'Anything illegal where you or the buyer are, including stolen goods, weapons and ammunition, drugs, and counterfeit or pirated goods.',
@@ -218,7 +218,7 @@ export const en: LegalContent = {
               'Meet in a public place and inspect the item before you pay.',
               'Be careful with requests to pay a deposit or send money before you have seen the item.',
               'For property, land and vehicles, check ownership documents before any money changes hands.',
-              'Keep conversations in East-Market messages where you can, so they can be reviewed if something goes wrong.',
+              'Keep conversations in Magan Market messages where you can, so they can be reviewed if something goes wrong.',
             ],
           },
         ],
@@ -227,10 +227,10 @@ export const en: LegalContent = {
         title: 'Your content',
         blocks: [
           {
-            p: 'You keep ownership of the text, photos and videos you post. By posting them you allow East-Market to store, display, resize and share them on the website and apps, and in links people share, for as long as the listing is up. You confirm you have the right to post them and that they do not infringe anyone else’s rights.',
+            p: 'You keep ownership of the text, photos and videos you post. By posting them you allow Magan Market to store, display, resize and share them on the website and apps, and in links people share, for as long as the listing is up. You confirm you have the right to post them and that they do not infringe anyone else’s rights.',
           },
           {
-            p: 'The East-Market name, logo and design belong to East-Market and may not be used without our permission.',
+            p: 'The Magan Market name, logo and design belong to Magan Market and may not be used without our permission.',
           },
         ],
       },
@@ -238,7 +238,7 @@ export const en: LegalContent = {
         title: 'Ending your account',
         blocks: [
           {
-            p: 'You can stop using East-Market at any time and ask us to delete your account by emailing {email}. We may suspend or close an account that breaks these terms. Some records may be kept after an account is closed, as described in the Privacy Policy.',
+            p: 'You can stop using Magan Market at any time and ask us to delete your account by emailing {email}. We may suspend or close an account that breaks these terms. Some records may be kept after an account is closed, as described in the Privacy Policy.',
           },
         ],
       },
@@ -246,10 +246,10 @@ export const en: LegalContent = {
         title: 'Disclaimers and liability',
         blocks: [
           {
-            p: 'East-Market is provided “as is”. We work to keep it available and accurate, but we do not promise it will always be uninterrupted or error-free, and we cannot guarantee that listings or users are genuine. Because we are not a party to deals between users, we are not responsible for the items, the payments or the conduct of buyers and sellers.',
+            p: 'Magan Market is provided “as is”. We work to keep it available and accurate, but we do not promise it will always be uninterrupted or error-free, and we cannot guarantee that listings or users are genuine. Because we are not a party to deals between users, we are not responsible for the items, the payments or the conduct of buyers and sellers.',
           },
           {
-            p: 'To the extent the law allows, East-Market is not liable for indirect or consequential losses, and our total liability to you is limited to the amount you paid us for paid features in the 12 months before the claim. Nothing in these terms limits rights you have under the law that cannot be limited.',
+            p: 'To the extent the law allows, Magan Market is not liable for indirect or consequential losses, and our total liability to you is limited to the amount you paid us for paid features in the 12 months before the claim. Nothing in these terms limits rights you have under the law that cannot be limited.',
           },
         ],
       },
@@ -257,7 +257,7 @@ export const en: LegalContent = {
         title: 'Changes to these terms',
         blocks: [
           {
-            p: 'We may update these terms as East-Market changes. We will update the date at the top of this page and, for significant changes, let you know before they take effect. If you keep using East-Market after that, you accept the updated terms.',
+            p: 'We may update these terms as Magan Market changes. We will update the date at the top of this page and, for significant changes, let you know before they take effect. If you keep using Magan Market after that, you accept the updated terms.',
           },
         ],
       },
@@ -271,9 +271,9 @@ export const en: LegalContent = {
   guidelines: {
     title: 'Community Guidelines',
     description:
-      'How to buy and sell well on East-Market: honest listings, respectful messages, safe deals, and what to report.',
+      'How to buy and sell well on Magan Market: honest listings, respectful messages, safe deals, and what to report.',
     intro:
-      'East-Market works when buyers can trust what they see and sellers are treated fairly. These guidelines explain, in everyday terms, what that looks like. They sit alongside our [Terms of Service](/legal/terms), which are the binding rules.',
+      'Magan Market works when buyers can trust what they see and sellers are treated fairly. These guidelines explain, in everyday terms, what that looks like. They sit alongside our [Terms of Service](/legal/terms), which are the binding rules.',
     sections: [
       {
         title: 'Be honest in your listings',
@@ -325,8 +325,8 @@ export const en: LegalContent = {
               'Meet in a busy public place, and bring someone with you for high-value items.',
               'See and check the item before you pay. Never send a deposit for something you have not seen.',
               'Be wary of prices that look too good to be true, and of pressure to decide or pay quickly.',
-              'Never share your mobile money PIN or a verification code — East-Market will never ask for them.',
-              'Keep your conversation in East-Market messages where you can, so there is a record if something goes wrong.',
+              'Never share your mobile money PIN or a verification code — Magan Market will never ask for them.',
+              'Keep your conversation in Magan Market messages where you can, so there is a record if something goes wrong.',
             ],
           },
         ],

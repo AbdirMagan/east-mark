@@ -1,7 +1,7 @@
 import { useId } from 'react';
 
 /**
- * East-Market's cultural pattern layer.
+ * Magan Market's cultural pattern layer.
  *
  * The motifs are geometric abstractions of the kinds of repeating forms found
  * across East African weaving and architecture — interlocking diamonds, zigzag

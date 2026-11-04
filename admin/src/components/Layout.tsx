@@ -64,9 +64,15 @@ export function Layout() {
         }`}
       >
         <div className="flex h-14 items-center gap-2.5 border-b border-border-subtle px-4">
-          <img src="/logo-mark.webp" width={32} height={32} alt="" className="size-8 shrink-0 object-contain" />
+          <img
+            src="/logo-mark.webp"
+            width={36}
+            height={20}
+            alt=""
+            className="h-5 w-9 shrink-0 rounded bg-white object-contain"
+          />
           <div className="min-w-0">
-            <p className="truncate text-sm font-bold leading-tight text-text-primary">East-Market</p>
+            <p className="truncate text-sm font-bold leading-tight text-text-primary">Magan Market</p>
             <p className="text-[0.6875rem] leading-tight text-text-muted">Admin</p>
           </div>
         </div>
@@ -138,7 +144,7 @@ export function Layout() {
           >
             <Icon name="dashboard" size={18} />
           </button>
-          <span className="font-bold text-text-primary">East-Market Admin</span>
+          <span className="font-bold text-text-primary">Magan Market Admin</span>
         </header>
 
         <main className="min-w-0 flex-1 p-4 lg:p-6">

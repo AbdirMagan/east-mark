@@ -42,7 +42,7 @@ export function HomePage() {
   const popular = useProductSearch({ ...scope, sort: 'popular', limit: 12 });
 
   useSeo({
-    title: 'East-Market',
+    title: 'Magan Market',
     description:
       'Buy and sell across Somaliland, Somalia, Ethiopia, Kenya and Djibouti. Electronics, houses, cars and motorcycles, land, livestock, and home and office goods — to buy or rent, from people near you.',
     path: '/',

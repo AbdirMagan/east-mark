@@ -82,7 +82,7 @@ export const en = {
   'home.heroTitle': 'Buy. Sell. Connect.',
   'home.heroSubtitle':
     'The marketplace for Somaliland, Somalia, Ethiopia, Kenya and Djibouti. List what you have, find what you need, deal with people near you.',
-  'home.mapLabel': 'Map of Africa showing the East-Market markets: Somaliland, Somalia, Ethiopia, Kenya and Djibouti',
+  'home.mapLabel': 'Map of Africa showing the Magan Market markets: Somaliland, Somalia, Ethiopia, Kenya and Djibouti',
   'home.carouselLabel': 'Promotions and offers',
   'home.prevSlide': 'Previous slide',
   'home.nextSlide': 'Next slide',
@@ -212,7 +212,7 @@ export const en = {
   'product.similar': 'Similar listings',
   'product.sold': 'Sold',
   'product.contactHidden': 'This seller prefers to be contacted through chat',
-  'product.memberSince': 'On East-Market since {date}',
+  'product.memberSince': 'On Magan Market since {date}',
   'product.sellerListings': '{count} listings',
   'product.viewSeller': 'View seller',
   'product.noImage': 'No photo',
@@ -253,7 +253,7 @@ export const en = {
   'auth.confirmedSubtitle': 'Your account is active.',
   'auth.confirmedSignedIn': 'You are signed in and ready to go.',
   'auth.confirmedBody': 'Thank you. Your email address has been confirmed.',
-  'auth.confirmedInApp': 'Signed up in the app? Open East-Market on your phone and sign in.',
+  'auth.confirmedInApp': 'Signed up in the app? Open Magan Market on your phone and sign in.',
   'auth.confirmedBrowse': 'Start browsing',
   'auth.signedOut': 'You have been signed out',
 

@@ -10,7 +10,7 @@ import retrofit2.http.Query
 import retrofit2.http.QueryMap
 
 /**
- * The East-Market backend REST API (Node + Express), matching the shapes in
+ * The Magan Market backend REST API (Node + Express), matching the shapes in
  * the backend's route handlers under backend/src/routes. Base URL:
  * {API_BASE_URL}/ (already includes /api/v1, see android/.env).
  */

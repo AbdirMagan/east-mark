@@ -192,7 +192,7 @@ export function Header() {
     <header className="sticky top-0 z-40 border-b border-border-subtle bg-surface-raised/95 backdrop-blur supports-[backdrop-filter]:bg-surface-raised/80">
       {/* Row 1: brand, search, account */}
       <div className="mx-auto flex h-16 max-w-[90rem] items-center gap-3 px-4 sm:gap-4 lg:px-6">
-        <Link to="/" className="shrink-0" aria-label="East-Market">
+        <Link to="/" className="shrink-0" aria-label="Magan Market">
           <Logo />
         </Link>
 

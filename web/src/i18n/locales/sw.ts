@@ -76,7 +76,7 @@ export const sw: Partial<Dictionary> = {
   'home.heroTitle': 'Nunua. Uza. Unganisha.',
   'home.heroSubtitle':
     'Soko la Somaliland, Somalia, Ethiopia, Kenya na Jibuti. Tangaza ulicho nacho, pata unachohitaji, fanya biashara na watu walio karibu nawe.',
-  'home.mapLabel': 'Ramani ya Afrika inayoonyesha masoko ya East-Market: Somaliland, Somalia, Ethiopia, Kenya na Jibuti',
+  'home.mapLabel': 'Ramani ya Afrika inayoonyesha masoko ya Magan Market: Somaliland, Somalia, Ethiopia, Kenya na Jibuti',
   'home.carouselLabel': 'Ofa na matangazo',
   'home.prevSlide': 'Slaidi iliyotangulia',
   'home.nextSlide': 'Slaidi inayofuata',
@@ -207,7 +207,7 @@ export const sw: Partial<Dictionary> = {
   'product.similar': 'Matangazo yanayofanana',
   'product.sold': 'Imeuzwa',
   'product.contactHidden': 'Muuzaji huyu anapendelea kuwasiliana kwa ujumbe',
-  'product.memberSince': 'Kwenye East-Market tangu {date}',
+  'product.memberSince': 'Kwenye Magan Market tangu {date}',
   'product.sellerListings': 'matangazo {count}',
   'product.viewSeller': 'Ona muuzaji',
   'product.noImage': 'Hakuna picha',
@@ -250,7 +250,7 @@ export const sw: Partial<Dictionary> = {
   'auth.confirmedSubtitle': 'Akaunti yako inafanya kazi.',
   'auth.confirmedSignedIn': 'Umeingia na uko tayari.',
   'auth.confirmedBody': 'Asante. Anwani yako ya barua pepe imethibitishwa.',
-  'auth.confirmedInApp': 'Ulijisajili kwenye programu? Fungua East-Market kwenye simu yako na uingie.',
+  'auth.confirmedInApp': 'Ulijisajili kwenye programu? Fungua Magan Market kwenye simu yako na uingie.',
   'auth.confirmedBrowse': 'Anza kuvinjari',
   'auth.signedOut': 'Umetoka',
 

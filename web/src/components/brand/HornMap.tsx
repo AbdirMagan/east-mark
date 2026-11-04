@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState, type CSSProperties, type KeyboardEvent, type MouseEvent } from 'react';
 
 /**
- * Africa with the five East-Market countries lit, drawn after the Horn of
+ * Africa with the five Magan Market countries lit, drawn after the Horn of
  * Africa animated background supplied for the brand.
  *
  * Two uses share one drawing:

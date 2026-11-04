@@ -1,4 +1,4 @@
--- East-Market :: 0019 :: Rent or buy, vehicles, and Home & Office Goods
+-- Magan Market :: 0019 :: Rent or buy, vehicles, and Home & Office Goods
 --
 -- Product decisions:
 --  * Houses, Cars and Lands can be listed for sale OR for rent. Their field

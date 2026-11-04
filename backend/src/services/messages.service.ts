@@ -141,7 +141,7 @@ async function summarise(auth: AuthContext, rows: ConversationRow[]): Promise<Co
       otherParty: {
         id: otherId,
         name:
-          sellerByUser.get(otherId)?.display_name ?? profile?.full_name ?? profile?.username ?? 'East-Market user',
+          sellerByUser.get(otherId)?.display_name ?? profile?.full_name ?? profile?.username ?? 'Magan Market user',
         avatarUrl: profile?.avatar_url ?? null,
       },
       product: product

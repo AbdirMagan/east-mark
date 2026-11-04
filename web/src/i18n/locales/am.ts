@@ -76,7 +76,7 @@ export const am: Partial<Dictionary> = {
   'home.heroTitle': 'ይግዙ። ይሽጡ። ይገናኙ።',
   'home.heroSubtitle':
     'የሶማሊላንድ፣ ሶማሊያ፣ ኢትዮጵያ፣ ኬንያ እና ጅቡቲ ገበያ። ያለዎትን ያስተዋውቁ፣ የሚፈልጉትን ያግኙ፣ ከአጠገብዎ ካሉ ሰዎች ጋር ይገበያዩ።',
-  'home.mapLabel': 'የEast-Market ገበያዎችን የሚያሳይ የአፍሪካ ካርታ፦ ሶማሊላንድ፣ ሶማሊያ፣ ኢትዮጵያ፣ ኬንያ እና ጅቡቲ',
+  'home.mapLabel': 'የMagan Market ገበያዎችን የሚያሳይ የአፍሪካ ካርታ፦ ሶማሊላንድ፣ ሶማሊያ፣ ኢትዮጵያ፣ ኬንያ እና ጅቡቲ',
   'home.carouselLabel': 'ቅናሾች እና ማስታወቂያዎች',
   'home.prevSlide': 'ቀዳሚ ስላይድ',
   'home.nextSlide': 'ቀጣይ ስላይድ',
@@ -206,7 +206,7 @@ export const am: Partial<Dictionary> = {
   'product.similar': 'ተመሳሳይ ዝርዝሮች',
   'product.sold': 'ተሽጧል',
   'product.contactHidden': 'ይህ ሻጭ በመልዕክት መገናኘትን ይመርጣል',
-  'product.memberSince': 'ከ{date} ጀምሮ በEast-Market',
+  'product.memberSince': 'ከ{date} ጀምሮ በMagan Market',
   'product.sellerListings': '{count} ዝርዝሮች',
   'product.viewSeller': 'ሻጩን ይመልከቱ',
   'product.noImage': 'ፎቶ የለም',
@@ -247,7 +247,7 @@ export const am: Partial<Dictionary> = {
   'auth.confirmedSubtitle': 'መለያዎ ገቢር ሆኗል።',
   'auth.confirmedSignedIn': 'ገብተዋል፤ ለመጀመር ዝግጁ ነዎት።',
   'auth.confirmedBody': 'እናመሰግናለን። የኢሜይል አድራሻዎ ተረጋግጧል።',
-  'auth.confirmedInApp': 'በመተግበሪያው ተመዝግበዋል? East-Market በስልክዎ ከፍተው ይግቡ።',
+  'auth.confirmedInApp': 'በመተግበሪያው ተመዝግበዋል? Magan Market በስልክዎ ከፍተው ይግቡ።',
   'auth.confirmedBrowse': 'መቃኘት ይጀምሩ',
   'auth.signedOut': 'ወጥተዋል',
 

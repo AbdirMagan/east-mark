@@ -199,7 +199,7 @@ struct Profile: Decodable {
     var displayName: String {
         if let fullName, !fullName.trimmingCharacters(in: .whitespaces).isEmpty { return fullName }
         if let username, !username.isEmpty { return username }
-        return "East Market"
+        return "Magan Market"
     }
 }
 

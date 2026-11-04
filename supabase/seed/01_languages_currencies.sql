@@ -1,4 +1,4 @@
--- East-Market :: seed 01 :: Languages, currencies, exchange rates, settings
+-- Magan Market :: seed 01 :: Languages, currencies, exchange rates, settings
 -- Idempotent. Safe to re-run.
 
 insert into public.languages (code, name, native_name, is_rtl, sort_order) values

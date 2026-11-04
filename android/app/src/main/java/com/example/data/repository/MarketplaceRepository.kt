@@ -35,7 +35,7 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 
 /**
- * Categories, locations, products and favorites now come from the East-Market
+ * Categories, locations, products and favorites now come from the Magan Market
  * backend API (see BackendApi). Messaging also comes from the backend now (the
  * same conversations as the web app), and so does the home carousel. The "Sell"
  * draft flow still uses the local Room database: keeping Sell local avoids the location-id and image-upload plumbing a real
@@ -359,7 +359,7 @@ class MarketplaceRepository(
                 rating = 4.8f,
                 reviewCount = 24,
                 joinedDate = "2023",
-                about = "Trusted local seller on East-Market."
+                about = "Trusted local seller on Magan Market."
             )
     }
 

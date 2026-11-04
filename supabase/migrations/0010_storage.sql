@@ -1,4 +1,4 @@
--- East-Market :: 0010 :: Supabase Storage
+-- Magan Market :: 0010 :: Supabase Storage
 --
 -- Buckets and their object-level policies.
 --

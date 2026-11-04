@@ -1,4 +1,4 @@
--- East-Market :: 0018 :: Home carousel
+-- Magan Market :: 0018 :: Home carousel
 --
 -- The home page hero on the web and in the Android app is a carousel of
 -- advertisements with placement 'home_hero'. A promotional slide needs more

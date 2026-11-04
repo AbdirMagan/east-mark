@@ -64,7 +64,7 @@ fun SignUpScreen(
         )
         Spacer(modifier = Modifier.height(6.dp))
         Text(
-            text = "Join East-Market to buy, sell and message sellers directly.",
+            text = "Join Magan Market to buy, sell and message sellers directly.",
             fontSize = 13.sp,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )

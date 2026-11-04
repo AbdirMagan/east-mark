@@ -24,7 +24,7 @@ class ExampleRobolectricTest {
     fun readStringFromContext_matchesAppName() {
         val context = ApplicationProvider.getApplicationContext<Context>()
         val appName = context.getString(R.string.app_name)
-        assertEquals("East-Market", appName)
+        assertEquals("Magan Market", appName)
     }
 
     @Test
@@ -45,10 +45,10 @@ class ExampleRobolectricTest {
     @Test
     fun localizationManager_providesMultiLanguageSupport() {
         // The name of the business is not a word to be translated: a seller who
-        // hears "East-Market" on the radio has to find that name in the app,
+        // hears "Magan Market" on the radio has to find that name in the app,
         // whichever language they read it in.
         for (language in AppLanguage.values()) {
-            assertEquals("East-Market", LocalizationManager.getString("app_name", language))
+            assertEquals("Magan Market", LocalizationManager.getString("app_name", language))
         }
 
         // Conditions, unlike the brand, are ordinary words and do stand alone --

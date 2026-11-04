@@ -76,7 +76,7 @@ healthRouter.get('/', (_req, res) => {
   ok(
     res,
     {
-      service: 'East-Market API',
+      service: 'Magan Market API',
       version: 'v1',
       status: 'running',
       // The thing most people opening this URL are actually looking for.
@@ -92,8 +92,8 @@ healthRouter.get('/', (_req, res) => {
       },
     },
     env.NODE_ENV === 'production'
-      ? `This is the East-Market API. The marketplace is at ${env.SITE_URL}.`
-      : 'This is the East-Market API. The marketplace runs separately on port 5173.',
+      ? `This is the Magan Market API. The marketplace is at ${env.SITE_URL}.`
+      : 'This is the Magan Market API. The marketplace runs separately on port 5173.',
   );
 });
 

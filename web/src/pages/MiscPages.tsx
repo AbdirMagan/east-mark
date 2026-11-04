@@ -17,7 +17,7 @@ export function CategoriesPage() {
   useSeo({
     title: t('nav.categories'),
     description:
-      'Every category on East-Market — cars, phones, houses, land, livestock, jobs, services and more.',
+      'Every category on Magan Market — cars, phones, houses, land, livestock, jobs, services and more.',
     path: '/categories',
   });
 

@@ -17,7 +17,7 @@ enum APIError: LocalizedError {
     }
 }
 
-/// Talks to the East-Market backend: the same API the web and Android apps use.
+/// Talks to the Magan Market backend: the same API the web and Android apps use.
 ///
 /// The base URL comes from Info.plist, so a device build can point at the Mac's
 /// address on the Wi-Fi without touching code. Auth is per call: the token, when

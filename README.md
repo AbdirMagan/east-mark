@@ -1,4 +1,4 @@
-# East-Market
+# Magan Market
 
 **Buy. Sell. Connect.** — an online marketplace for Somaliland, Somalia, Ethiopia, Kenya and Djibouti.
 
@@ -31,7 +31,7 @@ against the API.
 ## Layout
 
 ```
-East-Market/
+Magan Market/
 ├── android/      Kotlin + Jetpack Compose
 ├── ios/          Swift + SwiftUI
 ├── web/          React + TypeScript (Vite)

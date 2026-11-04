@@ -137,7 +137,7 @@ fun ProductCardDto.toSeller(fallbackCountry: String, fallbackCity: String): Sell
     rating = 4.5f,
     reviewCount = 0,
     joinedDate = "",
-    about = "Seller on East-Market."
+    about = "Seller on Magan Market."
 )
 
 fun HomeAdDto.toDomain(): HomeAd = HomeAd(

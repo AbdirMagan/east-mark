@@ -7,7 +7,7 @@ object LocalizationManager {
 
     private val translations = mapOf(
         AppLanguage.ENGLISH to mapOf(
-            "app_name" to "East-Market",
+            "app_name" to "Magan Market",
             "app_tagline" to "East Africa Online Marketplace",
             "home" to "Home",
             "categories" to "Categories",
@@ -84,11 +84,11 @@ object LocalizationManager {
             "item_sold" to "Mark as Sold",
             "select_country" to "Select Your Country",
             "select_language" to "Select Language",
-            "welcome" to "Welcome to East-Market",
+            "welcome" to "Welcome to Magan Market",
             "welcome_subtitle" to "Buy, sell, and connect across East Africa with ease."
         ),
         AppLanguage.SOMALI to mapOf(
-            "app_name" to "East-Market",
+            "app_name" to "Magan Market",
             "app_tagline" to "Suuqa Bariga Afrika ee Internetka",
             "home" to "Bogga Hore",
             "categories" to "Qaybaha",
@@ -164,11 +164,11 @@ object LocalizationManager {
             "item_sold" to "La Iibiyay",
             "select_country" to "Dooro Dalkaaga",
             "select_language" to "Dooro Luuqadda",
-            "welcome" to "Kusoo dhawoow East-Market",
+            "welcome" to "Kusoo dhawoow Magan Market",
             "welcome_subtitle" to "Ku iibso oo ku iibi si fudud Bariga Afrika oo dhan."
         ),
         AppLanguage.AMHARIC to mapOf(
-            "app_name" to "East-Market",
+            "app_name" to "Magan Market",
             "app_tagline" to "የምስራቅ አፍሪካ የመስመር ላይ ገበያ",
             "home" to "መነሻ",
             "categories" to "ምድቦች",
@@ -244,11 +244,11 @@ object LocalizationManager {
             "item_sold" to "ተሽጧል",
             "select_country" to "ሀገርዎን ይምረጡ",
             "select_language" to "ቋንቋ ይምረጡ",
-            "welcome" to "እንኳን ወደ East-Market በደህና መጡ",
+            "welcome" to "እንኳን ወደ Magan Market በደህና መጡ",
             "welcome_subtitle" to "በምስራቅ አፍሪካ በቀላሉ ይግዙ፣ ይሽጡ እና ይገናኙ።"
         ),
         AppLanguage.SWAHILI to mapOf(
-            "app_name" to "East-Market",
+            "app_name" to "Magan Market",
             "app_tagline" to "Soko la Mtandaoni la Afrika Mashariki",
             "home" to "Nyumbani",
             "categories" to "Kategoria",
@@ -324,7 +324,7 @@ object LocalizationManager {
             "item_sold" to "Imeuzwa",
             "select_country" to "Chagua Nchi Yako",
             "select_language" to "Chagua Lugha",
-            "welcome" to "Karibu East-Market",
+            "welcome" to "Karibu Magan Market",
             "welcome_subtitle" to "Nunua na uuze kwa urahisi kote Afrika Mashariki."
         )
     )

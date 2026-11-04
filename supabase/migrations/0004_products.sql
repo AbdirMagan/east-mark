@@ -1,4 +1,4 @@
--- East-Market :: 0004 :: Products
+-- Magan Market :: 0004 :: Products
 -- Listings, images, favorites, follows, view tracking and the search index.
 
 create table if not exists public.products (

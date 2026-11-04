@@ -45,6 +45,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.R
@@ -118,17 +119,30 @@ fun EastMarketHeader(
                         Spacer(modifier = Modifier.width(6.dp))
                     }
 
-                    // The East Market emblem, cut from the same artwork as the web
+                    // The Magan Market emblem, cut from the same artwork as the web
                     // header logo and the launcher icon.
-                    Image(
-                        painter = painterResource(id = R.drawable.ic_logo_mark),
-                        contentDescription = "East-Market",
-                        modifier = Modifier.size(34.dp)
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
+                    // The slot is the shape of the cart, 1.83:1, not a square:
+                    // in a square most of it was blank tile and the cart drew
+                    // at half the height of the bar it sits in.
+                    //
+                    // Dropped next to a back arrow: the arrow, the mark and the
+                    // title do not all fit beside the city and the currency,
+                    // and the title is the one that was losing.
+                    if (onBack == null) {
+                        Image(
+                            painter = painterResource(id = R.drawable.ic_logo_mark),
+                            contentDescription = "Magan Market",
+                            modifier = Modifier
+                                .height(28.dp)
+                                .width(52.dp)
+                                .clip(RoundedCornerShape(8.dp))
+                                .background(Color.White)
+                        )
+                        Spacer(modifier = Modifier.width(6.dp))
+                    }
                     Column {
                         Text(
-                            text = title ?: "East-Market",
+                            text = title ?: "Magan Market",
                             color = Color.White,
                             fontWeight = FontWeight.Black,
                             fontSize = if (title == null) 18.sp else 16.sp,
@@ -142,9 +156,10 @@ fun EastMarketHeader(
                             Text(
                                 text = LocalizationManager.getString("app_tagline", language),
                                 color = BrandTeal.copy(alpha = 0.9f),
-                                fontSize = 10.sp,
+                                fontSize = 9.sp,
                                 fontWeight = FontWeight.Medium,
-                                maxLines = 1
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
                             )
                         }
                     }
@@ -161,7 +176,7 @@ fun EastMarketHeader(
                         color = Color.White.copy(alpha = 0.15f)
                     ) {
                         Row(
-                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 5.dp),
+                            modifier = Modifier.padding(horizontal = 6.dp, vertical = 5.dp),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Text(text = selectedCountry.flag, fontSize = 12.sp)
@@ -182,7 +197,7 @@ fun EastMarketHeader(
                         }
                     }
 
-                    Spacer(modifier = Modifier.width(6.dp))
+                    Spacer(modifier = Modifier.width(4.dp))
 
                     Box {
                         Surface(
@@ -197,7 +212,7 @@ fun EastMarketHeader(
                                 color = BrandGold,
                                 fontSize = 11.sp,
                                 fontWeight = FontWeight.Bold,
-                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 5.dp)
+                                modifier = Modifier.padding(horizontal = 6.dp, vertical = 5.dp)
                             )
                         }
 

@@ -1,4 +1,4 @@
--- East-Market :: 0021 :: Browse photos and video separately
+-- Magan Market :: 0021 :: Browse photos and video separately
 --
 -- Two entry points from the home page: listings with photos, and listings with
 -- a video. The video feed is played full screen, one listing at a time, the way

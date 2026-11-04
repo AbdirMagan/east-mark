@@ -1,4 +1,4 @@
--- East-Market :: 0006 :: Trust & safety
+-- Magan Market :: 0006 :: Trust & safety
 -- Reviews, reports, verification requests and the admin audit trail.
 
 -- ---------------------------------------------------------------------------

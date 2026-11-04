@@ -5,14 +5,14 @@ export const sw: LegalContent = {
   updated: 'Ilisasishwa mwisho 30 Septemba 2026',
   translationNotice:
     'Hii ni tafsiri iliyotolewa kwa urahisi. Ikiwa kuna tofauti, toleo la Kiingereza ndilo litakalotumika.',
-  back: '← Rudi East-Market',
+  back: '← Rudi Magan Market',
 
   privacy: {
     title: 'Sera ya Faragha',
     description:
-      'Taarifa ambazo East-Market hukusanya unaponunua na kuuza, kwa nini, inashirikiwa na nani, na jinsi ya kuzifuta.',
+      'Taarifa ambazo Magan Market hukusanya unaponunua na kuuza, kwa nini, inashirikiwa na nani, na jinsi ya kuzifuta.',
     intro:
-      'East-Market ni soko la mtandaoni la kununua na kuuza Somaliland, Somalia, Ethiopia, Kenya na Djibouti. Sera hii inaeleza taarifa tunazokusanya unapotumia tovuti ya East-Market na programu za Android na iOS, kwa nini tunazikusanya, na chaguo ulizonazo. Inatumika kwa zote tatu.',
+      'Magan Market ni soko la mtandaoni la kununua na kuuza Somaliland, Somalia, Ethiopia, Kenya na Djibouti. Sera hii inaeleza taarifa tunazokusanya unapotumia tovuti ya Magan Market na programu za Android na iOS, kwa nini tunazikusanya, na chaguo ulizonazo. Inatumika kwa zote tatu.',
     sections: [
       {
         title: 'Taarifa unazotupa',
@@ -66,13 +66,13 @@ export const sw: LegalContent = {
             list: [
               'Watumiaji wengine — matangazo yako ya umma na wasifu wako wa muuzaji, na ujumbe unaowatumia.',
               'Wasimamizi wetu — kushughulikia ripoti na maombi ya uthibitisho.',
-              'Watoa huduma wanaotuhifadhia na kutuendeshea East-Market: Supabase (hifadhidata, kuingia na hifadhi ya faili, ndani ya Umoja wa Ulaya), Vercel (uhifadhi wa tovuti na API) na, kwa arifa, Google Firebase na Apple.',
+              'Watoa huduma wanaotuhifadhia na kutuendeshea Magan Market: Supabase (hifadhidata, kuingia na hifadhi ya faili, ndani ya Umoja wa Ulaya), Vercel (uhifadhi wa tovuti na API) na, kwa arifa, Google Firebase na Apple.',
               'Watoa huduma za pesa za simu (kama Zaad, eDahab, EVC Plus, Sahal, Telebirr na M-Pesa) — maelezo yanayohitajika tu kukamilisha malipo unayofanya.',
               'Mamlaka — sheria inapohitaji, au kuwalinda watu dhidi ya madhara au ulaghai.',
             ],
           },
           {
-            p: 'Unapowasiliana na muuzaji kupitia WhatsApp au simu, mazungumzo hayo hufanyika nje ya East-Market na yanasimamiwa na sera za huduma hizo.',
+            p: 'Unapowasiliana na muuzaji kupitia WhatsApp au simu, mazungumzo hayo hufanyika nje ya Magan Market na yanasimamiwa na sera za huduma hizo.',
           },
         ],
       },
@@ -100,7 +100,7 @@ export const sw: LegalContent = {
         title: 'Usalama',
         blocks: [
           {
-            p: 'Miunganisho kwenye East-Market imesimbwa (HTTPS). Ufikiaji wa data umedhibitiwa kwa akaunti: unaweza kubadilisha matangazo yako tu na kusoma mazungumzo yako tu, na hati za utambulisho huhifadhiwa katika hifadhi ya faragha. Hakuna mfumo ulio salama kikamilifu, kwa hivyo tafadhali tumia nenosiri imara ambalo hulitumii mahali pengine.',
+            p: 'Miunganisho kwenye Magan Market imesimbwa (HTTPS). Ufikiaji wa data umedhibitiwa kwa akaunti: unaweza kubadilisha matangazo yako tu na kusoma mazungumzo yako tu, na hati za utambulisho huhifadhiwa katika hifadhi ya faragha. Hakuna mfumo ulio salama kikamilifu, kwa hivyo tafadhali tumia nenosiri imara ambalo hulitumii mahali pengine.',
           },
         ],
       },
@@ -108,7 +108,7 @@ export const sw: LegalContent = {
         title: 'Watoto',
         blocks: [
           {
-            p: 'East-Market haikusudiwi watoto walio chini ya miaka 16, na hatukusanyi taarifa zao kwa kujua. Ukiamini kwamba mtoto amefungua akaunti, wasiliana nasi na tutaiondoa.',
+            p: 'Magan Market haikusudiwi watoto walio chini ya miaka 16, na hatukusanyi taarifa zao kwa kujua. Ukiamini kwamba mtoto amefungua akaunti, wasiliana nasi na tutaiondoa.',
           },
         ],
       },
@@ -130,15 +130,15 @@ export const sw: LegalContent = {
   terms: {
     title: 'Masharti ya Huduma',
     description:
-      'Kanuni za kununua na kuuza kwenye East-Market: akaunti, matangazo, bidhaa zilizopigwa marufuku, huduma za kulipia na usalama.',
+      'Kanuni za kununua na kuuza kwenye Magan Market: akaunti, matangazo, bidhaa zilizopigwa marufuku, huduma za kulipia na usalama.',
     intro:
-      'Masharti haya ni makubaliano kati yako na East-Market kuhusu kutumia tovuti ya East-Market na programu za Android na iOS. Kwa kufungua akaunti au kutumia East-Market unakubali masharti haya. Tafadhali soma pia [Sera ya Faragha](/legal/privacy), inayoeleza jinsi tunavyoshughulikia taarifa zako.',
+      'Masharti haya ni makubaliano kati yako na Magan Market kuhusu kutumia tovuti ya Magan Market na programu za Android na iOS. Kwa kufungua akaunti au kutumia Magan Market unakubali masharti haya. Tafadhali soma pia [Sera ya Faragha](/legal/privacy), inayoeleza jinsi tunavyoshughulikia taarifa zako.',
     sections: [
       {
-        title: 'East-Market ni nini',
+        title: 'Magan Market ni nini',
         blocks: [
           {
-            p: 'East-Market ni mahali ambapo watu wa Somaliland, Somalia, Ethiopia, Kenya na Djibouti hutangaza bidhaa na mali za kuuza au kukodisha na kuwasiliana wao kwa wao. Sisi si mnunuzi wala muuzaji, hatumiliki wala kukagua bidhaa zilizotangazwa, na sisi si upande wa makubaliano yoyote unayofanya. Malipo, uwasilishaji na hali ya bidhaa ni kati ya mnunuzi na muuzaji.',
+            p: 'Magan Market ni mahali ambapo watu wa Somaliland, Somalia, Ethiopia, Kenya na Djibouti hutangaza bidhaa na mali za kuuza au kukodisha na kuwasiliana wao kwa wao. Sisi si mnunuzi wala muuzaji, hatumiliki wala kukagua bidhaa zilizotangazwa, na sisi si upande wa makubaliano yoyote unayofanya. Malipo, uwasilishaji na hali ya bidhaa ni kati ya mnunuzi na muuzaji.',
           },
         ],
       },
@@ -147,7 +147,7 @@ export const sw: LegalContent = {
         blocks: [
           {
             list: [
-              'Lazima uwe na umri wa angalau miaka 16 kutumia East-Market.',
+              'Lazima uwe na umri wa angalau miaka 16 kutumia Magan Market.',
               'Toa taarifa sahihi, na usasishe maelezo yako ya mawasiliano ili wanunuzi na wauzaji wakufikie.',
               'Weka nenosiri lako kuwa siri. Unawajibika kwa kinachotokea kwenye akaunti yako; tuambie mara moja ukidhani mtu mwingine anaitumia.',
               'Usitumie akaunti ya mtu mwingine, wala kufungua akaunti mpya ili kukwepa kusimamishwa.',
@@ -171,7 +171,7 @@ export const sw: LegalContent = {
       {
         title: 'Kisichoruhusiwa',
         blocks: [
-          { p: 'Huruhusiwi kutangaza, wala kutumia East-Market kupanga:' },
+          { p: 'Huruhusiwi kutangaza, wala kutumia Magan Market kupanga:' },
           {
             list: [
               'Chochote kilicho kinyume cha sheria mahali ulipo wewe au mnunuzi, ikiwemo bidhaa za wizi, silaha na risasi, dawa za kulevya, na bidhaa bandia au zilizonakiliwa.',
@@ -217,7 +217,7 @@ export const sw: LegalContent = {
               'Kutaneni mahali pa umma na ukague bidhaa kabla ya kulipa.',
               'Kuwa mwangalifu na maombi ya kulipa amana au kutuma pesa kabla ya kuona bidhaa.',
               'Kwa mali, ardhi na magari, hakikisha hati za umiliki kabla pesa hazijabadilishana mikono.',
-              'Weka mazungumzo katika ujumbe wa East-Market inapowezekana, ili yaweze kukaguliwa jambo likienda vibaya.',
+              'Weka mazungumzo katika ujumbe wa Magan Market inapowezekana, ili yaweze kukaguliwa jambo likienda vibaya.',
             ],
           },
         ],
@@ -226,10 +226,10 @@ export const sw: LegalContent = {
         title: 'Maudhui yako',
         blocks: [
           {
-            p: 'Unabaki kuwa mmiliki wa maandishi, picha na video unazochapisha. Kwa kuzichapisha unaruhusu East-Market kuzihifadhi, kuzionyesha, kubadilisha ukubwa wake na kuzishiriki kwenye tovuti na programu, na katika viungo ambavyo watu hushiriki, kwa muda wote tangazo lipo. Unathibitisha kuwa una haki ya kuzichapisha na kwamba hazikiuki haki za mtu mwingine.',
+            p: 'Unabaki kuwa mmiliki wa maandishi, picha na video unazochapisha. Kwa kuzichapisha unaruhusu Magan Market kuzihifadhi, kuzionyesha, kubadilisha ukubwa wake na kuzishiriki kwenye tovuti na programu, na katika viungo ambavyo watu hushiriki, kwa muda wote tangazo lipo. Unathibitisha kuwa una haki ya kuzichapisha na kwamba hazikiuki haki za mtu mwingine.',
           },
           {
-            p: 'Jina, nembo na muundo wa East-Market ni mali ya East-Market na haviwezi kutumiwa bila ruhusa yetu.',
+            p: 'Jina, nembo na muundo wa Magan Market ni mali ya Magan Market na haviwezi kutumiwa bila ruhusa yetu.',
           },
         ],
       },
@@ -237,7 +237,7 @@ export const sw: LegalContent = {
         title: 'Kufunga akaunti yako',
         blocks: [
           {
-            p: 'Unaweza kuacha kutumia East-Market wakati wowote na kuomba akaunti yako ifutwe kwa kutuma barua pepe kwa {email}. Tunaweza kusimamisha au kufunga akaunti inayovunja masharti haya. Baadhi ya kumbukumbu zinaweza kuhifadhiwa baada ya akaunti kufungwa, kama ilivyoelezwa katika Sera ya Faragha.',
+            p: 'Unaweza kuacha kutumia Magan Market wakati wowote na kuomba akaunti yako ifutwe kwa kutuma barua pepe kwa {email}. Tunaweza kusimamisha au kufunga akaunti inayovunja masharti haya. Baadhi ya kumbukumbu zinaweza kuhifadhiwa baada ya akaunti kufungwa, kama ilivyoelezwa katika Sera ya Faragha.',
           },
         ],
       },
@@ -245,10 +245,10 @@ export const sw: LegalContent = {
         title: 'Kanusho na dhima',
         blocks: [
           {
-            p: 'East-Market inatolewa “kama ilivyo”. Tunajitahidi iwe inapatikana na sahihi, lakini hatuahidi kwamba itafanya kazi daima bila kukatika au bila makosa, na hatuwezi kuhakikisha kwamba matangazo au watumiaji ni halisi. Kwa kuwa sisi si upande wa makubaliano kati ya watumiaji, hatuwajibiki kwa bidhaa, malipo au mwenendo wa wanunuzi na wauzaji.',
+            p: 'Magan Market inatolewa “kama ilivyo”. Tunajitahidi iwe inapatikana na sahihi, lakini hatuahidi kwamba itafanya kazi daima bila kukatika au bila makosa, na hatuwezi kuhakikisha kwamba matangazo au watumiaji ni halisi. Kwa kuwa sisi si upande wa makubaliano kati ya watumiaji, hatuwajibiki kwa bidhaa, malipo au mwenendo wa wanunuzi na wauzaji.',
           },
           {
-            p: 'Kwa kiwango kinachoruhusiwa na sheria, East-Market haiwajibiki kwa hasara zisizo za moja kwa moja au zinazofuata, na dhima yetu yote kwako ina kikomo cha kiasi ulichotulipa kwa huduma za kulipia katika miezi 12 kabla ya dai. Hakuna chochote katika masharti haya kinachopunguza haki ulizonazo chini ya sheria ambazo haziwezi kupunguzwa.',
+            p: 'Kwa kiwango kinachoruhusiwa na sheria, Magan Market haiwajibiki kwa hasara zisizo za moja kwa moja au zinazofuata, na dhima yetu yote kwako ina kikomo cha kiasi ulichotulipa kwa huduma za kulipia katika miezi 12 kabla ya dai. Hakuna chochote katika masharti haya kinachopunguza haki ulizonazo chini ya sheria ambazo haziwezi kupunguzwa.',
           },
         ],
       },
@@ -256,7 +256,7 @@ export const sw: LegalContent = {
         title: 'Mabadiliko ya masharti haya',
         blocks: [
           {
-            p: 'Tunaweza kusasisha masharti haya East-Market inapobadilika. Tutasasisha tarehe iliyo juu ya ukurasa huu na, kwa mabadiliko makubwa, tutakujulisha kabla hayajaanza kutumika. Ukiendelea kutumia East-Market baada ya hapo, unakubali masharti yaliyosasishwa.',
+            p: 'Tunaweza kusasisha masharti haya Magan Market inapobadilika. Tutasasisha tarehe iliyo juu ya ukurasa huu na, kwa mabadiliko makubwa, tutakujulisha kabla hayajaanza kutumika. Ukiendelea kutumia Magan Market baada ya hapo, unakubali masharti yaliyosasishwa.',
           },
         ],
       },
@@ -270,9 +270,9 @@ export const sw: LegalContent = {
   guidelines: {
     title: 'Miongozo ya Jamii',
     description:
-      'Jinsi ya kununua na kuuza vizuri kwenye East-Market: matangazo ya kweli, ujumbe wenye heshima, biashara salama, na nini cha kuripoti.',
+      'Jinsi ya kununua na kuuza vizuri kwenye Magan Market: matangazo ya kweli, ujumbe wenye heshima, biashara salama, na nini cha kuripoti.',
     intro:
-      'East-Market hufanya kazi pale wanunuzi wanapoweza kuamini wanachokiona na wauzaji wanapotendewa haki. Miongozo hii inaeleza kwa lugha rahisi jinsi hilo linavyoonekana. Inaenda sambamba na [Masharti ya Huduma](/legal/terms), ambayo ndiyo kanuni zinazofunga.',
+      'Magan Market hufanya kazi pale wanunuzi wanapoweza kuamini wanachokiona na wauzaji wanapotendewa haki. Miongozo hii inaeleza kwa lugha rahisi jinsi hilo linavyoonekana. Inaenda sambamba na [Masharti ya Huduma](/legal/terms), ambayo ndiyo kanuni zinazofunga.',
     sections: [
       {
         title: 'Kuwa mkweli katika matangazo yako',
@@ -324,8 +324,8 @@ export const sw: LegalContent = {
               'Kutaneni mahali pa umma penye watu wengi, na uende na mtu mwingine kwa bidhaa za thamani kubwa.',
               'Ona na ukague bidhaa kabla ya kulipa. Kamwe usitume amana kwa kitu ambacho hujakiona.',
               'Kuwa mwangalifu na bei zinazoonekana nzuri mno kuwa za kweli, na shinikizo la kuamua au kulipa haraka.',
-              'Kamwe usishiriki PIN yako ya pesa za simu au msimbo wa uthibitisho — East-Market haitakuuliza kamwe.',
-              'Weka mazungumzo yako katika ujumbe wa East-Market inapowezekana, ili kuwe na kumbukumbu jambo likienda vibaya.',
+              'Kamwe usishiriki PIN yako ya pesa za simu au msimbo wa uthibitisho — Magan Market haitakuuliza kamwe.',
+              'Weka mazungumzo yako katika ujumbe wa Magan Market inapowezekana, ili kuwe na kumbukumbu jambo likienda vibaya.',
             ],
           },
         ],

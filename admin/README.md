@@ -1,4 +1,4 @@
-# East-Market — Admin
+# Magan Market — Admin
 
 React + TypeScript + Vite + Tailwind + Recharts. Staff dashboard for
 moderation, users, reports and verification.

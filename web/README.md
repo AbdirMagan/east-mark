@@ -1,4 +1,4 @@
-# East-Market — Web
+# Magan Market — Web
 
 React 18 + TypeScript + Vite + Tailwind v4. The public marketplace.
 
@@ -37,7 +37,7 @@ they cannot compete with a product photo or make text harder to read. They
 belong behind headers, heroes and empty states — **never behind a product
 grid**. A full-bleed banner costs a few hundred bytes.
 
-**The logo** — the East Market emblem: the sun over East Africa, market towns
+**The logo** — the Magan Market emblem: the sun over East Africa, market towns
 and traders, and a handshake closing the circle. It is raster artwork, so every
 size is cut from one source image rather than redrawn: `public/brand/logo-mark.webp`
 (256px, ~29 KB, preloaded from `index.html` because the header shows it on every

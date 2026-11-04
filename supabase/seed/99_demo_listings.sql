@@ -1,4 +1,4 @@
--- East-Market :: seed 99 :: DEMO LISTINGS (optional, removable)
+-- Magan Market :: seed 99 :: DEMO LISTINGS (optional, removable)
 --
 -- Sample marketplace content so a fresh environment has something to look at:
 -- two demo sellers and eight listings spread across Somaliland, Somalia, Ethiopia and Kenya.

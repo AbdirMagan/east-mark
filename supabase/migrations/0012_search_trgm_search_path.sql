@@ -1,4 +1,4 @@
--- East-Market :: 0012 :: Fix trigram operator resolution in search_products
+-- Magan Market :: 0012 :: Fix trigram operator resolution in search_products
 --
 -- Every text search failed with:
 --   ERROR: operator does not exist: text % text

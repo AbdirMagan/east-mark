@@ -2,7 +2,7 @@
   "name": "@east-market/backend",
   "version": "0.1.0",
   "private": true,
-  "description": "East-Market REST API — Node.js + Express + TypeScript",
+  "description": "Magan Market REST API — Node.js + Express + TypeScript",
   "type": "module",
   "engines": {
     "node": ">=20.11"

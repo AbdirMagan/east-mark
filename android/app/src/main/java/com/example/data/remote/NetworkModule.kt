@@ -15,7 +15,7 @@ import retrofit2.converter.moshi.MoshiConverterFactory
 import java.util.concurrent.TimeUnit
 
 /**
- * Builds the Retrofit clients for Supabase Auth and the East-Market backend.
+ * Builds the Retrofit clients for Supabase Auth and the Magan Market backend.
  * No DI framework is used elsewhere in this app, so this is wired by hand,
  * the same way AppDatabase.getDatabase(application) is.
  */

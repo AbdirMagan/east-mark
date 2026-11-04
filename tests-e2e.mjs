@@ -40,7 +40,7 @@ page.on('pageerror', (error) => consoleErrors.push(`${page.url()} :: ${error.mes
 /* ------------------------------------------------------------------ */
 
 await page.goto(WEB, { waitUntil: 'networkidle', timeout: 30000 });
-check('marketplace loads', (await page.title()).includes('East-Market'), await page.title());
+check('marketplace loads', (await page.title()).includes('Magan Market'), await page.title());
 
 const cards = await page.locator('article').count();
 check('home renders listings', cards > 0, `${cards} product cards`);

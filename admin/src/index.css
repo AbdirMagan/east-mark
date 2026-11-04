@@ -3,7 +3,7 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 /* ==========================================================================
-   The admin dashboard shares East-Market's palette but not its personality.
+   The admin dashboard shares Magan Market's palette but not its personality.
    The marketplace is warm and spacious because it is selling something; this
    is a tool someone stares at for an hour while clearing a moderation queue,
    so it is denser, quieter, and has no cultural pattern layer competing with

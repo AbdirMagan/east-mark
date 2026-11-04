@@ -1,12 +1,10 @@
 /**
- * The East Market logo.
+ * The Magan Market logo.
  *
- * The emblem -- the sun over East Africa, market towns, and a handshake
- * closing the circle -- is raster artwork, so it is served as a 256px WebP
- * (about 30 KB, cached once) rather than inlined. public/brand/ also holds a
- * 512px PNG and the full lockup with the wordmark; the favicons, the web app
- * manifest icons, the admin favicon and the Android launcher icons are all
- * cut from the same source image.
+ * Raster artwork, served as WebP rather than inlined: `logo-mark` is the
+ * square cart emblem, `logo-full` the horizontal lockup with the wordmark
+ * drawn in. The favicons, the web app manifest icons and the Android
+ * launcher icons are all cut from the same square source.
  */
 
 interface LogoMarkProps {
@@ -34,18 +32,30 @@ interface LogoProps {
   responsive?: boolean;
 }
 
+/**
+ * The lockup: artwork, not a mark beside typed words.
+ *
+ * The name is drawn into the logo, so setting it in HTML next to the image
+ * would print it twice. On a narrow screen the lockup is dropped for the
+ * square mark alone, because a wordmark scaled to fit a phone header is too
+ * small to read -- `responsive={false}` keeps the lockup regardless, for the
+ * places that have the width.
+ */
 export function Logo({ size = 40, className = '', responsive = true }: LogoProps) {
+  // The artwork is 3.18:1, so the width follows from the height it is given.
+  const height = Math.round(size * 0.86);
   return (
-    <span className={`inline-flex items-center gap-2 ${className}`}>
-      <LogoMark size={size} />
-      <span className={`flex-col leading-none ${responsive ? 'hidden sm:flex' : 'flex'}`}>
-        <span className="font-display text-[1.0625rem] font-extrabold uppercase tracking-tight text-[#1d3f72] dark:text-sand-50">
-          East Market
-        </span>
-        <span className="mt-1 text-[0.5625rem] font-semibold uppercase tracking-[0.14em] text-text-muted">
-          East Africa Online Market
-        </span>
-      </span>
+    <span className={`inline-flex items-center ${className}`}>
+      {responsive ? <LogoMark size={size} className="sm:hidden" /> : null}
+      <img
+        src="/brand/logo-full.webp"
+        height={height}
+        width={Math.round(height * 3.18)}
+        style={{ height }}
+        alt="Magan Market"
+        decoding="async"
+        className={`w-auto object-contain ${responsive ? 'hidden sm:block' : 'block'}`}
+      />
     </span>
   );
 }

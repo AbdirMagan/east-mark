@@ -1,4 +1,4 @@
--- East-Market :: 0017 :: Add Djibouti
+-- Magan Market :: 0017 :: Add Djibouti
 --
 -- The location system is database-driven, so a new country is rows, not code:
 -- its currency, the country, its six regions, their main towns, and the

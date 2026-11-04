@@ -33,7 +33,7 @@ struct AccountView: View {
                 }
 
                 Section {
-                    Text("East Market — the marketplace for Somaliland, Somalia, Ethiopia, Kenya and Djibouti.")
+                    Text("Magan Market — the marketplace for Somaliland, Somalia, Ethiopia, Kenya and Djibouti.")
                         .font(.footnote)
                         .foregroundColor(Brand.muted)
                 }
@@ -60,7 +60,7 @@ struct AccountView: View {
                 .frame(width: 48, height: 48)
 
                 VStack(alignment: .leading, spacing: 2) {
-                    Text(auth.profile?.displayName ?? (auth.session?.email ?? "East Market"))
+                    Text(auth.profile?.displayName ?? (auth.session?.email ?? "Magan Market"))
                         .font(.headline)
                     if let email = auth.session?.email {
                         Text(email).font(.caption).foregroundColor(Brand.muted)

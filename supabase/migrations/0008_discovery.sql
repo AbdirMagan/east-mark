@@ -1,4 +1,4 @@
--- East-Market :: 0008 :: Discovery
+-- Magan Market :: 0008 :: Discovery
 -- Search history, saved searches, and the RPCs that power search,
 -- the home feed and recommendations.
 

@@ -1,4 +1,4 @@
-# East-Market — iOS
+# Magan Market — iOS
 
 SwiftUI, iOS 16+. The same backend as the web app and the Android app: listings,
 search, promotions, messaging and posting a listing all go through `/api/v1`, so

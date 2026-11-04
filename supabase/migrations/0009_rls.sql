@@ -1,4 +1,4 @@
--- East-Market :: 0009 :: Row Level Security
+-- Magan Market :: 0009 :: Row Level Security
 --
 -- Model:
 --   anon          -> public marketplace reads only (active listings, seller

@@ -71,7 +71,7 @@ struct HomeView: View {
                 .padding(.vertical, 12)
             }
             .background(Brand.sand)
-            .navigationTitle("East Market")
+            .navigationTitle("Magan Market")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {

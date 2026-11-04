@@ -22,6 +22,6 @@ dependencyResolutionManagement {
   }
 }
 
-rootProject.name = "East-Market"
+rootProject.name = "Magan Market"
 
 include(":app")

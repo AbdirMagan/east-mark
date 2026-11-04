@@ -1,4 +1,4 @@
--- East-Market :: 0013 :: Typo-tolerant search + function hardening
+-- Magan Market :: 0013 :: Typo-tolerant search + function hardening
 --
 -- 1. SEARCH
 --

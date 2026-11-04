@@ -1,4 +1,4 @@
--- East-Market :: 0014 :: Column-level write privileges
+-- Magan Market :: 0014 :: Column-level write privileges
 --
 -- Found by exercising the schema with a real JWT instead of as postgres.
 --

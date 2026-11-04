@@ -1,4 +1,4 @@
--- East-Market :: seed 04 :: Subscription plans and payment providers
+-- Magan Market :: seed 04 :: Subscription plans and payment providers
 --
 -- Payment providers are registered as DATA, never as code branches. The
 -- backend resolves an adapter by `code`; adding a new mobile-money provider

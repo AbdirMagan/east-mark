@@ -28,7 +28,7 @@ targets:
     info:
       path: EastMarket/Resources/Info.plist
       properties:
-        CFBundleDisplayName: East Market
+        CFBundleDisplayName: Magan Market
         CFBundleShortVersionString: "1.0"
         # TestFlight refuses a build number it has seen before, so CI passes
         # the run number. Locally it is just 1; nothing is uploaded from there.
@@ -37,8 +37,8 @@ targets:
           UIColorName: LaunchBackground
         UISupportedInterfaceOrientations:
           - UIInterfaceOrientationPortrait
-        NSPhotoLibraryUsageDescription: East Market needs your photos so you can add pictures to a listing.
-        NSCameraUsageDescription: East Market uses the camera so you can photograph what you are selling.
+        NSPhotoLibraryUsageDescription: Magan Market needs your photos so you can add pictures to a listing.
+        NSCameraUsageDescription: Magan Market uses the camera so you can photograph what you are selling.
         # The backend runs over plain HTTP on your own network during
         # development. Release builds should point at an https:// API and this
         # exception can then be deleted.

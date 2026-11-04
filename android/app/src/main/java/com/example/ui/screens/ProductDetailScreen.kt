@@ -125,7 +125,7 @@ fun ProductDetailScreen(
                                 putExtra(Intent.EXTRA_SUBJECT, product.title)
                                 putExtra(
                                     Intent.EXTRA_TEXT,
-                                    "Check out this listing on East-Market: ${product.title} - ${CurrencyConverter.formatPrice(product.price, com.example.data.model.Currency.fromCode(product.originalCurrency))}\nhttps://eastmarket.app/product/${product.id}"
+                                    "Check out this listing on Magan Market: ${product.title} - ${CurrencyConverter.formatPrice(product.price, com.example.data.model.Currency.fromCode(product.originalCurrency))}\nhttps://eastmarket.app/product/${product.id}"
                                 )
                             }
                             context.startActivity(Intent.createChooser(shareIntent, "Share Listing via"))
@@ -178,7 +178,7 @@ fun ProductDetailScreen(
                     Button(
                         onClick = {
                             val cleanNumber = product.sellerWhatsapp.replace("+", "").replace(" ", "")
-                            val msg = "Asc, I am interested in your listing on East-Market: ${product.title}"
+                            val msg = "Asc, I am interested in your listing on Magan Market: ${product.title}"
                             val url = "https://api.whatsapp.com/send?phone=$cleanNumber&text=${Uri.encode(msg)}"
                             val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
                             try {
@@ -528,7 +528,7 @@ fun ProductDetailScreen(
                         Spacer(modifier = Modifier.width(10.dp))
                         Column {
                             Text(
-                                text = "East-Market Safety Tips",
+                                text = "Magan Market Safety Tips",
                                 fontWeight = FontWeight.Bold,
                                 fontSize = 13.sp,
                                 color = Color(0xFF78350F)

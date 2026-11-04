@@ -1,4 +1,4 @@
--- East-Market :: 0020 :: A video on a listing
+-- Magan Market :: 0020 :: A video on a listing
 --
 -- A seller may add one short video alongside the photos: a walk around a car,
 -- a goat moving, a room. Photos stay the backbone -- the card thumbnail is

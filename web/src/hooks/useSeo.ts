@@ -12,7 +12,7 @@ interface SeoOptions {
   noIndex?: boolean;
 }
 
-const SITE_NAME = 'East-Market';
+const SITE_NAME = 'Magan Market';
 const SITE_URL = (import.meta.env.VITE_SITE_URL as string | undefined) ?? 'https://eastmarket.app';
 
 /**

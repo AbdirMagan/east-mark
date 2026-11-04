@@ -47,11 +47,15 @@ export function ResetPassword({ onDone }: { onDone: () => void }) {
     <div className="flex min-h-screen items-center justify-center p-4">
       <div className="w-full max-w-sm">
         <div className="mb-6 flex items-center justify-center gap-2.5">
-          <span className="flex size-9 items-center justify-center rounded-lg bg-brand text-sm font-bold text-white dark:text-ink-950">
-            EM
-          </span>
+          <img
+            src="/logo-mark.webp"
+            width={44}
+            height={24}
+            alt=""
+            className="h-6 w-11 shrink-0 rounded bg-white object-contain"
+          />
           <div>
-            <p className="font-bold leading-tight text-text-primary">East-Market</p>
+            <p className="font-bold leading-tight text-text-primary">Magan Market</p>
             <p className="text-xs leading-tight text-text-muted">Admin</p>
           </div>
         </div>

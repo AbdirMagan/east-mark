@@ -1,4 +1,4 @@
-# East-Market — Backend API
+# Magan Market — Backend API
 
 Node.js + Express 5 + TypeScript. Serves the Android app, the iOS app, the web
 marketplace and the admin dashboard from one REST API over Supabase Postgres.

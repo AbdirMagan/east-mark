@@ -1,4 +1,4 @@
-# East-Market — Database
+# Magan Market — Database
 
 Postgres 17 on Supabase. Everything in `supabase/migrations/` and
 `supabase/seed/` is idempotent and safe to re-run.

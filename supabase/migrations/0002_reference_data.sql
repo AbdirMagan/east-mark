@@ -1,4 +1,4 @@
--- East-Market :: 0002 :: Reference data
+-- Magan Market :: 0002 :: Reference data
 -- Languages, currencies, the location hierarchy and the category tree.
 --
 -- ID convention for the whole schema:

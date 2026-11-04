@@ -1,4 +1,4 @@
--- East-Market :: 0011 :: Let trusted server-side callers past the guard triggers
+-- Magan Market :: 0011 :: Let trusted server-side callers past the guard triggers
 --
 -- Found by running the schema against real users rather than as postgres.
 --

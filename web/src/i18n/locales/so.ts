@@ -76,7 +76,7 @@ export const so: Partial<Dictionary> = {
   'home.heroTitle': 'Iibso. Iibi. Xiriir.',
   'home.heroSubtitle':
     'Suuqa Somaliland, Soomaaliya, Itoobiya, Kiiniya iyo Jabuuti. Soo dhig waxaad haysato, hel waxaad u baahan tahay, kana ganacso dad kuu dhow.',
-  'home.mapLabel': 'Khariidadda Afrika oo muujinaysa suuqyada East-Market: Somaliland, Soomaaliya, Itoobiya, Kiiniya iyo Jabuuti',
+  'home.mapLabel': 'Khariidadda Afrika oo muujinaysa suuqyada Magan Market: Somaliland, Soomaaliya, Itoobiya, Kiiniya iyo Jabuuti',
   'home.carouselLabel': 'Dalacyo iyo xayaysiisyo',
   'home.prevSlide': 'Bogga hore',
   'home.nextSlide': 'Bogga xiga',
@@ -207,7 +207,7 @@ export const so: Partial<Dictionary> = {
   'product.similar': 'Shay la mid ah',
   'product.sold': 'La iibiyay',
   'product.contactHidden': 'Iibiyahani wuxuu doorbidayaa in fariin lagula soo xiriiro',
-  'product.memberSince': 'East-Market tan iyo {date}',
+  'product.memberSince': 'Magan Market tan iyo {date}',
   'product.sellerListings': '{count} shay',
   'product.viewSeller': 'Fiiri iibiyaha',
   'product.noImage': 'Sawir ma jiro',
@@ -250,7 +250,7 @@ export const so: Partial<Dictionary> = {
   'auth.confirmedSubtitle': 'Akoonkaagu waa firfircoon yahay.',
   'auth.confirmedSignedIn': 'Waad gashay oo diyaar baad tahay.',
   'auth.confirmedBody': 'Mahadsanid. Cinwaankaaga iimaylka waa la xaqiijiyay.',
-  'auth.confirmedInApp': 'Ma abbaayadda ayaad ku diiwaangashatay? Fur East-Market taleefankaaga oo gal.',
+  'auth.confirmedInApp': 'Ma abbaayadda ayaad ku diiwaangashatay? Fur Magan Market taleefankaaga oo gal.',
   'auth.confirmedBrowse': 'Bilow raadinta',
   'auth.signedOut': 'Waad ka baxday',
 

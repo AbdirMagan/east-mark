@@ -1,4 +1,4 @@
--- East-Market :: 0005 :: Messaging
+-- Magan Market :: 0005 :: Messaging
 -- Conversations, messages, blocking and notifications.
 -- Realtime delivery rides on Supabase Realtime over the `messages` table.
 

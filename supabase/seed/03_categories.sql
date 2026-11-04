@@ -1,4 +1,4 @@
--- East-Market :: seed 03 :: Category tree + translations
+-- Magan Market :: seed 03 :: Category tree + translations
 --
 -- Five top-level categories: Electronics, Houses, Cars, Lands, Livestock
 -- (see migrations/0016_trim_categories.sql). Phone and computer

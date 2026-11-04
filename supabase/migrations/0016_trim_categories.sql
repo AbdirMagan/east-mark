@@ -1,4 +1,4 @@
--- East-Market :: 0016 :: Narrow the catalogue to five categories
+-- Magan Market :: 0016 :: Narrow the catalogue to five categories
 --
 -- Product decision: the marketplace carries Electronics, Houses, Cars, Lands
 -- and Livestock only. Categories are data, so this is a data migration and no

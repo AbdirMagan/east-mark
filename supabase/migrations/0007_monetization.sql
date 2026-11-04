@@ -1,4 +1,4 @@
--- East-Market :: 0007 :: Monetization
+-- Magan Market :: 0007 :: Monetization
 -- Subscription plans, featured listings, advertisements and the
 -- provider-agnostic payment ledger.
 

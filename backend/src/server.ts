@@ -7,7 +7,7 @@ const app = createApp();
 const server = app.listen(env.PORT, () => {
   logger.info(
     { port: env.PORT, env: env.NODE_ENV, supabase: new URL(env.SUPABASE_URL).host },
-    `East-Market API listening on http://localhost:${env.PORT}`,
+    `Magan Market API listening on http://localhost:${env.PORT}`,
   );
 });
 

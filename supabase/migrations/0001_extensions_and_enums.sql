@@ -1,4 +1,4 @@
--- East-Market :: 0001 :: Extensions, enums and shared helper functions
+-- Magan Market :: 0001 :: Extensions, enums and shared helper functions
 -- Everything downstream depends on this file. Apply first.
 
 create extension if not exists "pgcrypto"   with schema extensions;

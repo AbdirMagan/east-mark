@@ -1,4 +1,4 @@
--- East-Market :: 0003 :: Identity
+-- Magan Market :: 0003 :: Identity
 -- Profiles, seller profiles, business storefronts, devices, preferences.
 
 -- ---------------------------------------------------------------------------

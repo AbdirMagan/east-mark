@@ -1,4 +1,4 @@
--- East-Market :: seed 02 :: Location hierarchy
+-- Magan Market :: seed 02 :: Location hierarchy
 -- Countries > regions > cities > districts for the five launch markets.
 --
 -- This file is a starting point, not a fixed list. The whole hierarchy is

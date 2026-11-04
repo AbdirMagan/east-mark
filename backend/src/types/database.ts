@@ -1,4 +1,4 @@
-// Generated from the East-Market Supabase schema. Do not edit by hand.
+// Generated from the Magan Market Supabase schema. Do not edit by hand.
 //
 // Regenerate after every migration:
 //   npx supabase gen types typescript --project-id ikfozizfgiemwuokoczf > src/types/database.ts

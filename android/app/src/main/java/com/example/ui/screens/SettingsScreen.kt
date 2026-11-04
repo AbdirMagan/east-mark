@@ -139,7 +139,7 @@ fun SettingsScreen(
 
                     Column {
                         Text(
-                            text = if (signedIn != null) displayName ?: "East Market" else "Guest",
+                            text = if (signedIn != null) displayName ?: "Magan Market" else "Guest",
                             color = Color.White,
                             fontWeight = FontWeight.Bold,
                             fontSize = 18.sp
@@ -416,7 +416,7 @@ fun SettingsScreen(
                     SettingRow(
                         icon = Icons.Filled.Info,
                         title = "Prohibited Products Policy",
-                        subtitle = "Items forbidden from sale across East-Market",
+                        subtitle = "Items forbidden from sale across Magan Market",
                         onClick = { showProhibitedDialog = true }
                     )
 
@@ -424,7 +424,7 @@ fun SettingsScreen(
 
                     SettingRow(
                         icon = Icons.Filled.Public,
-                        title = "About East-Market",
+                        title = "About Magan Market",
                         subtitle = "Version 1.0.0 • Somaliland, Somalia, Ethiopia, Kenya",
                         onClick = { showAboutDialog = true }
                     )
@@ -538,7 +538,7 @@ fun SettingsScreen(
             text = {
                 Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
                     Text(
-                        "The following categories and items are strictly forbidden on East-Market:\n\n" +
+                        "The following categories and items are strictly forbidden on Magan Market:\n\n" +
                                 "• Weapons, ammunition, explosives, and combat tactical gear\n" +
                                 "• Prescription drugs, narcotics, and controlled substances\n" +
                                 "• Counterfeit currency, forged documents, and identity papers\n" +
@@ -558,11 +558,11 @@ fun SettingsScreen(
     if (showAboutDialog) {
         AlertDialog(
             onDismissRequest = { showAboutDialog = false },
-            title = { Text("About East-Market", fontWeight = FontWeight.Bold) },
+            title = { Text("About Magan Market", fontWeight = FontWeight.Bold) },
             text = {
                 Column {
                     Text(
-                        "East-Market is a dedicated regional classifieds marketplace built to unite buyers and sellers across Somaliland, Somalia, Ethiopia, Kenya, and Djibouti.\n\n" +
+                        "Magan Market is a dedicated regional classifieds marketplace built to unite buyers and sellers across Somaliland, Somalia, Ethiopia, Kenya, and Djibouti.\n\n" +
                                 "Features:\n" +
                                 "• Multi-currency conversion (USD, SLSH, SOSH, ETB, KES, DJF)\n" +
                                 "• Multilingual interface (English, Somali, Amharic, Swahili)\n" +

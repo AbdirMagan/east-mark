@@ -104,7 +104,7 @@ export function BrowsePage() {
   useSeo({
     title: heading,
     description: searchTerm
-      ? `Listings matching "${searchTerm}" on East-Market.`
+      ? `Listings matching "${searchTerm}" on Magan Market.`
       : `Browse ${category?.name ?? 'listings'} across Somaliland, Somalia, Ethiopia, Kenya and Djibouti.`,
     path: `/browse${params.toString() ? `?${params.toString()}` : ''}`,
     // Filter permutations are near-infinite; indexing them all would be thin
