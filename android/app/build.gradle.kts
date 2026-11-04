@@ -3,13 +3,19 @@ import java.util.Properties
 
 /**
  * The API address a debug build should call: whatever is in .env, falling back
- * to the emulator's alias for this machine. Read here rather than through the
- * Secrets plugin because a release build must NOT inherit it -- see the
- * release build type below.
+ * to the deployed API. Read here rather than through the Secrets plugin
+ * because a release build must NOT inherit it -- see the release build type
+ * below.
+ *
+ * The fallback used to be 10.0.2.2:4000, the emulator's alias for this
+ * machine, which is only right when a backend is running here: every other
+ * debug build -- a phone, a colleague's clone -- showed an empty catalogue
+ * and no explanation. Set API_BASE_URL in android/.env to point at a local
+ * backend instead.
  */
 val debugApiBaseUrl: String = run {
   val env = rootProject.file(".env")
-  val fallback = "http://10.0.2.2:4000/api/v1"
+  val fallback = "https://east-market-api-two.vercel.app/api/v1"
   if (!env.exists()) return@run fallback
   val properties = Properties().apply { env.inputStream().use { load(it) } }
   (properties.getProperty("API_BASE_URL") ?: fallback).trim()
