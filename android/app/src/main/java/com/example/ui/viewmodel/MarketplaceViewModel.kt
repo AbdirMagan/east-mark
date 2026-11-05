@@ -149,20 +149,31 @@ class MarketplaceViewModel(application: Application) : AndroidViewModel(applicat
         }
     }
 
+    /** True while a listing is being fetched for a screen already on show. */
+    private val _productLoading = MutableStateFlow(false)
+    val productLoading: StateFlow<Boolean> = _productLoading.asStateFlow()
+
     /**
      * Opens the listing behind a shared link.
      *
-     * A link carries the ref -- magan.../product/100042 -- so this fetches it
-     * before navigating: the detail screen reads the selected product, and
-     * arriving there with nothing selected shows an empty page.
+     * A link carries the ref -- magan.../product/100042 -- which has to be
+     * exchanged for the listing over the network. The caller navigates first
+     * and this flag holds the detail screen on a spinner meanwhile: fetching
+     * before navigating left someone who tapped a link sitting on the home
+     * screen for several seconds, with nothing to say the tap had registered,
+     * and then jumping somewhere else on its own.
      */
-    fun openProductByRef(ref: Int, onReady: () -> Unit) {
+    fun openProductByRef(ref: Int) {
         viewModelScope.launch {
+            _productLoading.value = true
+            _selectedProduct.value = null
             val product = repository.getProductByRef(ref)
+            _productLoading.value = false
             if (product != null) {
                 _selectedProduct.value = product
-                onReady()
             } else {
+                // The detail screen pops itself when it has neither a listing
+                // nor a load in flight, so this is the whole failure path.
                 _snackbarEvent.emit("That listing is no longer available")
             }
         }

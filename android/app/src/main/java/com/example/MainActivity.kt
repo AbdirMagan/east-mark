@@ -12,6 +12,7 @@ import coil.Coil
 import coil.ImageLoader
 import coil.decode.SvgDecoder
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.padding
@@ -21,6 +22,7 @@ import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -33,6 +35,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -62,6 +65,7 @@ import com.example.ui.screens.SettingsScreen
 import com.example.ui.screens.VideoFeedScreen
 import com.example.ui.screens.SignUpScreen
 import com.example.notifications.NotificationSyncWorker
+import com.example.ui.theme.BrandTeal
 import com.example.ui.theme.MyApplicationTheme
 import com.example.ui.viewmodel.MarketplaceViewModel
 import kotlinx.coroutines.flow.collectLatest
@@ -150,9 +154,11 @@ fun EastMarketApp(openedFrom: Intent? = null, onHandled: () -> Unit = {}) {
             ?.toIntOrNull()
 
         if (sharedRef != null) {
-            viewModel.openProductByRef(sharedRef) {
-                navController.navigate(Screen.ProductDetail.route)
-            }
+            // Navigate first, fetch second: the screen opens on a spinner
+            // rather than leaving someone on the home screen wondering whether
+            // their tap did anything.
+            navController.navigate(Screen.ProductDetail.route)
+            viewModel.openProductByRef(sharedRef)
             onHandled()
             return@LaunchedEffect
         }
@@ -376,6 +382,7 @@ fun EastMarketApp(openedFrom: Intent? = null, onHandled: () -> Unit = {}) {
             // 7. Product Detail
             composable(Screen.ProductDetail.route) {
                 val selectedProduct by viewModel.selectedProduct.collectAsState()
+                val loadingProduct by viewModel.productLoading.collectAsState()
                 if (selectedProduct != null) {
                     ProductDetailScreen(
                         product = selectedProduct!!,
@@ -390,6 +397,11 @@ fun EastMarketApp(openedFrom: Intent? = null, onHandled: () -> Unit = {}) {
                             navController.navigate(Screen.SellerProfile.route)
                         }
                     )
+                } else if (loadingProduct) {
+                    // Arrived from a shared link: the listing is on its way.
+                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                        CircularProgressIndicator(color = BrandTeal)
+                    }
                 } else {
                     LaunchedEffect(Unit) {
                         navController.popBackStack()
