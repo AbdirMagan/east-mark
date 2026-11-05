@@ -1,0 +1,12 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "app.eastmarket.android",
+      "sha256_cert_fingerprints": [
+        "CE:DC:C8:92:B1:33:CF:DB:A8:FA:51:F3:29:54:21:E6:C0:05:43:1C:06:55:B4:A8:46:C2:EF:AD:70:61:64:2E"
+      ]
+    }
+  }
+]

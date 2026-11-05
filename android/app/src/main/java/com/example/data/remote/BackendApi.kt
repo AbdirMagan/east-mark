@@ -39,6 +39,10 @@ interface BackendApi {
     @GET("products")
     suspend fun searchProducts(@QueryMap params: Map<String, String>): ApiEnvelope<List<ProductCardDto>>
 
+    /** By the short id a share link carries: /product/100042. */
+    @GET("products/ref/{ref}")
+    suspend fun getProductByRef(@Path("ref") ref: Int): ApiEnvelope<ProductDetailDto>
+
     @GET("products/{id}")
     suspend fun getProduct(@Path("id") id: String): ApiEnvelope<ProductDetailDto>
 

@@ -137,6 +137,26 @@ fun EastMarketApp(openedFrom: Intent? = null, onHandled: () -> Unit = {}) {
     // it read on the way, so the badge matches what the person has seen.
     LaunchedEffect(openedFrom) {
         val intent = openedFrom ?: return@LaunchedEffect
+
+        // A shared listing link: magan.../product/100042. The path carries the
+        // ref rather than the internal id, so the listing is fetched before
+        // navigating -- the detail screen renders whatever is selected, and
+        // arriving with nothing selected shows an empty page.
+        val sharedRef = intent.takeIf { it.action == Intent.ACTION_VIEW }
+            ?.data
+            ?.pathSegments
+            ?.takeIf { it.size >= 2 && it[0] == "product" }
+            ?.get(1)
+            ?.toIntOrNull()
+
+        if (sharedRef != null) {
+            viewModel.openProductByRef(sharedRef) {
+                navController.navigate(Screen.ProductDetail.route)
+            }
+            onHandled()
+            return@LaunchedEffect
+        }
+
         intent.getStringExtra(NotificationSyncWorker.EXTRA_NOTIFICATION_ID)?.let {
             viewModel.markNotificationRead(it)
         }

@@ -149,6 +149,25 @@ class MarketplaceViewModel(application: Application) : AndroidViewModel(applicat
         }
     }
 
+    /**
+     * Opens the listing behind a shared link.
+     *
+     * A link carries the ref -- magan.../product/100042 -- so this fetches it
+     * before navigating: the detail screen reads the selected product, and
+     * arriving there with nothing selected shows an empty page.
+     */
+    fun openProductByRef(ref: Int, onReady: () -> Unit) {
+        viewModelScope.launch {
+            val product = repository.getProductByRef(ref)
+            if (product != null) {
+                _selectedProduct.value = product
+                onReady()
+            } else {
+                _snackbarEvent.emit("That listing is no longer available")
+            }
+        }
+    }
+
     fun refreshNotifications() {
         viewModelScope.launch { repository.refreshNotifications() }
     }

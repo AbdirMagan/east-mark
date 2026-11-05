@@ -198,6 +198,10 @@ class MarketplaceRepository(
     suspend fun getProductById(id: String): Product? =
         runCatching { backendApi.getProduct(id) }.getOrNull()?.data?.toDomain()
 
+    /** The listing behind a shared link. */
+    suspend fun getProductByRef(ref: Int): Product? =
+        runCatching { backendApi.getProductByRef(ref) }.getOrNull()?.data?.toDomain()
+
     suspend fun incrementViews(productId: String) {
         runCatching { backendApi.recordView(productId) }
     }

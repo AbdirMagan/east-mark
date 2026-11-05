@@ -19,15 +19,41 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.MyApplication">
+        <!--
+          singleTop: a listing link arriving while the app is already open
+          reaches onNewIntent rather than starting a second copy of it.
+        -->
         <activity
             android:name=".MainActivity"
             android:exported="true"
+            android:launchMode="singleTop"
             android:label="@string/app_name"
             android:theme="@style/Theme.MyApplication">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+
+            <!--
+              Listing links open the app rather than the browser.
+
+              autoVerify sends Android to
+              https://east-market-web.vercel.app/.well-known/assetlinks.json on
+              install to check that this package, signed with this certificate,
+              is allowed to claim the host. Until that check passes, or if the
+              app is signed with a key the file does not list, the link opens
+              in the browser instead. That is the right failure: the listing is
+              there either way.
+            -->
+            <intent-filter android:autoVerify="true">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data android:scheme="https" />
+                <data android:host="east-market-web.vercel.app" />
+                <data android:pathPrefix="/product/" />
             </intent-filter>
         </activity>
     </application>

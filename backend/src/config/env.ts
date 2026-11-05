@@ -39,7 +39,10 @@ const schema = z.object({
   RATE_LIMIT_WINDOW_MS: z.coerce.number().int().positive().default(60_000),
   RATE_LIMIT_MAX: z.coerce.number().int().positive().default(120),
 
-  DEEPLINK_HOST: z.string().default('eastmarket.app'),
+  // The host whose links open the apps. It has to be a site we serve, because
+  // Android and iOS both verify the claim by fetching a file from it --
+  // see web/public/.well-known/.
+  DEEPLINK_HOST: z.string().default('east-market-web.vercel.app'),
   // Where the marketplace lives. Every listing's share link is built from it,
   // so the default is the deployment that exists rather than a domain nobody
   // has registered.
