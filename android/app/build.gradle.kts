@@ -133,6 +133,11 @@ dependencies {
   implementation(libs.androidx.compose.ui.tooling.preview)
   implementation(libs.androidx.core.ktx)
   implementation(libs.androidx.datastore.preferences)
+  // Play services pulls in fragment 1.1.0, whose FragmentActivity mishandles
+  // the ActivityResult APIs -- lintVitalRelease fails the build over it, and
+  // a release cannot be assembled while it is on the classpath. Nothing here
+  // uses fragments; this is purely to evict the old one.
+  implementation(libs.androidx.fragment)
   // Background work: the periodic check for notifications while the app is shut.
   implementation(libs.androidx.work.runtime.ktx)
   implementation(libs.coil.svg)
