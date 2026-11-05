@@ -235,6 +235,10 @@ export const so: Partial<Dictionary> = {
   'auth.registerSubtitle':
     'Waxay qaadanaysaa daqiiqad. Kaddibna waad soo dhigi kartaa wax kasta oo aad iibinayso.',
   'auth.email': 'Iimaylka',
+  'auth.phone': 'Taleefan',
+  'auth.phoneNumber': 'Lambarka taleefanka',
+  'auth.country': 'Waddanka',
+  'auth.phoneNoReset': 'Furahaaga sirta ah ilaali — akoon taleefan iimayl looma dirin karo.',
   'auth.password': 'Furaha sirta ah',
   'auth.fullName': 'Magaca oo dhan',
   'auth.signIn': 'Gal',

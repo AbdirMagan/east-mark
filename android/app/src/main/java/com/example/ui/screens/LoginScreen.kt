@@ -1,6 +1,8 @@
 package com.example.ui.screens
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -25,7 +27,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import com.example.ui.components.AuthMethod
+import com.example.ui.components.AuthMethodPicker
 import com.example.ui.components.PasswordField
+import com.example.ui.components.PhoneNumberField
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
@@ -44,16 +49,26 @@ fun LoginScreen(
     onBack: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    var method by remember { mutableStateOf(AuthMethod.PHONE) }
     var email by remember { mutableStateOf("") }
+    var phone by remember { mutableStateOf("") }
+    var dialCode by remember { mutableStateOf("252") }
     var password by remember { mutableStateOf("") }
     val loading by viewModel.authLoading.collectAsState()
     val error by viewModel.authError.collectAsState()
+
+    val byPhone = method == AuthMethod.PHONE
+    val identifier = if (byPhone) phone.trim() else email.trim()
 
     Column(
         modifier = modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
-            .padding(horizontal = 24.dp),
+            // Scrollable, because the form is taller than a short screen once
+            // the keyboard is up -- without this the button at the bottom
+            // could not be reached at all.
+            .verticalScroll(rememberScrollState())
+            .padding(horizontal = 24.dp, vertical = 24.dp),
         verticalArrangement = Arrangement.Center
     ) {
         Text(
@@ -70,14 +85,26 @@ fun LoginScreen(
         )
         Spacer(modifier = Modifier.height(28.dp))
 
-        OutlinedTextField(
-            value = email,
-            onValueChange = { email = it },
-            label = { Text("Email") },
-            singleLine = true,
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
-            modifier = Modifier.fillMaxWidth()
-        )
+        AuthMethodPicker(method = method, onMethodChange = { method = it })
+        Spacer(modifier = Modifier.height(14.dp))
+
+        if (byPhone) {
+            PhoneNumberField(
+                phone = phone,
+                onPhoneChange = { phone = it },
+                dialCode = dialCode,
+                onDialCodeChange = { dialCode = it }
+            )
+        } else {
+            OutlinedTextField(
+                value = email,
+                onValueChange = { email = it },
+                label = { Text("Email") },
+                singleLine = true,
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
         Spacer(modifier = Modifier.height(14.dp))
         PasswordField(
             value = password,
@@ -88,12 +115,24 @@ fun LoginScreen(
         // Reaching the reset needs the address, and the person has usually
         // just typed it -- so the button stays disabled until they have, and
         // uses what is in the field rather than asking again on another screen.
-        TextButton(
-            onClick = { viewModel.requestPasswordReset(email) },
-            enabled = !loading && email.isNotBlank(),
-            modifier = Modifier.align(Alignment.End)
-        ) {
-            Text("Forgot your password?", fontSize = 13.sp)
+        //
+        // A phone account has nowhere to send a link, so it says so instead of
+        // offering a button that could only fail.
+        if (byPhone) {
+            Text(
+                text = "Keep this password safe \u2014 a phone account cannot be reset by email.",
+                fontSize = 12.sp,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.align(Alignment.End).padding(top = 8.dp)
+            )
+        } else {
+            TextButton(
+                onClick = { viewModel.requestPasswordReset(email) },
+                enabled = !loading && email.isNotBlank(),
+                modifier = Modifier.align(Alignment.End)
+            ) {
+                Text("Forgot your password?", fontSize = 13.sp)
+            }
         }
 
         if (error != null) {
@@ -103,8 +142,11 @@ fun LoginScreen(
 
         Spacer(modifier = Modifier.height(20.dp))
         Button(
-            onClick = { viewModel.signIn(email, password, onSignedIn) },
-            enabled = !loading && email.isNotBlank() && password.isNotBlank(),
+            onClick = {
+                if (byPhone) viewModel.signInWithPhone(phone, dialCode, password, onSignedIn)
+                else viewModel.signIn(email, password, onSignedIn)
+            },
+            enabled = !loading && identifier.isNotBlank() && password.isNotBlank(),
             colors = ButtonDefaults.buttonColors(containerColor = BrandTeal),
             modifier = Modifier.fillMaxWidth().height(50.dp)
         ) {

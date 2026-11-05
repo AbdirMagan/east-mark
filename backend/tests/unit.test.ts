@@ -260,3 +260,49 @@ describe('push gating', () => {
     expect(parseWebSubscription('ExponentPushToken[xxx]')).toBeNull();
   });
 });
+
+
+describe('phone numbers as credentials', () => {
+  it('reads the same number however it was typed', async () => {
+    const { normalizePhone } = await import('../src/services/phoneAuth.service.js');
+
+    // Somaliland and Somalia, dial code 252. All of these are one number.
+    expect(normalizePhone('0634400000', '252')).toBe('+252634400000');
+    expect(normalizePhone('063 440 0000', '252')).toBe('+252634400000');
+    expect(normalizePhone('+252 63 440 0000', '252')).toBe('+252634400000');
+    expect(normalizePhone('00252634400000', '252')).toBe('+252634400000');
+    expect(normalizePhone('634400000', '252')).toBe('+252634400000');
+
+    // Kenya, Ethiopia, Djibouti.
+    expect(normalizePhone('0712345678', '254')).toBe('+254712345678');
+    expect(normalizePhone('0911234567', '251')).toBe('+251911234567');
+    expect(normalizePhone('77123456', '253')).toBe('+25377123456');
+  });
+
+  it('refuses what is not a phone number', async () => {
+    const { normalizePhone } = await import('../src/services/phoneAuth.service.js');
+    expect(() => normalizePhone('', '252')).toThrow();
+    expect(() => normalizePhone('12', '252')).toThrow();
+    expect(() => normalizePhone('abc', '252')).toThrow();
+  });
+
+  it('derives an address that is stable, unique and not guessable', async () => {
+    process.env.PHONE_IDENTITY_SECRET ??= 'a'.repeat(48);
+    const { addressFor, isPhoneAddress } = await import('../src/services/phoneAuth.service.js');
+
+    const address = addressFor('+252634400000');
+    // Stable, or everyone with a phone account is locked out on the next call.
+    expect(addressFor('+252634400000')).toBe(address);
+    // Distinct per number, which is what makes Supabase's unique index on the
+    // address do the "one number, one account" work for us.
+    expect(addressFor('+252634400001')).not.toBe(address);
+    // The number itself must not be readable from the address: that is what
+    // stops someone claiming a number by signing up for its address.
+    expect(address).not.toContain('252634400000');
+    expect(address.endsWith('@phone.invalid')).toBe(true);
+
+    expect(isPhoneAddress(address)).toBe(true);
+    expect(isPhoneAddress('someone@example.com')).toBe(false);
+    expect(isPhoneAddress(null)).toBe(false);
+  });
+});

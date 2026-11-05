@@ -9,7 +9,13 @@ import com.example.data.remote.SupabaseAuthApi
 import com.example.data.remote.SupabaseErrorDto
 import com.example.data.remote.SupabaseSessionDto
 import com.example.data.session.Session
+import com.example.data.remote.ApiEnvelope
+import com.example.data.remote.PhoneAuthApi
+import com.example.data.remote.PhoneRegisterRequest
+import com.example.data.remote.PhoneSessionDto
+import com.example.data.remote.PhoneSignInRequest
 import com.example.data.session.SessionManager
+import org.json.JSONObject
 import com.squareup.moshi.Moshi
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -36,7 +42,8 @@ sealed interface AuthState {
 class AuthRepository(
     private val api: SupabaseAuthApi,
     private val sessionManager: SessionManager,
-    private val moshi: Moshi
+    private val moshi: Moshi,
+    private val phoneApi: PhoneAuthApi? = null
 ) {
     private val refreshMutex = Mutex()
 
@@ -61,10 +68,14 @@ class AuthRepository(
         }
     }
 
-    suspend fun signUp(email: String, password: String): Result<Unit> = runCatching {
+    suspend fun signUp(email: String, password: String, fullName: String? = null): Result<Unit> = runCatching {
         val response = api.signUp(
             redirectTo = BuildConfig.WEB_BASE_URL + "/auth/confirmed",
-            body = SignUpRequest(email, password),
+            body = SignUpRequest(
+                email,
+                password,
+                fullName?.trim()?.takeIf { it.isNotEmpty() }?.let { mapOf("full_name" to it) },
+            ),
         )
         if (!response.isSuccessful) throw AuthException(errorMessage(response))
         val body = response.body()
@@ -95,6 +106,63 @@ class AuthRepository(
         if (!response.isSuccessful) throw AuthException(errorMessage(response))
         val body = response.body() ?: throw AuthException("Sign in failed")
         persist(body)
+    }
+
+    /**
+     * Phone number and password, through the marketplace's own API.
+     *
+     * No code is sent and none is asked for: there is no SMS provider behind
+     * this project, so the number is a credential rather than something to
+     * verify. The session that comes back is a Supabase one and is stored the
+     * same way as any other.
+     */
+    suspend fun signInWithPhone(phone: String, dialCode: String, password: String): Result<Unit> =
+        runCatching {
+            val client = phoneApi ?: throw AuthException("Phone sign-in is unavailable")
+            val response = client.signIn(PhoneSignInRequest(phone.trim(), dialCode, password))
+            persistPhone(response)
+        }
+
+    suspend fun signUpWithPhone(
+        phone: String,
+        dialCode: String,
+        password: String,
+        fullName: String,
+        languageCode: String? = null
+    ): Result<Unit> = runCatching {
+        val client = phoneApi ?: throw AuthException("Phone sign-up is unavailable")
+        val response = client.register(
+            PhoneRegisterRequest(phone.trim(), dialCode, password, fullName.trim(), languageCode)
+        )
+        persistPhone(response)
+    }
+
+    private suspend fun persistPhone(response: Response<ApiEnvelope<PhoneSessionDto>>) {
+        if (!response.isSuccessful) throw AuthException(backendError(response))
+        val session = response.body()?.data ?: throw AuthException("Sign in failed")
+        sessionManager.save(
+            Session(
+                accessToken = session.accessToken,
+                refreshToken = session.refreshToken,
+                // The API reports an absolute epoch second; the rest of this
+                // class works in millis.
+                expiresAt = session.expiresAt?.times(1000)
+                    ?: (System.currentTimeMillis() + 3_600_000),
+                userId = session.userId,
+                // There is no address to show. The number is what this person
+                // signs in with, so that is what the profile screen shows.
+                email = session.phone
+            )
+        )
+    }
+
+    /** The API's own message ("Wrong phone number or password") where there is one. */
+    private fun backendError(response: Response<*>): String {
+        val raw = response.errorBody()?.string()
+        val message = raw?.let {
+            runCatching { JSONObject(it).optString("message") }.getOrNull()
+        }
+        return message?.takeIf { it.isNotBlank() } ?: "Something went wrong (${response.code()})"
     }
 
     suspend fun signOut() {

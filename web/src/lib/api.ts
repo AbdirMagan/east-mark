@@ -456,6 +456,15 @@ export interface AppNotification {
   createdAt: string;
 }
 
+export interface PhoneSession {
+  accessToken: string;
+  refreshToken: string;
+  expiresAt: number | null;
+  userId: string;
+  /** The number as it was stored, in E.164. */
+  phone: string;
+}
+
 export interface NotificationPreferences {
   pushEnabled: boolean;
   emailEnabled: boolean;
@@ -623,6 +632,24 @@ export const endpoints = {
     api<null>(`/messages/conversations/${id}/read`, { method: 'POST' }),
 
   unreadMessages: () => api<{ total: number; conversations: number }>('/messages/unread'),
+
+  /* --- phone sign-in --- */
+
+  // Email accounts talk to Supabase Auth directly, as they always have. A
+  // phone number has to come through the API, because the address the account
+  // is held under is derived with a secret no browser may hold.
+
+  registerWithPhone: (input: {
+    phone: string;
+    dialCode?: string;
+    password: string;
+    fullName: string;
+    languageCode?: string;
+    currencyCode?: string;
+  }) => api<PhoneSession>('/auth/phone/register', { method: 'POST', body: input, auth: false }),
+
+  signInWithPhone: (input: { phone: string; dialCode?: string; password: string }) =>
+    api<PhoneSession>('/auth/phone/sign-in', { method: 'POST', body: input, auth: false }),
 
   /* --- notifications --- */
 

@@ -1,4 +1,5 @@
 import { Ionicons } from '@expo/vector-icons';
+import { useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
 import {
   ActivityIndicator,
@@ -10,8 +11,9 @@ import {
   View,
 } from 'react-native';
 
+import { api } from '../../src/api/endpoints';
 import { PasswordField } from '../../src/components/PasswordField';
-import { Radius, Space } from '../../src/theme';
+import { Radius, Space, Type } from '../../src/theme';
 import type { Palette } from '../../src/theme';
 import { useColors, useStyles } from '../../src/useTheme';
 import { LANGUAGES, LANGUAGE_NAMES } from '../../src/i18n';
@@ -47,15 +49,25 @@ export default function AccountScreen() {
   const lastError = useAuth((state) => state.lastError);
   const signIn = useAuth((state) => state.signIn);
   const signUp = useAuth((state) => state.signUp);
+  const signInWithPhone = useAuth((state) => state.signInWithPhone);
+  const signUpWithPhone = useAuth((state) => state.signUpWithPhone);
   const signOut = useAuth((state) => state.signOut);
   const requestPasswordReset = useAuth((state) => state.requestPasswordReset);
 
   const [registering, setRegistering] = useState(false);
+  // Phone first: most people here have one, and many have no email at all.
+  const [method, setMethod] = useState<'phone' | 'email'>('phone');
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState('');
+  const [dialCode, setDialCode] = useState('252');
   const [password, setPassword] = useState('');
   const [resetSent, setResetSent] = useState(false);
   const [confirmSent, setConfirmSent] = useState(false);
+
+  const countries = useQuery({ queryKey: ['countries', 'en'], queryFn: () => api.countries('en') });
+  const byPhone = method === 'phone';
+  const identifier = byPhone ? phone.trim() : email.trim();
 
   return (
     <View style={styles.screen}>
@@ -84,17 +96,68 @@ export default function AccountScreen() {
             />
           ) : null}
 
-          <TextInput
-            value={email}
-            onChangeText={setEmail}
-            placeholder={t('email')}
-            placeholderTextColor={c.slateLight}
-            keyboardType="email-address"
-            autoCapitalize="none"
-            autoCorrect={false}
-            textContentType="emailAddress"
-            style={styles.input}
-          />
+          <View style={styles.methods}>
+            {(['phone', 'email'] as const).map((option) => (
+              <Pressable
+                key={option}
+                onPress={() => setMethod(option)}
+                style={[styles.method, method === option && styles.methodOn]}
+              >
+                <Ionicons
+                  name={option === 'phone' ? 'call-outline' : 'mail-outline'}
+                  size={15}
+                  color={method === option ? c.text : c.textMuted}
+                />
+                <Text style={[styles.methodText, method === option && styles.methodTextOn]}>
+                  {t(option === 'phone' ? 'phone' : 'email')}
+                </Text>
+              </Pressable>
+            ))}
+          </View>
+
+          {byPhone ? (
+            <View style={styles.phoneRow}>
+              {/* The dial code travels with the number: "063 440 0000" is only
+                  a number once you know which country it is in. */}
+              <Pressable
+                style={styles.dial}
+                onPress={() => {
+                  const list = (countries.data ?? []).map((country) =>
+                    (country.dialCode ?? '').replace(/[^0-9]/g, ''),
+                  );
+                  const unique = [...new Set(list)].filter(Boolean);
+                  if (!unique.length) return;
+                  const next = unique[(unique.indexOf(dialCode) + 1) % unique.length];
+                  setDialCode(next ?? dialCode);
+                }}
+              >
+                <Text style={styles.dialText}>+{dialCode}</Text>
+                <Ionicons name="chevron-down" size={13} color={c.textMuted} />
+              </Pressable>
+              <TextInput
+                value={phone}
+                onChangeText={setPhone}
+                placeholder="063 440 0000"
+                placeholderTextColor={c.slateLight}
+                keyboardType="phone-pad"
+                autoCorrect={false}
+                textContentType="telephoneNumber"
+                style={[styles.input, styles.phoneInput]}
+              />
+            </View>
+          ) : (
+            <TextInput
+              value={email}
+              onChangeText={setEmail}
+              placeholder={t('email')}
+              placeholderTextColor={c.slateLight}
+              keyboardType="email-address"
+              autoCapitalize="none"
+              autoCorrect={false}
+              textContentType="emailAddress"
+              style={styles.input}
+            />
+          )}
 
           <PasswordField
             value={password}
@@ -109,13 +172,27 @@ export default function AccountScreen() {
 
           <Pressable
             onPress={async () => {
+              if (byPhone) {
+                // No code to wait for and no inbox to check: a phone account
+                // is usable the moment it is made.
+                const ok = registering
+                  ? await signUpWithPhone({
+                      phone: phone.trim(),
+                      dialCode,
+                      password,
+                      fullName: fullName.trim(),
+                    })
+                  : await signInWithPhone(phone.trim(), dialCode, password);
+                if (ok) setConfirmSent(false);
+                return;
+              }
               const ok = registering
                 ? await signUp(email.trim(), password, fullName.trim())
                 : await signIn(email.trim(), password);
               if (ok && registering) setConfirmSent(true);
             }}
-            disabled={working || !email.trim() || !password}
-            style={[styles.button, (working || !email.trim() || !password) && styles.buttonDisabled]}
+            disabled={working || !identifier || !password}
+            style={[styles.button, (working || !identifier || !password) && styles.buttonDisabled]}
           >
             {working ? (
               <ActivityIndicator color={c.white} />
@@ -216,6 +293,36 @@ const makeStyles = (c: Palette) =>
   cardTitle: { fontSize: 17, fontWeight: '800', color: c.text },
   name: { fontSize: 20, fontWeight: '700', color: c.text },
   email: { fontSize: 13, color: c.textMuted },
+  methods: { flexDirection: 'row', gap: 6, marginBottom: Space.sm },
+  method: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 6,
+    height: 36,
+    borderRadius: Radius.field,
+    backgroundColor: c.card,
+  },
+  methodOn: { backgroundColor: c.surface, borderWidth: 1, borderColor: c.teal },
+  methodText: { fontSize: Type.small, fontWeight: '600', color: c.textMuted },
+  methodTextOn: { color: c.text },
+
+  phoneRow: { flexDirection: 'row', gap: Space.sm },
+  dial: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    paddingHorizontal: Space.md,
+    height: 46,
+    borderRadius: Radius.field,
+    backgroundColor: c.card,
+    borderWidth: 1,
+    borderColor: c.divider,
+  },
+  dialText: { fontSize: Type.body, fontWeight: '700', color: c.text },
+  phoneInput: { flex: 1 },
+
   input: {
     height: 48,
     borderRadius: Radius.field,

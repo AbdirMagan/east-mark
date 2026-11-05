@@ -104,6 +104,31 @@ object NetworkModule {
             .create(BackendApi::class.java)
     }
 
+    /**
+     * The phone sign-in calls.
+     *
+     * Neither is authenticated -- they are how someone gets a session in the
+     * first place -- so this client carries no token interceptor and no
+     * authenticator, which also keeps it clear of the chicken-and-egg between
+     * BackendApi and AuthRepository.
+     */
+    fun providePhoneAuthApi(moshi: Moshi): PhoneAuthApi {
+        val client = OkHttpClient.Builder()
+            .addInterceptor(loggingInterceptor())
+            .connectTimeout(15, TimeUnit.SECONDS)
+            .readTimeout(15, TimeUnit.SECONDS)
+            .build()
+
+        val baseUrl = BuildConfig.API_BASE_URL.let { if (it.endsWith("/")) it else "$it/" }
+
+        return Retrofit.Builder()
+            .baseUrl(baseUrl)
+            .client(client)
+            .addConverterFactory(MoshiConverterFactory.create(moshi))
+            .build()
+            .create(PhoneAuthApi::class.java)
+    }
+
     private fun responseCount(response: okhttp3.Response): Int {
         var result = 1
         var prior = response.priorResponse

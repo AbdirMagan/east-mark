@@ -235,6 +235,10 @@ export const sw: Partial<Dictionary> = {
   'auth.registerSubtitle':
     'Inachukua dakika moja. Kisha unaweza kutangaza chochote unachotaka kuuza.',
   'auth.email': 'Barua pepe',
+  'auth.phone': 'Simu',
+  'auth.phoneNumber': 'Namba ya simu',
+  'auth.country': 'Nchi',
+  'auth.phoneNoReset': 'Hifadhi nenosiri hili — akaunti ya simu haiwezi kuwekwa upya kwa barua pepe.',
   'auth.password': 'Nenosiri',
   'auth.fullName': 'Jina kamili',
   'auth.signIn': 'Ingia',

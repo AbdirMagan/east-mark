@@ -55,6 +55,12 @@ const schema = z.object({
   // sending works; an access token is only needed once push security is
   // switched on in the Expo project.
   EXPO_ACCESS_TOKEN: z.string().optional(),
+
+  // Phone sign-in derives the address an account is held under from the
+  // number and this secret. It must never change: every phone account is
+  // reachable only through its own derived address. Without it the phone
+  // routes answer 503 and email sign-in carries on as normal.
+  PHONE_IDENTITY_SECRET: z.string().min(32).optional(),
 });
 
 export type Env = z.infer<typeof schema>;

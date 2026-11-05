@@ -7,7 +7,12 @@ import com.squareup.moshi.JsonClass
 /* -------------------------------------------------------------------------- */
 
 @JsonClass(generateAdapter = true)
-data class SignUpRequest(val email: String, val password: String)
+data class SignUpRequest(
+    val email: String,
+    val password: String,
+    /** Carried into raw_user_meta_data, where handle_new_user() reads it. */
+    val data: Map<String, String>? = null
+)
 
 @JsonClass(generateAdapter = true)
 data class SignInRequest(val email: String, val password: String)

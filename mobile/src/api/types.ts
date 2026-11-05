@@ -167,6 +167,16 @@ export interface AppNotification {
   createdAt: string;
 }
 
+/** A session minted by the API for a phone sign-in. */
+export interface PhoneSession {
+  accessToken: string;
+  refreshToken: string;
+  expiresAt: number | null;
+  userId: string;
+  /** The number as stored, in E.164. */
+  phone: string;
+}
+
 export interface UnreadCount {
   total: number;
   conversations: number;

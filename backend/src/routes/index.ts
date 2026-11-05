@@ -6,6 +6,7 @@ import { cacheStats } from '../utils/cache.js';
 import { ok } from '../utils/response.js';
 import { adminRouter } from './admin.routes.js';
 import { adsRouter } from './ads.routes.js';
+import { authRouter } from './auth.routes.js';
 import { categoriesRouter } from './categories.routes.js';
 import { locationsRouter } from './locations.routes.js';
 import { messagesRouter } from './messages.routes.js';
@@ -15,6 +16,7 @@ import { usersRouter } from './users.routes.js';
 
 export const apiRouter: Router = Router();
 
+apiRouter.use('/auth', authRouter);
 apiRouter.use('/locations', locationsRouter);
 apiRouter.use('/categories', categoriesRouter);
 apiRouter.use('/products', productsRouter);

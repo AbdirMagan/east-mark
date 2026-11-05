@@ -1,6 +1,7 @@
 import { fireAndForget, request } from './client';
 import type {
   AppNotification,
+  PhoneSession,
   Category,
   ChatMessage,
   ConversationSummary,
@@ -120,6 +121,21 @@ export const api = {
     }),
 
   unread: () => request<UnreadCount>('messages/unread', { authorized: true }),
+
+  // Phone sign-in ------------------------------------------------------------
+  // Email accounts talk to Supabase directly. A phone number comes through the
+  // API, which holds the secret the account's address is derived from.
+
+  registerWithPhone: (input: {
+    phone: string;
+    dialCode?: string;
+    password: string;
+    fullName: string;
+    languageCode?: string;
+  }) => request<PhoneSession>('auth/phone/register', { method: 'POST', body: input }),
+
+  signInWithPhone: (input: { phone: string; dialCode?: string; password: string }) =>
+    request<PhoneSession>('auth/phone/sign-in', { method: 'POST', body: input }),
 
   // Notifications -----------------------------------------------------------
 

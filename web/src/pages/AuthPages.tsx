@@ -5,6 +5,7 @@ import { CulturalPattern } from '../components/brand/CulturalPattern.js';
 import { Logo, Tagline } from '../components/brand/Logo.js';
 import { Button, PasswordField, TextField } from '../components/ui/index.js';
 import { Icon } from '../components/ui/Icon.js';
+import { useCountries } from '../hooks/useMarketData.js';
 import { useSeo } from '../hooks/useSeo.js';
 import { useT } from '../i18n/index.js';
 import { useAuth } from '../store/auth.js';
@@ -47,6 +48,105 @@ function AuthLayout({
   );
 }
 
+type Method = 'email' | 'phone';
+
+/**
+ * Which credential this form is for.
+ *
+ * Two buttons rather than a dropdown: there are two choices, and one of them
+ * is what most people in the market have. A phone number is the credential
+ * for anyone without an email address, which in East Africa is a great many
+ * buyers and most sellers.
+ */
+function MethodToggle({ value, onChange }: { value: Method; onChange: (value: Method) => void }) {
+  const t = useT();
+  const options: Array<{ id: Method; label: string; icon: 'message' | 'phone' }> = [
+    { id: 'phone', label: t('auth.phone'), icon: 'phone' },
+    { id: 'email', label: t('auth.email'), icon: 'message' },
+  ];
+
+  return (
+    <div className="grid grid-cols-2 gap-1 rounded-(--radius-field) bg-surface-sunken p-1">
+      {options.map((option) => (
+        <button
+          key={option.id}
+          type="button"
+          onClick={() => onChange(option.id)}
+          aria-pressed={value === option.id}
+          className={`flex h-9 items-center justify-center gap-1.5 rounded-[calc(var(--radius-field)-0.25rem)] text-sm font-semibold transition-colors ${
+            value === option.id
+              ? 'bg-surface-raised text-text-primary shadow-(--shadow-card)'
+              : 'text-text-secondary hover:text-text-primary'
+          }`}
+        >
+          <Icon name={option.icon} size={15} />
+          {option.label}
+        </button>
+      ))}
+    </div>
+  );
+}
+
+/**
+ * A phone number, with the country beside it.
+ *
+ * The dial code travels to the API with the number, because "063 440 0000"
+ * is only a number once you know which country it is in. The country list is
+ * the same one the rest of the marketplace uses.
+ */
+function PhoneField({
+  value,
+  onChange,
+  dialCode,
+  onDialCodeChange,
+  autoComplete = 'tel',
+}: {
+  value: string;
+  onChange: (value: string) => void;
+  dialCode: string;
+  onDialCodeChange: (value: string) => void;
+  autoComplete?: string;
+}) {
+  const t = useT();
+  const { data: countries } = useCountries();
+  const list = countries ?? [];
+
+  return (
+    <div className="space-y-1.5">
+      <label htmlFor="phone" className="block text-sm font-medium text-text-secondary">
+        {t('auth.phoneNumber')}
+      </label>
+      <div className="flex gap-2">
+        <select
+          aria-label={t('auth.country')}
+          value={dialCode}
+          onChange={(event) => onDialCodeChange(event.target.value)}
+          className="h-11 shrink-0 rounded-(--radius-field) border border-border-subtle bg-surface-raised px-2 text-sm text-text-primary"
+        >
+          {list.length === 0 ? <option value="252">+252</option> : null}
+          {list.map((country) => (
+            <option key={country.id} value={country.dialCode.replace(/[^0-9]/g, '')}>
+              {country.flag ? `${country.flag} ` : ''}{country.dialCode}
+            </option>
+          ))}
+        </select>
+        <input
+          id="phone"
+          name="phone"
+          type="tel"
+          inputMode="tel"
+          autoComplete={autoComplete}
+          required
+          placeholder="063 440 0000"
+          value={value}
+          onChange={(event) => onChange(event.target.value)}
+          className="h-11 w-full rounded-(--radius-field) border border-border-subtle bg-surface-raised px-3 text-text-primary placeholder:text-text-muted focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/25"
+        />
+      </div>
+    </div>
+  );
+}
+
 function FormError({ message }: { message: string }) {
   return (
     <div
@@ -65,8 +165,12 @@ export function SignInPage() {
   const [params] = useSearchParams();
   const session = useAuth((state) => state.session);
   const signIn = useAuth((state) => state.signIn);
+  const signInWithPhone = useAuth((state) => state.signInWithPhone);
 
+  const [method, setMethod] = useState<Method>('phone');
   const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState('');
+  const [dialCode, setDialCode] = useState('252');
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
@@ -81,7 +185,8 @@ export function SignInPage() {
     setError(null);
     setBusy(true);
     try {
-      await signIn(email.trim(), password);
+      if (method === 'phone') await signInWithPhone(phone.trim(), dialCode, password);
+      else await signIn(email.trim(), password);
       navigate(next, { replace: true });
     } catch (caught) {
       // Supabase returns "Invalid login credentials" for both a wrong password
@@ -109,16 +214,27 @@ export function SignInPage() {
       <form onSubmit={onSubmit} className="space-y-4">
         {error ? <FormError message={error} /> : null}
 
-        <TextField
-          label={t('auth.email')}
-          name="email"
-          type="email"
-          autoComplete="email"
-          inputMode="email"
-          required
-          value={email}
-          onChange={(event) => setEmail(event.target.value)}
-        />
+        <MethodToggle value={method} onChange={setMethod} />
+
+        {method === 'phone' ? (
+          <PhoneField
+            value={phone}
+            onChange={setPhone}
+            dialCode={dialCode}
+            onDialCodeChange={setDialCode}
+          />
+        ) : (
+          <TextField
+            label={t('auth.email')}
+            name="email"
+            type="email"
+            autoComplete="email"
+            inputMode="email"
+            required
+            value={email}
+            onChange={(event) => setEmail(event.target.value)}
+          />
+        )}
 
         <PasswordField
           label={t('auth.password')}
@@ -131,13 +247,19 @@ export function SignInPage() {
           hideLabel={t('auth.hidePassword')}
         />
 
+        {/* A phone account has nowhere to send a reset link, so offering one
+            would be a dead end. It says so instead. */}
         <div className="flex justify-end">
-          <Link
-            to={`/forgot-password${email ? `?email=${encodeURIComponent(email.trim())}` : ''}`}
-            className="text-sm font-semibold text-brand hover:underline"
-          >
-            {t('auth.forgotPassword')}
-          </Link>
+          {method === 'phone' ? (
+            <p className="text-xs text-text-muted">{t('auth.phoneNoReset')}</p>
+          ) : (
+            <Link
+              to={`/forgot-password${email ? `?email=${encodeURIComponent(email.trim())}` : ''}`}
+              className="text-sm font-semibold text-brand hover:underline"
+            >
+              {t('auth.forgotPassword')}
+            </Link>
+          )}
         </div>
 
         <Button type="submit" fullWidth size="lg" loading={busy}>
@@ -153,9 +275,13 @@ export function RegisterPage() {
   const navigate = useNavigate();
   const session = useAuth((state) => state.session);
   const signUp = useAuth((state) => state.signUp);
+  const registerWithPhone = useAuth((state) => state.registerWithPhone);
 
+  const [method, setMethod] = useState<Method>('phone');
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState('');
+  const [dialCode, setDialCode] = useState('252');
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [confirmation, setConfirmation] = useState(false);
@@ -176,9 +302,21 @@ export function RegisterPage() {
 
     setBusy(true);
     try {
-      const result = await signUp(email.trim(), password, fullName.trim());
-      if (result.needsConfirmation) setConfirmation(true);
-      else navigate('/onboarding', { replace: true });
+      if (method === 'phone') {
+        // Nothing to confirm: there is no code and no email, so the account is
+        // usable the moment it exists.
+        await registerWithPhone({
+          phone: phone.trim(),
+          dialCode,
+          password,
+          fullName: fullName.trim(),
+        });
+        navigate('/', { replace: true });
+      } else {
+        const result = await signUp(email.trim(), password, fullName.trim());
+        if (result.needsConfirmation) setConfirmation(true);
+        else navigate('/', { replace: true });
+      }
     } catch (caught) {
       setError(caught instanceof Error ? caught.message : t('error.generic'));
     } finally {
@@ -221,6 +359,8 @@ export function RegisterPage() {
       <form onSubmit={onSubmit} className="space-y-4">
         {error ? <FormError message={error} /> : null}
 
+        <MethodToggle value={method} onChange={setMethod} />
+
         <TextField
           label={t('auth.fullName')}
           name="name"
@@ -230,16 +370,26 @@ export function RegisterPage() {
           onChange={(event) => setFullName(event.target.value)}
         />
 
-        <TextField
-          label={t('auth.email')}
-          name="email"
-          type="email"
-          autoComplete="email"
-          inputMode="email"
-          required
-          value={email}
-          onChange={(event) => setEmail(event.target.value)}
-        />
+        {method === 'phone' ? (
+          <PhoneField
+            value={phone}
+            onChange={setPhone}
+            dialCode={dialCode}
+            onDialCodeChange={setDialCode}
+            autoComplete="tel"
+          />
+        ) : (
+          <TextField
+            label={t('auth.email')}
+            name="email"
+            type="email"
+            autoComplete="email"
+            inputMode="email"
+            required
+            value={email}
+            onChange={(event) => setEmail(event.target.value)}
+          />
+        )}
 
         <PasswordField
           label={t('auth.password')}

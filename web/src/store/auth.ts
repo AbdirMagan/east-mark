@@ -1,6 +1,7 @@
 import type { Session } from '@supabase/auth-js';
 import { create } from 'zustand';
 
+import { endpoints, type PhoneSession } from '../lib/api.js';
 import { supabase } from '../lib/supabase.js';
 
 interface AuthState {
@@ -9,6 +10,14 @@ interface AuthState {
   initialising: boolean;
   setSession: (session: Session | null) => void;
   signIn: (email: string, password: string) => Promise<void>;
+  /** Phone + password. The API resolves the number and hands back a session. */
+  signInWithPhone: (phone: string, dialCode: string, password: string) => Promise<void>;
+  registerWithPhone: (input: {
+    phone: string;
+    dialCode: string;
+    password: string;
+    fullName: string;
+  }) => Promise<void>;
   signUp: (email: string, password: string, fullName: string) => Promise<{ needsConfirmation: boolean }>;
   signOut: () => Promise<void>;
   /** Sends the "set a new password" email. Never says whether the address exists. */
@@ -27,6 +36,14 @@ export const useAuth = create<AuthState>((set) => ({
     const { data, error } = await supabase.auth.signInWithPassword({ email, password });
     if (error) throw error;
     set({ session: data.session });
+  },
+
+  signInWithPhone: async (phone, dialCode, password) => {
+    await adoptSession(await endpoints.signInWithPhone({ phone, dialCode, password }));
+  },
+
+  registerWithPhone: async (input) => {
+    await adoptSession(await endpoints.registerWithPhone(input));
   },
 
   signUp: async (email, password, fullName) => {
@@ -90,6 +107,22 @@ export const useAuth = create<AuthState>((set) => ({
  * onAuthStateChange also fires on token refresh, so a long-lived tab keeps a
  * valid token without the API ever seeing a 401.
  */
+/**
+ * Installs a session the API minted.
+ *
+ * setSession hands the tokens to the Supabase client, which from then on
+ * refreshes them, persists them and tells every listener -- so a phone
+ * sign-in is indistinguishable from an email one everywhere downstream.
+ */
+async function adoptSession(session: PhoneSession): Promise<void> {
+  const { data, error } = await supabase.auth.setSession({
+    access_token: session.accessToken,
+    refresh_token: session.refreshToken,
+  });
+  if (error) throw error;
+  useAuth.getState().setSession(data.session);
+}
+
 export function initAuth(): () => void {
   void supabase.auth.getSession().then(({ data }) => {
     useAuth.getState().setSession(data.session);

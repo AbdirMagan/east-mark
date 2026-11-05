@@ -5,7 +5,7 @@ import { create } from 'zustand';
 import { api } from '../api/endpoints';
 import { setTokenProvider } from '../api/client';
 import { SUPABASE_ANON_KEY, SUPABASE_URL, WEB_BASE_URL } from '../config';
-import type { Profile } from '../api/types';
+import type { PhoneSession, Profile } from '../api/types';
 
 /**
  * Authentication only -- deliberately the auth package rather than the whole
@@ -42,6 +42,14 @@ interface AuthState {
 
   init: () => Promise<void>;
   signIn: (email: string, password: string) => Promise<boolean>;
+  /** Phone + password. The API resolves the number and returns a session. */
+  signInWithPhone: (phone: string, dialCode: string, password: string) => Promise<boolean>;
+  signUpWithPhone: (input: {
+    phone: string;
+    dialCode: string;
+    password: string;
+    fullName: string;
+  }) => Promise<boolean>;
   signUp: (email: string, password: string, fullName: string) => Promise<boolean>;
   signOut: () => Promise<void>;
   requestPasswordReset: (email: string) => Promise<boolean>;
@@ -89,6 +97,36 @@ export const useAuth = create<AuthState>((set, get) => ({
     set({ session: data.session });
     void get().loadProfile();
     return true;
+  },
+
+  signInWithPhone: async (phone, dialCode, password) => {
+    set({ working: true, lastError: null });
+    try {
+      const result = await api.signInWithPhone({ phone, dialCode, password });
+      await adoptSession(result, set);
+      void get().loadProfile();
+      return true;
+    } catch (error) {
+      set({ lastError: readableError(error) });
+      return false;
+    } finally {
+      set({ working: false });
+    }
+  },
+
+  signUpWithPhone: async (input) => {
+    set({ working: true, lastError: null });
+    try {
+      const result = await api.registerWithPhone(input);
+      await adoptSession(result, set);
+      void get().loadProfile();
+      return true;
+    } catch (error) {
+      set({ lastError: readableError(error) });
+      return false;
+    } finally {
+      set({ working: false });
+    }
   },
 
   signUp: async (email, password, fullName) => {
@@ -151,3 +189,28 @@ export const useAuth = create<AuthState>((set, get) => ({
     }
   },
 }));
+
+/**
+ * Installs a session the API minted.
+ *
+ * setSession hands the tokens to the auth client, which refreshes and
+ * persists them from then on, so a phone sign-in behaves exactly like an
+ * email one everywhere else in the app.
+ */
+async function adoptSession(
+  result: PhoneSession,
+  set: (partial: Partial<AuthState>) => void,
+): Promise<void> {
+  const { data, error } = await supabaseAuth.setSession({
+    access_token: result.accessToken,
+    refresh_token: result.refreshToken,
+  });
+  if (error) throw error;
+  set({ session: data.session });
+}
+
+/** The API's own message where there is one, rather than "Request failed". */
+function readableError(error: unknown): string {
+  if (error instanceof Error && error.message) return error.message;
+  return 'Something went wrong. Try again.';
+}

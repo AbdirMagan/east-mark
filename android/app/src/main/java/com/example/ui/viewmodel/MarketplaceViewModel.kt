@@ -48,7 +48,7 @@ class MarketplaceViewModel(application: Application) : AndroidViewModel(applicat
     private val moshi = NetworkModule.provideMoshi()
     private val sessionManager = SessionManager(application)
     private val authApi = NetworkModule.provideAuthApi(sessionManager, moshi)
-    val authRepository = AuthRepository(authApi, sessionManager, moshi)
+    val authRepository = AuthRepository(authApi, sessionManager, moshi, NetworkModule.providePhoneAuthApi(moshi))
     private val backendApi = NetworkModule.provideBackendApi(sessionManager, authRepository, moshi)
 
     val repository = MarketplaceRepository(database, backendApi, authRepository)
@@ -462,6 +462,40 @@ class MarketplaceViewModel(application: Application) : AndroidViewModel(applicat
      * so is the one the repository returns: saying "no such account" would let
      * anyone test addresses against the marketplace.
      */
+    fun signInWithPhone(phone: String, dialCode: String, password: String, onSuccess: () -> Unit) {
+        viewModelScope.launch {
+            _authLoading.value = true
+            _authError.value = null
+            val result = authRepository.signInWithPhone(phone, dialCode, password)
+            _authLoading.value = false
+            result.onSuccess {
+                _snackbarEvent.emit("Welcome back!")
+                onSuccess()
+            }.onFailure { _authError.value = it.message ?: "Sign in failed" }
+        }
+    }
+
+    fun signUpWithPhone(
+        phone: String,
+        dialCode: String,
+        password: String,
+        fullName: String,
+        onSuccess: () -> Unit
+    ) {
+        viewModelScope.launch {
+            _authLoading.value = true
+            _authError.value = null
+            val language = selectedLanguage.value.code
+            val result = authRepository.signUpWithPhone(phone, dialCode, password, fullName, language)
+            _authLoading.value = false
+            result.onSuccess {
+                // Nothing to confirm: no code was sent and there is no inbox.
+                _snackbarEvent.emit("Account created!")
+                onSuccess()
+            }.onFailure { _authError.value = it.message ?: "Could not create that account" }
+        }
+    }
+
     fun requestPasswordReset(email: String) {
         viewModelScope.launch {
             _authLoading.value = true
@@ -474,11 +508,11 @@ class MarketplaceViewModel(application: Application) : AndroidViewModel(applicat
         }
     }
 
-    fun signUp(email: String, password: String, onSuccess: () -> Unit) {
+    fun signUp(email: String, password: String, fullName: String = "", onSuccess: () -> Unit) {
         viewModelScope.launch {
             _authLoading.value = true
             _authError.value = null
-            val result = authRepository.signUp(email.trim(), password)
+            val result = authRepository.signUp(email.trim(), password, fullName)
             _authLoading.value = false
             result.onSuccess {
                 if (authState.value is AuthState.SignedIn) {
