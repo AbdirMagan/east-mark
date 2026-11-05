@@ -72,6 +72,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
+import com.example.BuildConfig
 import com.example.R
 import com.example.data.model.Product
 import com.example.data.remote.VideoCache
@@ -125,7 +126,30 @@ fun ProductDetailScreen(
                                 putExtra(Intent.EXTRA_SUBJECT, product.title)
                                 putExtra(
                                     Intent.EXTRA_TEXT,
-                                    "Check out this listing on Magan Market: ${product.title} - ${CurrencyConverter.formatPrice(product.price, com.example.data.model.Currency.fromCode(product.originalCurrency))}\nhttps://eastmarket.app/product/${product.id}"
+                                    buildString {
+                                        append("Check out this listing on Magan Market: ")
+                                        append(product.title)
+                                        append(" - ")
+                                        append(
+                                            CurrencyConverter.formatPrice(
+                                                product.price,
+                                                com.example.data.model.Currency.fromCode(product.originalCurrency)
+                                            )
+                                        )
+                                        // The API's own link where there is
+                                        // one: it is the only thing that knows
+                                        // where the site is deployed. This used
+                                        // to be a hardcoded domain nobody owns,
+                                        // carrying the internal id rather than
+                                        // the ref the web route reads -- so a
+                                        // shared listing led nowhere, twice over.
+                                        val link = product.shareUrl
+                                            ?: product.ref?.let { "${BuildConfig.WEB_BASE_URL}/product/$it" }
+                                        if (link != null) {
+                                            append("\n")
+                                            append(link)
+                                        }
+                                    }
                                 )
                             }
                             context.startActivity(Intent.createChooser(shareIntent, "Share Listing via"))

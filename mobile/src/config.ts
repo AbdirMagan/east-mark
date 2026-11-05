@@ -27,4 +27,10 @@ export const SUPABASE_ANON_KEY = required('supabaseAnonKey', extra.supabaseAnonK
  * The website. A password-reset email has to land somewhere that can set the
  * new password, and a phone browser cannot hand a session back to this app.
  */
-export const WEB_BASE_URL = extra.webBaseUrl ?? 'https://east-market-web.vercel.app/';
+// Trailing slashes are stripped. Every use is `${WEB_BASE_URL}/something`,
+// and this fallback used to end in one, so a confirmation link came out as
+// https://east-market-web.vercel.app//auth/confirmed.
+export const WEB_BASE_URL = (extra.webBaseUrl ?? 'https://east-market-web.vercel.app').replace(
+  /\/+$/,
+  '',
+);

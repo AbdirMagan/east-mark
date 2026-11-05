@@ -40,7 +40,10 @@ const schema = z.object({
   RATE_LIMIT_MAX: z.coerce.number().int().positive().default(120),
 
   DEEPLINK_HOST: z.string().default('eastmarket.app'),
-  SITE_URL: z.string().url().default('https://eastmarket.app'),
+  // Where the marketplace lives. Every listing's share link is built from it,
+  // so the default is the deployment that exists rather than a domain nobody
+  // has registered.
+  SITE_URL: z.string().url().default('https://east-market-web.vercel.app'),
 
   // Web Push. A VAPID key pair identifies this server to the browser push
   // services; generate one with `npx web-push generate-vapid-keys`. Without

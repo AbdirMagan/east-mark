@@ -13,7 +13,8 @@ interface SeoOptions {
 }
 
 const SITE_NAME = 'Magan Market';
-const SITE_URL = (import.meta.env.VITE_SITE_URL as string | undefined) ?? 'https://eastmarket.app';
+const SITE_URL =
+  (import.meta.env.VITE_SITE_URL as string | undefined) ?? 'https://east-market-web.vercel.app';
 
 /**
  * Per-page document metadata.

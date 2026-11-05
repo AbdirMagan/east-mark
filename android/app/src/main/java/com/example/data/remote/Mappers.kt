@@ -56,6 +56,7 @@ private fun String.countryCodeToFlagEmoji(): String {
 
 fun ProductCardDto.toDomain(): Product = Product(
     id = id,
+    ref = ref,
     title = title,
     description = "",
     categoryId = "",
@@ -88,6 +89,7 @@ fun ProductCardDto.toDomain(): Product = Product(
 
 fun ProductDetailDto.toDomain(): Product = Product(
     id = id,
+    ref = ref,
     title = title,
     description = description ?: "",
     categoryId = categoryId.toString(),

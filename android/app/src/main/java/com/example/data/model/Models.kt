@@ -81,6 +81,10 @@ data class Product(
     val views: Int = 1,
     val isFeatured: Boolean = false,
     val isFavorite: Boolean = false,
+    /** The short id a share link carries: magan.../product/100042. */
+    val ref: Int? = null,
+    /** The share link the API builds, which knows where the site lives. */
+    val shareUrl: String? = null,
     val negotiable: Boolean = false,
     val deliveryAvailable: Boolean = false,
     val createdAt: Long = System.currentTimeMillis()
