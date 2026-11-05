@@ -81,8 +81,9 @@ export function normalizePhone(raw: string, dialCode?: string | null): string {
 function secret(): string {
   const value = env.PHONE_IDENTITY_SECRET;
   if (!value) {
-    throw new AppError(503, 'Phone sign-in is not configured on this server', {
+    throw new AppError(503, 'Phone sign-in is not available yet. Use your email address for now.', {
       code: 'phone_auth_unconfigured',
+      expose: true,
     });
   }
   return value;
@@ -135,8 +136,9 @@ export interface RegisterInput {
 
 export async function register(input: RegisterInput): Promise<PhoneSession & { phone: string }> {
   if (!hasServiceRole) {
-    throw new AppError(503, 'Phone sign-up is not available on this server', {
+    throw new AppError(503, 'Phone sign-up is not available yet. Use your email address for now.', {
       code: 'phone_auth_unconfigured',
+      expose: true,
     });
   }
 
